@@ -121,6 +121,7 @@ const baselightTheme = createTheme({
     subtitle2: {
       fontSize: "0.875rem",
       fontWeight: 400,
+
     },
   },
   components: {

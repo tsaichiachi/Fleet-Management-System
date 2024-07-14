@@ -1,97 +1,93 @@
+//車主管理
 import {
-  Typography,
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Chip,
-} from "@mui/material";
-import DashboardCard from "@/app/(DashboardLayout)//components/shared/DashboardCard";
+    Typography, Box,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
+    Chip,
+    Button
+} from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+
 
 const products = [
   {
     id: "1",
-    name: "Sunil Joshi",
-    post: "Web Designer",
-    pname: "Elite Admin",
-    priority: "Low",
-    pbg: "primary.main",
-    budget: "3.9",
+    name: "陳春男",
+    phone: "0965383316",
+    licensePlate: "003-M9",
   },
   {
     id: "2",
-    name: "Andrew McDownland",
-    post: "Project Manager",
-    pname: "Real Homes WP Theme",
-    priority: "Medium",
-    pbg: "secondary.main",
-    budget: "24.5",
+    name: "陳春男",
+    phone: "0965383316",
+    licensePlate: "003-M9",
   },
   {
     id: "3",
-    name: "Christopher Jamil",
-    post: "Project Manager",
-    pname: "MedicalPro WP Theme",
-    priority: "High",
-    pbg: "error.main",
-    budget: "12.8",
+    name: "陳春男",
+    phone: "0965383316",
+    licensePlate: "003-M9",
   },
   {
     id: "4",
-    name: "Nirav Joshi",
-    post: "Frontend Engineer",
-    pname: "Hosting Press HTML",
-    priority: "Critical",
-    pbg: "success.main",
-    budget: "2.4",
+    name: "陳春男",
+    phone: "0965383316",
+    licensePlate: "003-M9",
   },
 ];
 
-const ProductPerformance = () => {
-  return (
-    <DashboardCard title="Product Performance">
-      <Box sx={{ overflow: "auto", width: { xs: "280px", sm: "auto" } }}>
+
+const CarOwner = () => {
+    return (
+      <Box sx={{ overflow: "auto", width: { xs: "auto", sm: "auto" } }}>
         <Table
           aria-label="simple table"
           sx={{
             whiteSpace: "nowrap",
             mt: 2,
+            border: "1px solid red",
+            tableLayout: "fixed",
+            overflow: "auto",
           }}
         >
           <TableHead>
             <TableRow>
-              <TableCell>
+              <TableCell sx={{ width: "6%" }}>
                 <Typography variant="subtitle2" fontWeight={600}>
                   Id
                 </Typography>
               </TableCell>
               <TableCell>
                 <Typography variant="subtitle2" fontWeight={600}>
-                  Assigned
+                  車主
+                </Typography>
+              </TableCell>
+
+              <TableCell>
+                <Typography variant="subtitle2" fontWeight={600}>
+                  行動電話
                 </Typography>
               </TableCell>
               <TableCell>
                 <Typography variant="subtitle2" fontWeight={600}>
-                  Name
+                  車牌號碼
                 </Typography>
               </TableCell>
               <TableCell>
                 <Typography variant="subtitle2" fontWeight={600}>
-                  Priority
-                </Typography>
-              </TableCell>
-              <TableCell align="right">
-                <Typography variant="subtitle2" fontWeight={600}>
-                  Budget
+                  編輯
                 </Typography>
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {products.map((product) => (
-              <TableRow key={product.name}>
+              <TableRow key={product.id}>
                 <TableCell>
                   <Typography
                     sx={{
@@ -102,6 +98,7 @@ const ProductPerformance = () => {
                     {product.id}
                   </Typography>
                 </TableCell>
+
                 <TableCell>
                   <Box
                     sx={{
@@ -110,16 +107,8 @@ const ProductPerformance = () => {
                     }}
                   >
                     <Box>
-                      <Typography variant="subtitle2" fontWeight={600}>
+                      <Typography variant="subtitle2" fontWeight={400}>
                         {product.name}
-                      </Typography>
-                      <Typography
-                        color="textSecondary"
-                        sx={{
-                          fontSize: "13px",
-                        }}
-                      >
-                        {product.post}
                       </Typography>
                     </Box>
                   </Box>
@@ -130,30 +119,34 @@ const ProductPerformance = () => {
                     variant="subtitle2"
                     fontWeight={400}
                   >
-                    {product.pname}
+                    {product.phone}
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Chip
-                    sx={{
-                      px: "4px",
-                      backgroundColor: product.pbg,
-                      color: "#fff",
-                    }}
-                    size="small"
-                    label={product.priority}
-                  ></Chip>
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle2"
+                    fontWeight={400}
+                  >
+                    {product.licensePlate}
+                  </Typography>
                 </TableCell>
-                <TableCell align="right">
-                  <Typography variant="h6">${product.budget}k</Typography>
+                <TableCell>
+                  <Typography>
+                    <IconButton aria-label="edit">
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton aria-label="delete">
+                      <DeleteIcon />
+                    </IconButton>
+                  </Typography>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </Box>
-    </DashboardCard>
-  );
+    );
 };
 
-export default ProductPerformance;
+export default CarOwner;
