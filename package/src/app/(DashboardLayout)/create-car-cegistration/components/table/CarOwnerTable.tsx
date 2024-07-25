@@ -1,18 +1,20 @@
-//車主管理
-import {
-    Typography, Box,
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableRow,
-    Chip,
-    Button
-} from '@mui/material';
-import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+"use client";
 
+import {
+  Typography,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  IconButton,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import React from "react";
+import { useRouter } from "next/navigation";
+import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 
 const products = [
   {
@@ -41,112 +43,120 @@ const products = [
   },
 ];
 
+const CarOwnerTable = () => {
+  const router = useRouter();
 
-const CarOwner = () => {
-    return (
-      <Box sx={{ overflow: "auto", width: { xs: "auto", sm: "auto" } }}>
-        <Table
-          aria-label="simple table"
-          sx={{
-            whiteSpace: "nowrap",
-            mt: 2,
-            border: "1px solid red",
-            tableLayout: "fixed",
-            overflow: "auto",
-          }}
-        >
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{ width: "6%" }}>
-                <Typography variant="subtitle2" fontWeight={600}>
-                  Id
-                </Typography>
-              </TableCell>
+  const handleEditClick = (id: any) => {
+   router.push(`/create-car-cegistration/${id}/overview`);
+  };
+
+  return (
+    <Box sx={{ overflow: "auto", width: { xs: "auto", sm: "auto" } }}>
+      <Table
+        aria-label="simple table"
+        sx={{
+          whiteSpace: "nowrap",
+          mt: 2,
+          border: "1px solid red",
+          tableLayout: "fixed",
+          overflow: "auto",
+        }}
+      >
+        <TableHead>
+          <TableRow>
+            <TableCell sx={{ width: "6%" }}>
+              <Typography variant="subtitle2" fontWeight={600}>
+                Id
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography variant="subtitle2" fontWeight={600}>
+                車主
+              </Typography>
+            </TableCell>
+
+            <TableCell>
+              <Typography variant="subtitle2" fontWeight={600}>
+                行動電話
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography variant="subtitle2" fontWeight={600}>
+                車牌號碼
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography variant="subtitle2" fontWeight={600}>
+                編輯
+              </Typography>
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {products.map((product) => (
+            <TableRow key={product.id}>
               <TableCell>
-                <Typography variant="subtitle2" fontWeight={600}>
-                  車主
+                <Typography
+                  sx={{
+                    fontSize: "15px",
+                    fontWeight: "500",
+                  }}
+                >
+                  {product.id}
                 </Typography>
               </TableCell>
 
               <TableCell>
-                <Typography variant="subtitle2" fontWeight={600}>
-                  行動電話
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Box>
+                    <Typography variant="subtitle2" fontWeight={400}>
+                      {product.name}
+                    </Typography>
+                  </Box>
+                </Box>
+              </TableCell>
+              <TableCell>
+                <Typography
+                  color="textSecondary"
+                  variant="subtitle2"
+                  fontWeight={400}
+                >
+                  {product.phone}
                 </Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="subtitle2" fontWeight={600}>
-                  車牌號碼
+                <Typography
+                  color="textSecondary"
+                  variant="subtitle2"
+                  fontWeight={400}
+                >
+                  {product.licensePlate}
                 </Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="subtitle2" fontWeight={600}>
-                  編輯
+                <Typography>
+                  <IconButton
+                    aria-label="edit"
+                    onClick={() => handleEditClick(product.id)}
+                  >
+                    <VisibilityRoundedIcon />
+                  </IconButton>
+                  <IconButton aria-label="delete">
+                    <DeleteIcon />
+                  </IconButton>
                 </Typography>
               </TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {products.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>
-                  <Typography
-                    sx={{
-                      fontSize: "15px",
-                      fontWeight: "500",
-                    }}
-                  >
-                    {product.id}
-                  </Typography>
-                </TableCell>
-
-                <TableCell>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Box>
-                      <Typography variant="subtitle2" fontWeight={400}>
-                        {product.name}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle2"
-                    fontWeight={400}
-                  >
-                    {product.phone}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle2"
-                    fontWeight={400}
-                  >
-                    {product.licensePlate}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography>
-                    <IconButton aria-label="edit">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton aria-label="delete">
-                      <DeleteIcon />
-                    </IconButton>
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Box>
-    );
+          ))}
+        </TableBody>
+      </Table>
+    </Box>
+  );
 };
 
-export default CarOwner;
+export default CarOwnerTable;

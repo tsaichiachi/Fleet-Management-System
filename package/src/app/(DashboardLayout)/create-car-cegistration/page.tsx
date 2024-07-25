@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import { Typography,Button } from "@mui/material";
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
 import DashboardCard from "@/app/(DashboardLayout)/components/shared/DashboardCard";
@@ -12,14 +13,35 @@ import PolicyManagement from "./components/form/PolicyManagement";
 import PolicyManagmentDetail from "./components/table/PolicyManagementTable";
 import TaxManagementDetail from "./components/table/TaxManagementTable";
 
+import { Select, MenuItem } from "@mui/material";
+import CarOwnerTable from "./components/table/CarOwnerTable";
 
-const SamplePage = () => {
+
+function SamplePage() {
+  // select
+  const [searchItems, setSearchItems] = React.useState("1");
+  const handleChange = (event: any) => {
+    setSearchItems(event.target.value);
+  };
+
   return (
     <PageContainer title="車籍資料建立" description="this is Sample page">
       <DashboardCard title="車主資料">
         {/* xs: 0, sm: 600, md: 960, lg: 1280, xl: 1920 */}
         <Box sx={{ overflow: "auto", width: { xs: "400px", sm: "auto" } }}>
           <Box>
+            <Select
+              labelId="searchItems"
+              id="searchItems"
+              value={searchItems}
+              size="small"
+              onChange={handleChange}
+              sx={{ marginRight: "1%" }}
+            >
+              <MenuItem value={1}>請選擇</MenuItem>
+              <MenuItem value={2}>車主</MenuItem>
+              <MenuItem value={3}>車牌</MenuItem>
+            </Select>
             <TextField
               label=""
               id="outlined-size-small"
@@ -33,7 +55,7 @@ const SamplePage = () => {
             <Button variant="contained">新增車主</Button>
           </Box>
           <h3>車主列表</h3>
-          <CarOwner />
+          <CarOwnerTable />
           <CarOwnerSetting />
           <h3>保單管理</h3>
           <PolicyManagmentDetail />
@@ -43,7 +65,6 @@ const SamplePage = () => {
         </Box>
       </DashboardCard>
     </PageContainer>
-    //
   );
 };
 

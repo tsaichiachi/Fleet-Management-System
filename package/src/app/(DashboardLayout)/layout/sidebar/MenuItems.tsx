@@ -6,6 +6,11 @@ import {
   IconMoodHappy,
   IconTypography,
   IconUserPlus,
+  IconBusinessplan,
+  IconCarCrash,
+  IconFileDollar,
+  IconHomeDollar,
+  IconCarCrane,
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -76,8 +81,32 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
-    title: "車籍資料建立",
-    icon: IconAperture,
+    title: "車籍資料",
+    icon: IconCarCrane,
+    href: "/create-car-cegistration",
+  },
+  {
+    id: uniqueId(),
+    title: "管費設定",
+    icon: IconBusinessplan,
+    href: "/create-car-cegistration",
+  },
+  {
+    id: uniqueId(),
+    title: "保單管理",
+    icon: IconCarCrash,
+    href: "/create-car-cegistration",
+  },
+  {
+    id: uniqueId(),
+    title: "貸款管理",
+    icon: IconFileDollar,
+    href: "/create-car-cegistration",
+  },
+  {
+    id: uniqueId(),
+    title: "稅金管理",
+    icon: IconHomeDollar,
     href: "/create-car-cegistration",
   },
 ];
