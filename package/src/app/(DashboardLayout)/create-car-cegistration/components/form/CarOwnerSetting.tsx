@@ -1,7 +1,6 @@
 //車主管理表單
 "use client";
-import React, { useState } from "react";
-import DashboardCard from "@/app/(DashboardLayout)/components/shared/DashboardCard";
+import React from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -10,12 +9,11 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { Button } from "@mui/material";
 
 const CarOwnerSetting = () => {
-  
   return (
     <Box
       component="form"
       sx={{
-        "& .MuiTextField-root": { m: 1, width: "30ch", maxWidth: "100%" },
+        "& .MuiTextField-root": { m: 1, width: "100%", maxWidth: "100%" },
       }}
       noValidate
       autoComplete="off"
@@ -225,7 +223,6 @@ const CarOwnerSetting = () => {
           label="備註"
           type=" "
           autoComplete="current-password"
-          style={{ width: "100%" }}
         />
       </div>
       <div style={{ display: "flex", justifyContent: "center" }}>

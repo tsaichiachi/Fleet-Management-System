@@ -14,6 +14,8 @@ import DashboardCard from "@/app/(DashboardLayout)//components/shared/DashboardC
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import { useRouter } from "next/navigation";
+import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 
 const policyManagment = [
   {
@@ -78,7 +80,16 @@ const policyManagment = [
   },
 ];
 
-const PolicyManagmentDetail = () => {
+const PolicyManagment = () => {
+
+ const router = useRouter();
+ const handleEditClick = (id: any) => {
+   router.push(`/create-car-cegistration/${id}/PolicyManagment`);
+ };
+
+
+
+
   return (
     <Box sx={{ overflow: "auto", width: { xs: "auto", sm: "auto" } }}>
       <Table
@@ -318,8 +329,11 @@ const PolicyManagmentDetail = () => {
                 }}
               >
                 <Typography>
-                  <IconButton aria-label="edit">
-                    <EditIcon />
+                  <IconButton
+                    aria-label="edit"
+                    onClick={() => handleEditClick(product.id)}
+                  >
+                    <VisibilityRoundedIcon />
                   </IconButton>
                   <IconButton aria-label="delete">
                     <DeleteIcon />
@@ -334,4 +348,4 @@ const PolicyManagmentDetail = () => {
   );
 };
 
-export default PolicyManagmentDetail;
+export default PolicyManagment;

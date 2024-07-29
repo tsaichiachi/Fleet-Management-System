@@ -54,14 +54,13 @@ function SamplePage() {
             </Button>
             <Button variant="contained">新增車主</Button>
           </Box>
-          <h3>車主列表</h3>
           <CarOwnerTable />
-          <CarOwnerSetting />
-          <h3>保單管理</h3>
+          {/* <CarOwnerSetting /> */}
+          {/* <h3>保單管理</h3>
           <PolicyManagmentDetail />
           <PolicyManagement />
           <h3>貸款管理</h3>
-          <TaxManagementDetail />
+          <TaxManagementDetail /> */}
         </Box>
       </DashboardCard>
     </PageContainer>

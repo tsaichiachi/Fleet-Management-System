@@ -57,7 +57,6 @@ const CarOwnerTable = () => {
         sx={{
           whiteSpace: "nowrap",
           mt: 2,
-          border: "1px solid red",
           tableLayout: "fixed",
           overflow: "auto",
         }}
