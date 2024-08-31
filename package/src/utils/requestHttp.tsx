@@ -1,22 +1,17 @@
 import qs from "qs";
-import { getLocalStorage } from "./tool";
 
-// 定義 RequestOptions 類型
 interface RequestOptions {
   data?: any;
   token?: string;
   headers?: Record<string, string>;
-  isDefault?: boolean;
-  [key: string]: any; // 其他配置
+  [key: string]: any; // 用於擴展其他配置
 }
 
-// 定義 HttpResponse 類型
 interface HttpResponse {
-  code?: string;
-  [key: string]: any;
+  code: string;
+  [key: string]: any; // 用於擴展其他響應屬性
 }
 
-// 定義 requestHttp 函數
 export const requestHttp = (
   endStr: string,
   { data, token, headers, ...config }: RequestOptions = {}
@@ -24,18 +19,18 @@ export const requestHttp = (
   const initConfig: RequestInit & { isDefault?: boolean } = {
     method: "GET",
     headers: {
-      Authorization: token ? `Bearer ${token}` : "",
-      "X-ESG-Auth": getLocalStorage({ localStorageKey: "token" }) || "",
       ...headers,
+      // 如果需要，取消下面的註釋以加入 token
+      // Authorization: token ? `Bearer ${token}` : "",
+      // "X-ESG-Auth": getLocalStorage({ localStorageKey: "token" }) || "",
     },
     ...config,
   };
 
   // 確保 initConfig.method 不會是 undefined
-  if (!initConfig.method) {
-    initConfig.method = "GET";
-  }
+  initConfig.method = initConfig.method || "GET";
 
+  // 根據請求方法處理數據
   if (initConfig.method.toUpperCase() === "GET") {
     endStr +=
       data && Object.keys(data).length > 0 ? `?${qs.stringify(data)}` : "";
@@ -43,34 +38,42 @@ export const requestHttp = (
     if (data instanceof FormData) {
       initConfig.body = data;
     } else {
-      if (!initConfig.headers) {
-        initConfig.headers = {};
-      }
       (initConfig.headers as Record<string, string>)["Content-Type"] =
         "application/json";
       initConfig.body = JSON.stringify(data || {});
     }
   }
 
-  const url = initConfig?.isDefault
-    ? process.env.NEXT_PUBLIC_API_DEFAULT
-    : process.env.NEXT_PUBLIC_API;
+  // const url = initConfig.isDefault
+  //   ? process.env.NEXT_PUBLIC_API_DEFAULT || ""
+  //   : "http://192.168.50.240:8080";
+
+     const url = initConfig.isDefault
+       ? process.env.NEXT_PUBLIC_API_DEFAULT || ""
+       : "http://192.168.50.240:8080";
+
+  // 調試信息，檢查 URL 和配置
+  console.log("Request URL:", url + `/${endStr}`);
+  console.log("Request Config:", initConfig);
 
   return fetch(url + `/${endStr}`, initConfig)
     .then(async (res) => {
       if (res.ok) {
         const response: HttpResponse = await res.json();
         if (response.code === "401101") {
+          // 處理未授權錯誤，根據需求更新
           // const locale = Cookies.get('NEXT_LOCALE') || 'en';
           // Cookies.remove('esg-token');
-          // return window.location.replace(`/${locale}/login`);
+          // window.location.replace(`/${locale}/login`);
         }
         return response;
       } else {
-        return Promise.reject(await res.json());
+        const errorResponse = await res.json();
+        return Promise.reject(errorResponse);
       }
     })
     .catch((error) => {
+      console.error("Request failed:", error);
       return Promise.reject(error);
     });
 };

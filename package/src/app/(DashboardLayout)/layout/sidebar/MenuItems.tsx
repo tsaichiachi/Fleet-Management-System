@@ -89,25 +89,25 @@ const Menuitems = [
     id: uniqueId(),
     title: "管費設定",
     icon: IconBusinessplan,
-    href: "/create-car-cegistration",
+    href: "/ManagementFeeSetting",
   },
   {
     id: uniqueId(),
     title: "保單管理",
     icon: IconCarCrash,
-    href: "/create-car-cegistration",
+    href: "/PolicyManagement",
   },
   {
     id: uniqueId(),
     title: "貸款管理",
     icon: IconFileDollar,
-    href: "/create-car-cegistration",
+    href: "/LoanManagement",
   },
   {
     id: uniqueId(),
     title: "稅金管理",
     icon: IconHomeDollar,
-    href: "/create-car-cegistration",
+    href: "/TaxManagement",
   },
 ];
 

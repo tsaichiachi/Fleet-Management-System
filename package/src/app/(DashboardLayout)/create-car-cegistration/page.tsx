@@ -5,17 +5,9 @@ import PageContainer from "@/app/(DashboardLayout)/components/container/PageCont
 import DashboardCard from "@/app/(DashboardLayout)/components/shared/DashboardCard";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import CarOwnerSetting from "./components/form/CarOwnerSetting";
-import CarOwner from "./components/table/CarOwnerTable";
-
-import LoanManagement from "./components/form/LoanManagement";
-import PolicyManagement from "./components/form/PolicyManagement";
-import PolicyManagmentDetail from "./components/table/PolicyManagementTable";
-import TaxManagementDetail from "./components/table/TaxManagementTable";
-
 import { Select, MenuItem } from "@mui/material";
-import CarOwnerTable from "./components/table/CarOwnerTable";
-
+import CarOwnerTable from "./components/CarOwnerTable";
+import { useRouter } from "next/navigation";
 
 function SamplePage() {
   // select
@@ -23,6 +15,13 @@ function SamplePage() {
   const handleChange = (event: any) => {
     setSearchItems(event.target.value);
   };
+
+  const router = useRouter();
+  const handleAddNewClick = (id: any) => {
+    router.push(`/create-car-cegistration/AddNew`);
+    localStorage.setItem("carOwnerId", id);
+  };
+
 
   return (
     <PageContainer title="車籍資料建立" description="this is Sample page">
@@ -52,15 +51,11 @@ function SamplePage() {
             <Button variant="contained" sx={{ marginRight: "1%" }}>
               搜尋
             </Button>
-            <Button variant="contained">新增車主</Button>
+            <Button variant="contained" onClick={handleAddNewClick}>
+              新增車主
+            </Button>
           </Box>
           <CarOwnerTable />
-          {/* <CarOwnerSetting /> */}
-          {/* <h3>保單管理</h3>
-          <PolicyManagmentDetail />
-          <PolicyManagement />
-          <h3>貸款管理</h3>
-          <TaxManagementDetail /> */}
         </Box>
       </DashboardCard>
     </PageContainer>

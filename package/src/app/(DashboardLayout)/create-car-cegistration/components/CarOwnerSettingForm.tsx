@@ -7,8 +7,29 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { Button } from "@mui/material";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 
 const CarOwnerSetting = () => {
+
+   const router = useRouter();
+   const handleCancleClick = (id: any) => {
+     router.push(`/create-car-cegistration`);
+     localStorage.setItem("carOwnerId", id);
+   };
+
+   const {
+     register,
+     handleSubmit,
+     setValue,
+     formState: { errors },
+   } = useForm();
+
+   const onSubmit = (data:any) => {
+      console.log(data);
+  }
+
+
   return (
     <Box
       component="form"
@@ -17,37 +38,39 @@ const CarOwnerSetting = () => {
       }}
       noValidate
       autoComplete="off"
+      onSubmit={handleSubmit(onSubmit)}
     >
       <div style={{ width: "100%" }}>
         <TextField
           required
           id="outlined-password-input"
           label="車牌號碼"
-          type=" "
+          type="text"
           autoComplete="current-password"
+          {...register("name", { required: true })}
         />
         <TextField
           id="outlined-password-input"
           label="姓名"
-          type=" "
+          type="text"
           autoComplete="current-password"
         />
         <TextField
           id="outlined-password-input"
           label="車行"
-          type=" "
+          type="text"
           autoComplete="current-password"
         />
         <TextField
           id="outlined-password-input"
           label="性別"
-          type=" "
+          type="text"
           autoComplete="current-password"
         />
         <TextField
           id="outlined-password-input"
           label="身分證字號"
-          type=" "
+          type="text"
           autoComplete="current-password"
         />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -56,37 +79,37 @@ const CarOwnerSetting = () => {
         <TextField
           id="outlined-password-input"
           label="電話1"
-          type=" "
+          type="text"
           autoComplete="current-password"
         />
         <TextField
           id="outlined-password-input"
           label="電話2"
-          type=" "
+          type="text"
           autoComplete="current-password"
         />
         <TextField
           id="outlined-password-input"
           label="傳真"
-          type=" "
+          type="text"
           autoComplete="current-password"
         />
         <TextField
           id="outlined-password-input"
           label="手機"
-          type=" "
+          type="text"
           autoComplete="current-password"
         />
         <TextField
           id="outlined-password-input"
           label="通訊地址"
-          type=" "
+          type="text"
           autoComplete="current-password"
         />
         <TextField
           id="outlined-password-input"
           label="戶籍地址"
-          type=" "
+          type="text"
           autoComplete="current-password"
         />
       </div>
@@ -98,13 +121,13 @@ const CarOwnerSetting = () => {
         <TextField
           id="outlined-password-input"
           label="簽入金額"
-          type=" "
+          type="number"
           autoComplete="current-password"
         />
         <TextField
           id="outlined-password-input"
           label="車輛來源"
-          type=" "
+          type="text"
           autoComplete="current-password"
         />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -113,13 +136,13 @@ const CarOwnerSetting = () => {
         <TextField
           id="outlined-password-input"
           label="遷出金額"
-          type=" "
+          type="number"
           autoComplete="current-password"
         />
         <TextField
           id="outlined-password-input"
           label="遷出地點"
-          type=" "
+          type="text"
           autoComplete="current-password"
         />
       </div>
@@ -134,26 +157,26 @@ const CarOwnerSetting = () => {
         <TextField
           id="outlined-password-input"
           label="年份"
-          type=" "
+          type="number"
           autoComplete="current-password"
         />
         <TextField
           id="outlined-password-input"
           label="廠牌"
-          type=" "
+          type="text"
           autoComplete="current-password"
           helperText="西式(1999)"
         />
         <TextField
           id="outlined-password-input"
           label="噸位CC數"
-          type=" "
+          type="number"
           autoComplete="current-password"
         />
         <TextField
           id="outlined-password-input"
           label="引擎號碼"
-          type=" "
+          type="text"
           autoComplete="current-password"
         />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -165,13 +188,13 @@ const CarOwnerSetting = () => {
         <TextField
           id="outlined-password-input"
           label="車身樣式"
-          type=" "
+          type="text"
           autoComplete="current-password"
         />
         <TextField
           id="outlined-password-input"
           label="通行證"
-          type=" "
+          type="text"
           autoComplete="current-password"
         />
         <TextField
@@ -226,10 +249,16 @@ const CarOwnerSetting = () => {
         />
       </div>
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <Button variant="contained" sx={{ marginRight: "1%" }}>
+        <Button
+          variant="contained"
+          sx={{ marginRight: "1%" }}
+          onClick={handleCancleClick}
+        >
           取消
         </Button>
-        <Button variant="contained">儲存</Button>
+        <Button variant="contained" type="submit">
+          儲存
+        </Button>
       </div>
     </Box>
   );

@@ -80,7 +80,7 @@ const policyManagment = [
   },
 ];
 
-const PolicyManagment = () => {
+const PolicyManagmentTable = () => {
 
  const router = useRouter();
  const handleEditClick = (id: any) => {
@@ -348,4 +348,4 @@ const PolicyManagment = () => {
   );
 };
 
-export default PolicyManagment;
+export default PolicyManagmentTable;

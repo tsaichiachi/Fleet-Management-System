@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev:ESG_INT": "dotenv -e .env.dev-b216 next dev",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -19,12 +20,15 @@
     "@mui/material": "^5.15.15",
     "@mui/x-date-pickers": "^7.11.0",
     "@tabler/icons-react": "2.30.0",
+    "@tanstack/react-query": "^5.51.23",
     "@types/node": "20.4.5",
     "@types/react": "18.2.18",
     "@types/react-dom": "18.2.7",
+    "@types/react-router-dom": "^5.3.3",
     "apexcharts": "3.41.1",
     "date-fns": "^3.6.0",
     "dayjs": "^1.11.12",
+    "dotenv": "^16.4.5",
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.12",
     "lodash": "4.17.21",
@@ -33,6 +37,9 @@
     "react-apexcharts": "1.4.1",
     "react-dom": "18.2.0",
     "react-helmet-async": "1.3.0",
+    "react-hook-form": "^7.53.0",
+    "react-query": "^3.39.3",
+    "react-router-dom": "^6.26.1",
     "typescript": "5.1.6"
   },
   "devDependencies": {

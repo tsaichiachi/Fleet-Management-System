@@ -2,18 +2,18 @@
 import React from "react";
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
 import DashboardCard from "@/app/(DashboardLayout)/components/shared/DashboardCard";
-import CarOwnerSetting from "../../components/form/CarOwnerSetting";
-import PageTabs from "@/app/(DashboardLayout)/components/PageTabs";
+import CarOwnerSetting from "../components/CarOwnerSettingForm";
 
-const Overview = () => {
+
+const OwnerAdd = () => {
   return (
     <PageContainer title="車籍資料建立" description="this is Sample page">
-      <PageTabs />
-      <DashboardCard title="車主資料">
+      {/* <PageTabs /> */}
+      <DashboardCard title="新增車主資料">
         <CarOwnerSetting />
       </DashboardCard>
     </PageContainer>
   );
 };
 
-export default Overview;
+export default OwnerAdd;

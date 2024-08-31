@@ -3,12 +3,10 @@
 import React from "react";
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
 import DashboardCard from "@/app/(DashboardLayout)/components/shared/DashboardCard";
-import CarOwnerSetting from "../../components/form/CarOwnerSetting";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import ManagementFeeSettingTable from "../../components/table/ManagementFeeSettingTable";
-import ManagementFeeSettingForm from "../../components/form/ManagementFeeSetting";
+import ManagementFeeSettingForm from "../components/form/ManagementFeeSetting";
 
 const ManagementFeeSetting = () => {
   const [value, setValue] = React.useState("one");

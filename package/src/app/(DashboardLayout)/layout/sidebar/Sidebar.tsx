@@ -2,6 +2,7 @@ import { useMediaQuery, Box, Drawer } from "@mui/material";
 import Logo from "../shared/logo/Logo";
 import SidebarItems from "./SidebarItems";
 import { Upgrade } from "./Updrade";
+import { useLocation } from "react-router-dom";
 
 interface ItemType {
   isMobileSidebarOpen: boolean;
@@ -14,9 +15,12 @@ const Sidebar = ({
   onSidebarClose,
   isSidebarOpen,
 }: ItemType) => {
+  console.log(isMobileSidebarOpen);
+  console.log(isSidebarOpen);
   const lgUp = useMediaQuery((theme: any) => theme.breakpoints.up("lg"));
-
   const sidebarWidth = "270px";
+
+  
 
   if (lgUp) {
     return (

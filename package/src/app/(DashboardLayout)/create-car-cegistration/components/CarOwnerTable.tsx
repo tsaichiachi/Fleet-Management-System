@@ -11,44 +11,41 @@ import {
   IconButton,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import React from "react";
 import { useRouter } from "next/navigation";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
+import { requestHttp } from "@/utils/requestHttp";
+import { useEffect, useState } from "react";
 
-const products = [
-  {
-    id: "1",
-    name: "陳春男",
-    phone: "0965383316",
-    licensePlate: "003-M9",
-  },
-  {
-    id: "2",
-    name: "陳春男",
-    phone: "0965383316",
-    licensePlate: "003-M9",
-  },
-  {
-    id: "3",
-    name: "陳春男",
-    phone: "0965383316",
-    licensePlate: "003-M9",
-  },
-  {
-    id: "4",
-    name: "陳春男",
-    phone: "0965383316",
-    licensePlate: "003-M9",
-  },
-];
+
 
 const CarOwnerTable = () => {
   const router = useRouter();
-
   const handleEditClick = (id: any) => {
-   router.push(`/create-car-cegistration/${id}/overview`);
+   router.push(`/create-car-cegistration/Edit`);
+   localStorage.setItem("carOwnerId", id);
   };
+
+   const [singleData, setSingleData] = useState<any[]>([]);
+
+   const fetchData = async () => {
+     try {
+       const data = await requestHttp("car/carInfo", {
+         method: "POST",
+         isDefault: false,
+       });
+       //console.log(data);
+       const fetchedData = data.data;
+       //console.log(fetchedData);
+       setSingleData(fetchedData);
+     } catch (error) {
+       console.error("Error fetching data:", error);
+     }
+   };
+
+   useEffect(() => {
+     fetchData();
+   }, []);
 
   return (
     <Box sx={{ overflow: "auto", width: { xs: "auto", sm: "auto" } }}>
@@ -65,7 +62,7 @@ const CarOwnerTable = () => {
           <TableRow>
             <TableCell sx={{ width: "6%" }}>
               <Typography variant="subtitle2" fontWeight={600}>
-                Id
+                ID
               </Typography>
             </TableCell>
             <TableCell>
@@ -74,11 +71,11 @@ const CarOwnerTable = () => {
               </Typography>
             </TableCell>
 
-            <TableCell>
+            {/* <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
                 行動電話
               </Typography>
-            </TableCell>
+            </TableCell> */}
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
                 車牌號碼
@@ -92,8 +89,8 @@ const CarOwnerTable = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {products.map((product) => (
-            <TableRow key={product.id}>
+          {singleData.map((owner) => (
+            <TableRow key={owner.id}>
               <TableCell>
                 <Typography
                   sx={{
@@ -101,7 +98,7 @@ const CarOwnerTable = () => {
                     fontWeight: "500",
                   }}
                 >
-                  {product.id}
+                  {owner.id}
                 </Typography>
               </TableCell>
 
@@ -114,7 +111,7 @@ const CarOwnerTable = () => {
                 >
                   <Box>
                     <Typography variant="subtitle2" fontWeight={400}>
-                      {product.name}
+                      {owner.ownerName}
                     </Typography>
                   </Box>
                 </Box>
@@ -125,23 +122,14 @@ const CarOwnerTable = () => {
                   variant="subtitle2"
                   fontWeight={400}
                 >
-                  {product.phone}
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography
-                  color="textSecondary"
-                  variant="subtitle2"
-                  fontWeight={400}
-                >
-                  {product.licensePlate}
+                  {owner.licenseNumber}
                 </Typography>
               </TableCell>
               <TableCell>
                 <Typography>
                   <IconButton
                     aria-label="edit"
-                    onClick={() => handleEditClick(product.id)}
+                    onClick={() => handleEditClick(owner.id)}
                   >
                     <VisibilityRoundedIcon />
                   </IconButton>
