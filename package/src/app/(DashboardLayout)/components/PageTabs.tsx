@@ -25,10 +25,7 @@ const handleEditClick = (id: any) => {
         aria-label="secondary tabs example"
       >
         <Tab value="one" label="車籍資料" />
-        <Tab
-          value="two"
-          label="管費設定"
-        />
+        <Tab value="two" label="管費設定" />
         <Tab value="three" label="保單管理" />
         <Tab value="four" label="貸款管理" />
         <Tab value="five" label="稅金管理" />

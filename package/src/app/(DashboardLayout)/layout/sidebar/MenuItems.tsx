@@ -79,11 +79,23 @@ const Menuitems = [
     navlabel: true,
     subheader: "基本代號1",
   },
+  // {
+  //   id: uniqueId(),
+  //   title: "車籍資料",
+  //   icon: IconCarCrane,
+  //   href: "/create-car-cegistration",
+  // },
   {
     id: uniqueId(),
-    title: "車籍資料",
+    title: "司機管理",
     icon: IconCarCrane,
-    href: "/create-car-cegistration",
+    href: "/driver-management",
+  },
+  {
+    id: uniqueId(),
+    title: "車輛管理",
+    icon: IconCarCrane,
+    href: "/vehicle-management",
   },
   {
     id: uniqueId(),
