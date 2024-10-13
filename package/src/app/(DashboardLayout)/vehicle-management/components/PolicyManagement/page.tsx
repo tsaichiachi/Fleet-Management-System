@@ -6,7 +6,7 @@ import DashboardCard from "@/app/(DashboardLayout)/components/shared/DashboardCa
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import PolicyManagmentTable from "./components/PolicyManagementTable";
+import PolicyManagmentTable from "../table/PolicyManagementTable";
 
 const PolicyManagement = () => {
   const [value, setValue] = React.useState("one");

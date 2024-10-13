@@ -97,30 +97,30 @@ const Menuitems = [
     icon: IconCarCrane,
     href: "/vehicle-management",
   },
-  {
-    id: uniqueId(),
-    title: "管費設定",
-    icon: IconBusinessplan,
-    href: "/ManagementFeeSetting",
-  },
-  {
-    id: uniqueId(),
-    title: "保單管理",
-    icon: IconCarCrash,
-    href: "/PolicyManagement",
-  },
-  {
-    id: uniqueId(),
-    title: "貸款管理",
-    icon: IconFileDollar,
-    href: "/LoanManagement",
-  },
-  {
-    id: uniqueId(),
-    title: "稅金管理",
-    icon: IconHomeDollar,
-    href: "/TaxManagement",
-  },
+  // {
+  //   id: uniqueId(),
+  //   title: "管費設定",
+  //   icon: IconBusinessplan,
+  //   href: "/ManagementFeeSetting",
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: "保單管理",
+  //   icon: IconCarCrash,
+  //   href: "/PolicyManagement",
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: "貸款管理",
+  //   icon: IconFileDollar,
+  //   href: "/LoanManagement",
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: "稅金管理",
+  //   icon: IconHomeDollar,
+  //   href: "/TaxManagement",
+  // },
 ];
 
 export default Menuitems;

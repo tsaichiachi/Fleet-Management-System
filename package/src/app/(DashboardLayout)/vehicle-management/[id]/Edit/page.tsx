@@ -5,12 +5,13 @@ import DashboardCard from "@/app/(DashboardLayout)/components/shared/DashboardCa
 import VehicleSetting from "../../components/VehicleSettingForm";
 
 
+
 const VehicleEdit = () => {
   return (
     <PageContainer title="" description="">
       {/* <PageTabs /> */}
       <DashboardCard title="編輯車籍資料">
-        <VehicleSetting />
+        {/* <VehicleSetting /> */}
       </DashboardCard>
     </PageContainer>
   );
