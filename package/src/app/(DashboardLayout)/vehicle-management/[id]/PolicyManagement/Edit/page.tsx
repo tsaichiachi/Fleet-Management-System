@@ -1,19 +1,18 @@
+//管費管理ManagementFeeSetting
 "use client";
 import React from "react";
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
 import DashboardCard from "@/app/(DashboardLayout)/components/shared/DashboardCard";
-import VehicleSetting from "../../components/form/VehicleSettingForm";
+import PolicyManagementForm from "../../../components/form/PolicyManagement";
 
-
-
-const VehicleEdit = () => {
+const PolicyManagementEdit = () => {
   return (
     <PageContainer title="" description="">
-      <DashboardCard title="編輯車籍資料">
-        <VehicleSetting mode="edit" />
+      <DashboardCard title="編輯保費">
+        <PolicyManagementForm mode="edit" />
       </DashboardCard>
     </PageContainer>
   );
 };
 
-export default VehicleEdit;
+export default PolicyManagementEdit;

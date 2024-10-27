@@ -14,6 +14,7 @@ import DashboardCard from "@/app/(DashboardLayout)//components/shared/DashboardC
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import { useRouter } from "next/navigation";
 
 const taxManagement = [
   {
@@ -78,7 +79,15 @@ const taxManagement = [
   },
 ];
 
-const TaxManagementDetail = () => {
+const TaxManagementTable = () => {
+
+  const router = useRouter();
+  const handleEditClick = (id: any) => {
+    router.push(`/vehicle-management/${id}/TaxManagement/Edit`);
+  };
+
+
+
   return (
     <Box sx={{ overflow: "auto", width: { xs: "auto", sm: "auto" } }}>
       <Table
@@ -92,37 +101,22 @@ const TaxManagementDetail = () => {
           <TableRow>
             <TableCell sx={{ width: "6%" }}>
               <Typography variant="subtitle2" fontWeight={600}>
-                Id
+                稅金月份
               </Typography>
             </TableCell>
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
-                貸款公司
+                稅金名稱
               </Typography>
             </TableCell>
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
-                起日
+                稅金
               </Typography>
             </TableCell>
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
-                止日
-              </Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="subtitle2" fontWeight={600}>
-                貸款總額
-              </Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="subtitle2" fontWeight={600}>
-                每月還款
-              </Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="subtitle2" fontWeight={600}>
-                是否入帳
+                已繳日期
               </Typography>
             </TableCell>
             <TableCell>
@@ -132,7 +126,7 @@ const TaxManagementDetail = () => {
             </TableCell>
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
-                編輯
+                操作
               </Typography>
             </TableCell>
           </TableRow>
@@ -188,55 +182,6 @@ const TaxManagementDetail = () => {
                   {product.startDate}
                 </Typography>
               </TableCell>
-
-              <TableCell
-                sx={{
-                  height: "auto", // 讓行高根據內容自動調整
-                }}
-              >
-                <Typography
-                  fontWeight={400}
-                  sx={{
-                    wordWrap: "break-word",
-                    overflowWrap: "break-word",
-                  }}
-                >
-                  {product.endDate}
-                </Typography>
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  height: "auto", // 讓行高根據內容自動調整
-                }}
-              >
-                <Typography
-                  fontWeight={400}
-                  sx={{
-                    wordWrap: "break-word",
-                    overflowWrap: "break-word",
-                  }}
-                >
-                  {product.accountMonth}
-                </Typography>
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  height: "auto", // 讓行高根據內容自動調整
-                }}
-              >
-                <Typography
-                  fontWeight={400}
-                  sx={{
-                    wordWrap: "break-word",
-                    overflowWrap: "break-word",
-                  }}
-                >
-                  {product.premium}
-                </Typography>
-              </TableCell>
-
               <TableCell
                 sx={{
                   height: "auto", // 讓行高根據內容自動調整
@@ -269,16 +214,16 @@ const TaxManagementDetail = () => {
                 </Typography>
               </TableCell>
 
-             
-
-              
               <TableCell
                 sx={{
                   height: "auto", // 讓行高根據內容自動調整
                 }}
               >
                 <Typography>
-                  <IconButton aria-label="edit">
+                  <IconButton
+                    aria-label="edit"
+                    onClick={() => handleEditClick(product.id)}
+                  >
                     <EditIcon />
                   </IconButton>
                   <IconButton aria-label="delete">
@@ -294,4 +239,4 @@ const TaxManagementDetail = () => {
   );
 };
 
-export default TaxManagementDetail;
+export default TaxManagementTable;

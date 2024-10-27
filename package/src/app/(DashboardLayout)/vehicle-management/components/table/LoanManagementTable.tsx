@@ -13,7 +13,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import React from "react";
 import { useRouter } from "next/navigation";
-import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
+import EditIcon from "@mui/icons-material/Edit";
 
 
 const products = [
@@ -47,7 +47,7 @@ const LoanManagementTable = () => {
   const router = useRouter();
 
   const handleEditClick = (id: any) => {
-    router.push(`/create-car-cegistration/${id}/LoanManagement/edit`);
+    router.push(`/vehicle-management/${id}/LoanManagement/Edit`);
   };
 
   return (
@@ -198,7 +198,7 @@ const LoanManagementTable = () => {
                     aria-label="edit"
                     onClick={() => handleEditClick(product.id)}
                   >
-                    <VisibilityRoundedIcon />
+                    <EditIcon />
                   </IconButton>
                   <IconButton aria-label="delete">
                     <DeleteIcon />

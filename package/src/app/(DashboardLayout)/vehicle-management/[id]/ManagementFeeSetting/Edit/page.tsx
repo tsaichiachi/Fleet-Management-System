@@ -1,19 +1,18 @@
+//管費管理ManagementFeeSetting
 "use client";
 import React from "react";
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
 import DashboardCard from "@/app/(DashboardLayout)/components/shared/DashboardCard";
-import VehicleSetting from "../components/VehicleSettingForm";
+import ManagementFeeSettingForm from "../../../components/form/ManagementFeeSetting";
 
-
-const OwnerAdd = () => {
+const ManagementFeeSettingEdit = () => {
   return (
     <PageContainer title="" description="">
-      {/* <PageTabs /> */}
-      <DashboardCard title="新增車輛資料">
-        <VehicleSetting mode="add"/>
+      <DashboardCard title="編輯管費">
+        <ManagementFeeSettingForm mode="edit" />
       </DashboardCard>
     </PageContainer>
   );
 };
 
-export default OwnerAdd;
+export default ManagementFeeSettingEdit;

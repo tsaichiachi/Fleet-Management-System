@@ -4,14 +4,14 @@ import React from "react";
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
 import DashboardCard from "@/app/(DashboardLayout)/components/shared/DashboardCard";
 import PageTabs from "@/app/(DashboardLayout)/components/PageTabs";
-import LoanManagement from "../page";
+import LoanManagement from "../../../components/form/LoanManagement";
 
 const Overview = () => {
   return (
-    <PageContainer title="車籍資料建立" description="this is Sample page">
+    <PageContainer title="" description="">
       {/* <PageTabs /> */}
-      <DashboardCard title="貸款管理">
-        <LoanManagement />
+      <DashboardCard title="編輯貸款管理">
+        <LoanManagement mode="edit" />
       </DashboardCard>
     </PageContainer>
   );

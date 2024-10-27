@@ -48,7 +48,7 @@ const ManagementFeeSettingTable = () => {
   const router = useRouter();
 
   const handleEditClick = (id: any) => {
-    router.push(`/create-car-cegistration/${id}/ManagementFeeSetting/edit`);
+    router.push(`/vehicle-management/${id}/ManagementFeeSetting/Edit`);
   };
 
   return (
@@ -78,7 +78,7 @@ const ManagementFeeSettingTable = () => {
               <Typography variant="subtitle2" fontWeight={600}>
                 管理費
               </Typography>
-            </TableCell>       
+            </TableCell>
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
                 編輯
@@ -128,7 +128,7 @@ const ManagementFeeSettingTable = () => {
                     aria-label="edit"
                     onClick={() => handleEditClick(product.id)}
                   >
-                    <VisibilityRoundedIcon />
+                    <EditIcon />
                   </IconButton>
                   <IconButton aria-label="delete">
                     <DeleteIcon />

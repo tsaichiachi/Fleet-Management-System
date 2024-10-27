@@ -83,9 +83,9 @@ const policyManagment = [
 const PolicyManagmentTable = () => {
 
  const router = useRouter();
- const handleEditClick = (id: any) => {
-   router.push(`/create-car-cegistration/${id}/PolicyManagment`);
- };
+  const handleEditClick = (id: any) => {
+    router.push(`/vehicle-management/${id}/PolicyManagement/Edit`);
+  };
 
 
 
@@ -333,7 +333,7 @@ const PolicyManagmentTable = () => {
                     aria-label="edit"
                     onClick={() => handleEditClick(product.id)}
                   >
-                    <VisibilityRoundedIcon />
+                    <EditIcon />
                   </IconButton>
                   <IconButton aria-label="delete">
                     <DeleteIcon />

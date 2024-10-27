@@ -10,8 +10,7 @@ import LoanManagement from "../components/form/LoanManagement";
 import LoanManagementTable from "../components/table/LoanManagementTable";
 import ManagementFeeSettingForm from "../components/form/ManagementFeeSetting";
 import ManagementFeeSettingTable from "../components/table/ManagementFeeSettingTable";
-import TaxManagementDetail from "../components/table/TaxManagementTable";
-
+import TaxManagementTable from "../components/table/TaxManagementTable";
 
 const VehicleView = () => {
   const [isClient, setIsClient] = useState(false);
@@ -22,7 +21,6 @@ const VehicleView = () => {
   // 狀態以管理選中的選項卡
   const [value, setValue] = useState(0);
 
-  // 確保只在客戶端渲染時調用 useRouter
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -45,44 +43,38 @@ const VehicleView = () => {
     }
   };
 
-  // 根據 URL 中的查詢參數條件渲染不同的元件
-  const isEdit = searchParams.has("edit");
-  console.log(isEdit); // 這將輸出 true 或 false
-
   return (
     <PageContainer title="" description="">
       <DashboardCard title="">
         {/* 選項卡 */}
         <Box sx={{ width: "100%" }}>
-          <Tabs value={value} onChange={handleChange} aria-label="vehicle tabs">
+          {/* <Tabs value={value} onChange={handleChange} aria-label="vehicle tabs">
             <Tab label="管費設定" />
             <Tab label="保單管理" />
             <Tab label="貸款管理" />
             <Tab label="稅金管理" />
-          </Tabs>
+          </Tabs> */}
           {/* 根據選中的選項卡顯示內容 */}
-          {value === 0 && (
+          {/* {value === 0 && (
             <div>
-              {isEdit ? (
-                <ManagementFeeSettingForm />
-              ) : (
-                <ManagementFeeSettingTable />
-              )}
+              <ManagementFeeSettingTable />
             </div>
           )}
           {value === 1 && (
             <div>
-              {isEdit ? <PolicyManagement /> : <PolicyManagmentTable />}
+              <PolicyManagmentTable />
             </div>
           )}
           {value === 2 && (
-            <div>{isEdit ? <LoanManagement /> : <LoanManagementTable />}</div>
+            <div>
+              <LoanManagementTable />
+            </div>
           )}
           {value === 3 && (
             <div>
-              {isEdit ? <TaxManagementDetail /> : <TaxManagementDetail />}
+              <TaxManagementTable />{" "}
             </div>
-          )}
+          )} */}
         </Box>
       </DashboardCard>
     </PageContainer>

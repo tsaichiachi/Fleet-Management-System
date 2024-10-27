@@ -48,7 +48,7 @@ const VehicleTable = () => {
     const router = useRouter();
     const handleViewClick = (id: any) => {
       //console.log(`查看車主 ID: ${id}`);
-      router.push(`/vehicle-management/${id}`);
+      router.push(`/vehicle-management/${id}/ManagementFeeSetting`);
     };
     const handleEditClick = (id: any) => {
       //console.log(`查看車主 ID: ${id}`);
