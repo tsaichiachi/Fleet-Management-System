@@ -7,15 +7,13 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Chip,
-  Button,
+  Pagination,
 } from "@mui/material";
-import DashboardCard from "@/app/(DashboardLayout)//components/shared/DashboardCard";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/navigation";
-import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
+
 
 const policyManagment = [
   {
@@ -153,7 +151,7 @@ const PolicyManagmentTable = () => {
             </TableCell>
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
-                編輯
+                操作
               </Typography>
             </TableCell>
           </TableRow>
@@ -344,6 +342,9 @@ const PolicyManagmentTable = () => {
           ))}
         </TableBody>
       </Table>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        <Pagination count={10} />
+      </Box>
     </Box>
   );
 };

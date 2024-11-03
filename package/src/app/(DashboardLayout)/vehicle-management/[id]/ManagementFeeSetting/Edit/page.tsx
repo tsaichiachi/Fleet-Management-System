@@ -8,7 +8,7 @@ import ManagementFeeSettingForm from "../../../components/form/ManagementFeeSett
 const ManagementFeeSettingEdit = () => {
   return (
     <PageContainer title="" description="">
-      <DashboardCard title="編輯管費">
+      <DashboardCard title="管費管理_編輯">
         <ManagementFeeSettingForm mode="edit" />
       </DashboardCard>
     </PageContainer>

@@ -8,7 +8,7 @@ import TaxManagement from "../../../components/form/TaxManagement";
 const OwnerAdd = () => {
   return (
     <PageContainer title="" description="">
-      <DashboardCard title="新增稅金管理">
+      <DashboardCard title="稅金管理_編輯">
         <TaxManagement mode="add" />
       </DashboardCard>
     </PageContainer>

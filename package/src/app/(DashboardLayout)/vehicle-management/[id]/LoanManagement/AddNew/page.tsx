@@ -9,7 +9,7 @@ import LoanManagement from "../../../components/form/LoanManagement";
 const OwnerAdd = () => {
   return (
     <PageContainer title="" description="">
-      <DashboardCard title="新增貸款">
+      <DashboardCard title="貸款管理_新增">
         <LoanManagement mode="add" />
       </DashboardCard>
     </PageContainer>

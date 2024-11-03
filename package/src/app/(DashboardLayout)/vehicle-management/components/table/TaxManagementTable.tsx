@@ -7,8 +7,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Chip,
-  Button,
+  Pagination,
 } from "@mui/material";
 import DashboardCard from "@/app/(DashboardLayout)//components/shared/DashboardCard";
 import IconButton from "@mui/material/IconButton";
@@ -235,6 +234,9 @@ const TaxManagementTable = () => {
           ))}
         </TableBody>
       </Table>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        <Pagination count={10} />
+      </Box>
     </Box>
   );
 };

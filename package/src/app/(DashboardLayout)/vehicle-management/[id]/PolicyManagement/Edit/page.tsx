@@ -8,7 +8,7 @@ import PolicyManagementForm from "../../../components/form/PolicyManagement";
 const PolicyManagementEdit = () => {
   return (
     <PageContainer title="" description="">
-      <DashboardCard title="編輯保費">
+      <DashboardCard title="保費管理_編輯">
         <PolicyManagementForm mode="edit" />
       </DashboardCard>
     </PageContainer>

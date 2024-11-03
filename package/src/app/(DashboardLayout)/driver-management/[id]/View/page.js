@@ -9,7 +9,6 @@ import VehicleTable from "../../../vehicle-management/components/VehicleTable"
 const OwnerEdit = () => {
   return (
     <PageContainer title="車籍資料建立" description="this is Sample page">
-      {/* <PageTabs /> */}
       <DashboardCard title="檢視車主資料">
         <CarOwnerSetting mode="view" />
         

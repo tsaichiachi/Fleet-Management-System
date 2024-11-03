@@ -11,6 +11,7 @@ import {
   IconFileDollar,
   IconHomeDollar,
   IconCarCrane,
+  IconUsers,
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -88,7 +89,7 @@ const Menuitems = [
   {
     id: uniqueId(),
     title: "司機管理",
-    icon: IconCarCrane,
+    icon: IconUsers,
     href: "/driver-management",
   },
   {

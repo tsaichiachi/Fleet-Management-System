@@ -8,7 +8,6 @@ import CarOwnerSetting from "../components/CarOwnerSettingForm";
 const OwnerAdd = () => {
   return (
     <PageContainer title="" description="">
-      {/* <PageTabs /> */}
       <DashboardCard title="新增車主資料">
         <CarOwnerSetting mode="add" />
       </DashboardCard>

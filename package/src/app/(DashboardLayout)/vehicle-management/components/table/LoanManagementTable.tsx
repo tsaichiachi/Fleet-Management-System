@@ -9,6 +9,7 @@ import {
   TableHead,
   TableRow,
   IconButton,
+  Pagination,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import React from "react";
@@ -105,7 +106,7 @@ const LoanManagementTable = () => {
             </TableCell>
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
-                編輯
+                操作
               </Typography>
             </TableCell>
           </TableRow>
@@ -209,6 +210,9 @@ const LoanManagementTable = () => {
           ))}
         </TableBody>
       </Table>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        <Pagination count={10} />
+      </Box>
     </Box>
   );
 };

@@ -4,11 +4,10 @@ import PageContainer from "@/app/(DashboardLayout)/components/container/PageCont
 import DashboardCard from "@/app/(DashboardLayout)/components/shared/DashboardCard";
 import ManagementFeeSettingForm from "../../../components/form/ManagementFeeSetting";
 
-
 const OwnerAdd = () => {
   return (
     <PageContainer title="" description="">
-      <DashboardCard title="新增管費">
+      <DashboardCard title="管費管理_新增">
         <ManagementFeeSettingForm mode="add" />
       </DashboardCard>
     </PageContainer>

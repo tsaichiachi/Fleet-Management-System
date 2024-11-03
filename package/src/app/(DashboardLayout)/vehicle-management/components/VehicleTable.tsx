@@ -9,6 +9,7 @@ import {
   TableHead,
   TableRow,
   IconButton,
+  Pagination,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import React from "react";
@@ -175,6 +176,9 @@ const VehicleTable = () => {
           ))}
         </TableBody>
       </Table>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        <Pagination count={10} />
+      </Box>
     </Box>
   );
 };

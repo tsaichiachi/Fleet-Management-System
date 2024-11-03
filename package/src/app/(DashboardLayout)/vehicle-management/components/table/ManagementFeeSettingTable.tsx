@@ -14,8 +14,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import React from "react";
 import { useRouter } from "next/navigation";
-import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
-import { Modal } from "@mui/base/Modal";
+import Pagination from "@mui/material/Pagination";
+
 
 const products = [
   {
@@ -81,7 +81,7 @@ const ManagementFeeSettingTable = () => {
             </TableCell>
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
-                編輯
+                操作
               </Typography>
             </TableCell>
           </TableRow>
@@ -139,6 +139,9 @@ const ManagementFeeSettingTable = () => {
           ))}
         </TableBody>
       </Table>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        <Pagination count={10} />
+      </Box>
     </Box>
   );
 };
