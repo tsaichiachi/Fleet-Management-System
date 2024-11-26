@@ -1,14 +1,15 @@
 import React from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { Button } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Grid } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
+import TaiwanDatePicker from "../../vehicle-management/components/TaiwanDatePicker";
+import { useAddCarOwner } from "../apihooks";
+
+
 
 interface CarOwnerSettingProps {
   mode: string; 
@@ -17,34 +18,32 @@ interface CarOwnerSettingProps {
 const CarOwnerSetting: React.FC<CarOwnerSettingProps> = ({ mode }) => {
   console.log(mode);
   const router = useRouter();
+   const { mutate: addCarOwner } = useAddCarOwner();
   const handleCancleClick = () => {
     router.push(`/driver-management`);
   };
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm();
+    const {
+      register,
+      handleSubmit,
+      setValue,
+      trigger,
+      formState: { errors },
+    } = useForm();
 
   const onSubmit = (data: any) => {
-    // 檢查是否填寫出生年、月、日
-    const year = data.birthYear ? String(data.birthYear).padStart(3, "0") : "";
-    const month = data.birthMonth
-      ? String(data.birthMonth).padStart(2, "0")
-      : "";
-    const day = data.birthDay ? String(data.birthDay).padStart(2, "0") : "";
+    //console.log("提交的資料：", data);
 
-    // 生成出生日期，根據是否填寫決定格式
-    const birthDate = year && month && day ? `${year}-${month}-${day}` : "";
-
-    // 將出生日期放入 data 中，並移除 birthYear, birthMonth, 和 birthDay
-    const { birthYear, birthMonth, birthDay, ...updatedData } = data;
-    updatedData.birthDate = birthDate;
-
-    // 打印更新後的資料
-    //console.log(updatedData);
+    // 使用 API 新增車主
+    addCarOwner(data, {
+      onSuccess: () => {
+        console.log("新增成功！");
+        router.push(`/driver-management`); // 成功後跳轉到列表頁
+      },
+      onError: (error) => {
+        console.error("新增失敗：", error);
+      },
+    });
   };
 
   return (
@@ -82,58 +81,20 @@ const CarOwnerSetting: React.FC<CarOwnerSettingProps> = ({ mode }) => {
           </TextField>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <Grid container spacing={2}>
-            {/* 出生年 */}
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="出生年 (民國)"
-                {...register("birthYear")}
-                fullWidth
-                disabled={mode === "view"}
-              >
-                {Array.from({ length: 112 }, (_, i) => (
-                  <MenuItem key={i} value={i}>
-                    {String(i).padStart(3, "0")} 年
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-
-            {/* 月 */}
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="月"
-                {...register("birthMonth")}
-                fullWidth
-                disabled={mode === "view"}
-              >
-                {Array.from({ length: 12 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 月
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-
-            {/* 日 */}
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="日"
-                {...register("birthDay")}
-                fullWidth
-                disabled={mode === "view"}
-              >
-                {Array.from({ length: 31 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 日
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-          </Grid>
+          <TaiwanDatePicker
+            label="生日"
+            fieldName="birthDate"
+            required={true} // 必填
+            defaultValue=""
+            onChange={(value) => {
+              setValue("birthDate", value);
+              trigger("birthDate");
+            }}
+            error={!!errors.birthDate} // 動態顯示錯誤樣式
+            //helperText={errors.entryDate?.message} // 顯示錯誤訊息
+            register={register}
+            trigger={trigger}
+          />
         </Grid>
 
         <Grid item xs={12} sm={6}>

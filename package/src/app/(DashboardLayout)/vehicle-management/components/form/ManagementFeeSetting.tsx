@@ -1,28 +1,42 @@
-//管費設定表單
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { Button, Grid } from "@mui/material";
+import Select from "@mui/material/Select";
+import { Button, Grid, MenuItem, InputLabel } from "@mui/material";
 import { useForm } from "react-hook-form";
+import TaiwanDatePicker from "../TaiwanDatePicker";
 import { useRouter } from "next/navigation";
 
 interface VehicleSettingProps {
   mode: string;
 }
 
-const ManagementFeeSettingForm:React.FC<VehicleSettingProps> = ({ mode }) => {
-  console.log(mode);
+const ManagementFeeSettingForm: React.FC<VehicleSettingProps> = ({ mode }) => {
   const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    trigger,
+    formState: { errors },
+  } = useForm();
+
+  // 燃料費月份狀態
+  const [springMonth, setSpringMonth] = useState("");
+  const [summerMonth, setSummerMonth] = useState("");
+  const [autumnMonth, setAutumnMonth] = useState("");
+  const [winterMonth, setWinterMonth] = useState("");
+
   const handleCancelClick = (id: any) => {
     router.push(`/vehicle-management/${id}/ManagementFeeSetting`);
   };
 
-  // select
+  const onSubmit = (data: any) => {
+    console.log(data);
+  };
+
   const monthNames = [
     "1月",
     "2月",
@@ -37,257 +51,145 @@ const ManagementFeeSettingForm:React.FC<VehicleSettingProps> = ({ mode }) => {
     "11月",
     "12月",
   ];
-  const [searchMonth, setSearchMonth] = React.useState("1");
-  const handleChange = (event: any) => {
-    setSearchMonth(event.target.value);
-  };
 
-    const {
-      register,
-      handleSubmit,
-      setValue,
-      formState: { errors },
-    } = useForm();
-
-    const onSubmit = (data: any) => {
-      console.log(data);
-    };
-
-    
   return (
     <Box
       component="form"
       sx={{
-        "& .MuiTextField-root": { m: 1, width: "100%", maxWidth: "100%" },
+        "& .MuiTextField-root": { m: 1, width: "100%" },
       }}
       noValidate
       autoComplete="off"
+      onSubmit={handleSubmit(onSubmit)}
     >
       <Grid container spacing={2}>
+        {/* 車牌號碼 */}
         <Grid item xs={12} md={6}>
           <TextField
             required
-            id="outlined-password-input"
-            label="車牌"
-            type="text "
-            autoComplete="current-password"
-            error={!!errors.plateNumber} // 顯示錯誤狀態
+            label="車牌號碼"
+            error={!!errors.plateNumber}
             {...register("plateNumber", { required: true })}
           />
         </Grid>
+
+        {/* 計算方式 */}
         <Grid item xs={12} md={6}>
           <TextField
             required
-            id="owner-name"
-            label="車主"
-            type="text"
-            autoComplete="current-password"
-            error={!!errors.ownerName}
-            {...register("ownerName", { required: true })}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            required
-            id="outlined-calculation-method"
             label="計算方式"
-            type="text"
-            autoComplete="off"
             error={!!errors.calculationMethod}
             {...register("calculationMethod", { required: true })}
           />
         </Grid>
 
+        {/* 無息基準 */}
         <Grid item xs={12} md={6}>
           <TextField
             required
-            id="outlined-no-interest-basis"
             label="無息基準"
-            type="text"
-            autoComplete="off"
             error={!!errors.noInterestBasis}
             {...register("noInterestBasis", { required: true })}
           />
         </Grid>
 
+        {/* 管理費 */}
         <Grid item xs={12} md={6}>
           <TextField
             required
-            id="outlined-management-fee"
             label="管理費"
-            type="text"
-            autoComplete="off"
             error={!!errors.managementFee}
             {...register("managementFee", { required: true })}
           />
         </Grid>
 
+        {/* 勞保費 */}
         <Grid item xs={12} md={6}>
           <TextField
             required
-            id="outlined-association-fee"
-            label="公會費"
-            type="text"
-            autoComplete="off"
-            error={!!errors.associationFee}
-            {...register("associationFee", { required: true })}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <TextField
-            required
-            id="outlined-labor-insurance-fee"
             label="勞保費"
-            type="text"
-            autoComplete="off"
             error={!!errors.laborInsuranceFee}
             {...register("laborInsuranceFee", { required: true })}
           />
         </Grid>
 
+        {/* 健保費 */}
         <Grid item xs={12} md={6}>
           <TextField
             required
-            id="outlined-health-insurance-fee"
             label="健保費"
-            type="text"
-            autoComplete="off"
             error={!!errors.healthInsuranceFee}
             {...register("healthInsuranceFee", { required: true })}
           />
         </Grid>
 
+        {/* 銷項稅率 */}
         <Grid item xs={12} md={6}>
           <TextField
             required
-            id="outlined-reserve-fund"
-            label="準備金"
-            type="text"
-            autoComplete="off"
-            error={!!errors.reserveFund}
-            {...register("reserveFund", { required: true })}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <TextField
-            required
-            id="outlined-mutual-aid-fund"
-            label="互助金"
-            type="text"
-            autoComplete="off"
-            error={!!errors.mutualAidFund}
-            {...register("mutualAidFund", { required: true })}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <TextField
-            required
-            id="outlined-output-tax-rate"
             label="銷項稅率"
-            type="text"
-            autoComplete="off"
             error={!!errors.outputTaxRate}
             {...register("outputTaxRate", { required: true })}
           />
         </Grid>
 
+        {/* 進項稅率 */}
         <Grid item xs={12} md={6}>
           <TextField
             required
-            id="outlined-input-tax-rate"
             label="進項稅率"
-            type="text"
-            autoComplete="off"
             error={!!errors.inputTaxRate}
             {...register("inputTaxRate", { required: true })}
           />
         </Grid>
 
+        {/* 油單稅率 */}
         <Grid item xs={12} md={6}>
           <TextField
             required
-            id="outlined-oil-tax-rate"
             label="油單稅率"
-            type="text"
-            autoComplete="off"
             error={!!errors.oilTaxRate}
             {...register("oilTaxRate", { required: true })}
           />
         </Grid>
 
+        {/* 上牌照稅 */}
         <Grid item xs={12} md={6}>
           <TextField
             required
-            id="outlined-debt-interest"
-            label="欠款利息"
-            type="text"
-            autoComplete="off"
-            error={!!errors.debtInterest}
-            {...register("debtInterest", { required: true })}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <TextField
-            required
-            id="outlined-receipt-tax-rate"
-            label="收據稅率"
-            type="text"
-            autoComplete="off"
-            error={!!errors.receiptTaxRate}
-            {...register("receiptTaxRate", { required: true })}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <TextField
-            required
-            id="outlined-license-tax-up"
             label="上牌照稅"
-            type="text"
-            autoComplete="off"
-            error={!!errors.licenseTaxUp}
-            {...register("licenseTaxUp", { required: true })}
+            error={!!errors.upperLicenseTax}
+            {...register("upperLicenseTax", { required: true })}
           />
         </Grid>
 
+        {/* 下牌照稅 */}
         <Grid item xs={12} md={6}>
           <TextField
             required
-            id="outlined-license-tax-down"
             label="下牌照稅"
-            type="text"
-            autoComplete="off"
-            error={!!errors.licenseTaxDown}
-            {...register("licenseTaxDown", { required: true })}
+            error={!!errors.lowerLicenseTax}
+            {...register("lowerLicenseTax", { required: true })}
           />
         </Grid>
 
+        {/* 春燃料費 */}
         <Grid container spacing={2} alignItems="center" item xs={12} md={12}>
           <Grid item xs={9}>
             <TextField
-              id="outlined-winter-fuel-fee"
+              required
               label="春燃料費"
-              type="text"
-              autoComplete="off"
-              fullWidth
               error={!!errors.springFuelFee}
               {...register("springFuelFee", { required: true })}
             />
           </Grid>
-
           <Grid item xs={3}>
-            <FormControl fullWidth error={!!errors.winterFuelFee}>
-              <InputLabel id="select-month-label">月份</InputLabel>
+            <FormControl fullWidth error={!!errors.springMonth}>
+              <InputLabel id="springMonth-label">月份</InputLabel>
               <Select
-                labelId="select-month-label"
-                id="select-month"
-                value={searchMonth}
-                label="月份"
-                onChange={handleChange}
+                labelId="springMonth-label"
+                value={springMonth}
+                onChange={(e) => setSpringMonth(e.target.value)}
               >
                 {monthNames.map((month, index) => (
                   <MenuItem key={index} value={index + 1}>
@@ -303,25 +205,19 @@ const ManagementFeeSettingForm:React.FC<VehicleSettingProps> = ({ mode }) => {
         <Grid container spacing={2} alignItems="center" item xs={12} md={12}>
           <Grid item xs={9}>
             <TextField
-              id="outlined-winter-fuel-fee"
+              required
               label="夏燃料費"
-              type="text"
-              autoComplete="off"
-              fullWidth
               error={!!errors.summerFuelFee}
               {...register("summerFuelFee", { required: true })}
             />
           </Grid>
-
           <Grid item xs={3}>
-            <FormControl fullWidth error={!!errors.winterFuelFee}>
-              <InputLabel id="select-month-label">月份</InputLabel>
+            <FormControl fullWidth error={!!errors.summerMonth}>
+              <InputLabel id="summerMonth-label">月份</InputLabel>
               <Select
-                labelId="select-month-label"
-                id="select-month"
-                value={searchMonth}
-                label="月份"
-                onChange={handleChange}
+                labelId="summerMonth-label"
+                value={summerMonth}
+                onChange={(e) => setSummerMonth(e.target.value)}
               >
                 {monthNames.map((month, index) => (
                   <MenuItem key={index} value={index + 1}>
@@ -337,25 +233,19 @@ const ManagementFeeSettingForm:React.FC<VehicleSettingProps> = ({ mode }) => {
         <Grid container spacing={2} alignItems="center" item xs={12} md={12}>
           <Grid item xs={9}>
             <TextField
-              id="outlined-winter-fuel-fee"
+              required
               label="秋燃料費"
-              type="text"
-              autoComplete="off"
-              fullWidth
               error={!!errors.autumnFuelFee}
               {...register("autumnFuelFee", { required: true })}
             />
           </Grid>
-
           <Grid item xs={3}>
-            <FormControl fullWidth error={!!errors.winterFuelFee}>
-              <InputLabel id="select-month-label">月份</InputLabel>
+            <FormControl fullWidth error={!!errors.autumnMonth}>
+              <InputLabel id="autumnMonth-label">月份</InputLabel>
               <Select
-                labelId="select-month-label"
-                id="select-month"
-                value={searchMonth}
-                label="月份"
-                onChange={handleChange}
+                labelId="autumnMonth-label"
+                value={autumnMonth}
+                onChange={(e) => setAutumnMonth(e.target.value)}
               >
                 {monthNames.map((month, index) => (
                   <MenuItem key={index} value={index + 1}>
@@ -367,28 +257,23 @@ const ManagementFeeSettingForm:React.FC<VehicleSettingProps> = ({ mode }) => {
           </Grid>
         </Grid>
 
+        {/* 冬燃料費 */}
         <Grid container spacing={2} alignItems="center" item xs={12} md={12}>
           <Grid item xs={9}>
             <TextField
-              id="outlined-winter-fuel-fee"
+              required
               label="冬燃料費"
-              type="text"
-              autoComplete="off"
-              fullWidth
               error={!!errors.winterFuelFee}
               {...register("winterFuelFee", { required: true })}
             />
           </Grid>
-
           <Grid item xs={3}>
-            <FormControl fullWidth error={!!errors.winterFuelFee}>
-              <InputLabel id="select-month-label">月份</InputLabel>
+            <FormControl fullWidth error={!!errors.winterMonth}>
+              <InputLabel id="winterMonth-label">月份</InputLabel>
               <Select
-                labelId="select-month-label"
-                id="select-month"
-                value={searchMonth}
-                label="月份"
-                onChange={handleChange}
+                labelId="winterMonth-label"
+                value={winterMonth}
+                onChange={(e) => setWinterMonth(e.target.value)}
               >
                 {monthNames.map((month, index) => (
                   <MenuItem key={index} value={index + 1}>
@@ -399,34 +284,20 @@ const ManagementFeeSettingForm:React.FC<VehicleSettingProps> = ({ mode }) => {
             </FormControl>
           </Grid>
         </Grid>
-
-        <Grid item xs={12} md={12}>
-          <TextField
-            required
-            id="outlined-note"
-            label="備註"
-            type="text"
-            autoComplete="off"
-            error={!!errors.note}
-            {...register("note", { required: true })}
-          />
-        </Grid>
       </Grid>
+
+      {/* 按鈕 */}
       <Grid item xs={12} sx={{ display: "flex", justifyContent: "center" }}>
-        {mode !== "view" && (
-          <>
-            <Button
-              variant="contained"
-              sx={{ marginRight: "1%" }}
-              onClick={handleCancelClick}
-            >
-              取消
-            </Button>
-            <Button variant="contained" type="submit">
-              儲存
-            </Button>
-          </>
-        )}
+        <Button
+          variant="contained"
+          sx={{ marginRight: "1%" }}
+          onClick={handleCancelClick}
+        >
+          取消
+        </Button>
+        <Button variant="contained" type="submit">
+          儲存
+        </Button>
       </Grid>
     </Box>
   );

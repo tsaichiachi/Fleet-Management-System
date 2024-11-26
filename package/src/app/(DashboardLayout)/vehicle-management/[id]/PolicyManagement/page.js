@@ -1,55 +1,56 @@
 "use client";
 import React, { useState } from "react";
-import { Typography, Button } from "@mui/material";
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
 import DashboardCard from "@/app/(DashboardLayout)/components/shared/DashboardCard";
 import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
+import PolicyManagmentTable from "../../components/table/PolicyManagementTable";
 import { useRouter } from "next/navigation";
-import CarOwnerTable from "./components/CarOwnerTable";
-import { useGetCarOwners } from "./apihooks";
+import { Typography, Button, TextField } from "@mui/material";
+import { useGetInsuranceList } from "@/app/(DashboardLayout)/vehicle-management/apihooks";
 
-interface CarOwner {
-  id: number;
-  licenseNumber: string;
-  ownerName: string;
-}
 
-function DriverManagementPage() {
+const PolicyManagement = () => {
   const router = useRouter();
-  const [search, setSearch] = useState(""); // 用於輸入框綁定
-  const [query, setQuery] = useState(""); // 用於觸發搜尋的實際字串
+  const [search, setSearch] = useState("");
+  const [query, setQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(4);
 
-  const { data } = useGetCarOwners();
-  const owners: CarOwner[] = data?.data || [];
+  const { data: insuranceList, isLoading } = useGetInsuranceList(
+    currentPage,
+    pageSize
+  );
 
-  // 按搜尋按鈕後更新 query 狀態，觸發重新篩選
+  const insurance = insuranceList?.pageList;
+  //console.log(insurance);
+
+
+  // 搜尋過濾
+  const filteredInsurance = insurance?.filter(
+    (item) =>
+      item.insuranceCom.includes(query) || item.insuranceNum.includes(query)
+  );
+
   const handleSearchClick = () => {
     setQuery(search);
   };
 
-  // 根據 query 狀態篩選數據
-  const filteredOwners = owners.filter(
-    (owner: CarOwner) =>
-      owner.ownerName.includes(query) || owner.licenseNumber.includes(query)
-  );
-
-  // 新增車主按鈕處理邏輯
   const handleAddNewClick = () => {
-    router.push(`/driver-management/AddNew`);
+    router.push(`/vehicle-management/${currentPage}/PolicyManagement/AddNew`);
   };
 
   return (
-    <PageContainer title="" description="">
-      <DashboardCard title="車主資料">
+    <PageContainer title="保單管理" description="管理車輛保險相關資料">
+      <DashboardCard title="保單管理">
         <Box sx={{ overflow: "auto", width: { xs: "400px", sm: "auto" } }}>
-          {/* 搜尋輸入框與按鈕 */}
           <Box>
             <TextField
               label="搜尋"
               id="outlined-size-small"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) =>
+                setSearch(e.target.value)
+              }
               size="small"
               sx={{ marginRight: "1%", marginTop: "1%" }}
             />
@@ -65,15 +66,14 @@ function DriverManagementPage() {
               onClick={handleAddNewClick}
               sx={{ marginRight: "1%", marginTop: "1%" }}
             >
-              新增車主
+              新增保單
             </Button>
           </Box>
-          {/* 車主列表表格 */}
-          <CarOwnerTable data={filteredOwners} />
+          <PolicyManagmentTable data={filteredInsurance} />
         </Box>
       </DashboardCard>
     </PageContainer>
   );
-}
+};
 
-export default DriverManagementPage;
+export default PolicyManagement;

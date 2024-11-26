@@ -1,37 +1,33 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { Button, Grid } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import MenuItem from "@mui/material/MenuItem";
+import TaiwanDatePicker from "../TaiwanDatePicker";
 
 interface VehicleSettingProps {
   mode: string;
 }
 
 const VehicleSetting: React.FC<VehicleSettingProps> = ({ mode }) => {
-  console.log(mode);
   const router = useRouter();
-  const handleCancleClick = (id: any) => {
-    router.push(`/vehicle-management`);
-  };
 
   const {
     register,
     handleSubmit,
     setValue,
+    trigger,
     formState: { errors },
   } = useForm();
 
   const onSubmit = (data: any) => {
-    console.log(data);
+    console.log(data); // 提交表單數據
+    
   };
 
+  
   return (
     <Box
       component="form"
@@ -50,8 +46,7 @@ const VehicleSetting: React.FC<VehicleSettingProps> = ({ mode }) => {
             id="plate-number"
             label="車牌號碼"
             type="text"
-            autoComplete="current-password"
-            error={!!errors.plateNumber} // 顯示錯誤狀態
+            error={!!errors.plateNumber}
             {...register("plateNumber", { required: true })}
           />
         </Grid>
@@ -61,555 +56,164 @@ const VehicleSetting: React.FC<VehicleSettingProps> = ({ mode }) => {
             id="owner-name"
             label="車主"
             type="text"
-            autoComplete="current-password"
             error={!!errors.ownerName}
             {...register("ownerName", { required: true })}
           />
         </Grid>
 
-        {/* 遷入日期和簽入金額 */}
+        {/* 遷入日期 */}
         <Grid item xs={12} md={6}>
-          <Grid container spacing={2}>
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="遷入年 (民國)"
-                error={!!errors.entryYear}
-                {...register("entryYear", { required: true })}
-                fullWidth
-              >
-                {Array.from({ length: 112 }, (_, i) => (
-                  <MenuItem key={i} value={i}>
-                    {String(i).padStart(3, "0")} 年
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="月"
-                error={!!errors.entryMonth}
-                {...register("entryMonth", { required: true })}
-                fullWidth
-              >
-                {Array.from({ length: 12 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 月
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="日"
-                error={!!errors.entryDay}
-                {...register("entryDay", { required: true })}
-                fullWidth
-              >
-                {Array.from({ length: 31 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 日
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-          </Grid>
+          <TaiwanDatePicker
+            label="遷入日期"
+            fieldName="entryDate"
+            required={true} // 必填
+            defaultValue=""
+            onChange={(value) => {
+              setValue("entryDate", value);
+              trigger("entryDate");
+            }}
+            error={!!errors.entryDate} // 動態顯示錯誤樣式
+            //helperText={errors.entryDate?.message} // 顯示錯誤訊息
+            register={register}
+            trigger={trigger}
+          />
         </Grid>
+
+        {/* 遷入金額 */}
         <Grid item xs={12} md={6}>
           <TextField
             id="entry-amount"
             label="遷入金額"
             type="number"
-            autoComplete="current-password"
-            {...register("entryAmount", { required: false })}
+            {...register("entryAmount")}
           />
         </Grid>
 
+        {/* 遷出日期 */}
         <Grid item xs={12} md={6}>
-          <TextField
-            id="vehicle-source"
-            label="車輛來源"
-            type="text"
-            autoComplete="current-password"
-            {...register("vehicleSource", { required: false })}
+          <TaiwanDatePicker
+            label="遷出日期"
+            fieldName="exitDate"
+            required={true}
+            defaultValue=""
+            onChange={(value) => {
+              setValue("exitDate", value);
+              trigger("exitDate");
+            }}
+            error={!!errors.exitDate} // 顯示錯誤樣式
+            //helperText={errors.inspectionDate?.message} // 錯誤提示
+            register={register}
+            trigger={trigger}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Grid container spacing={2}>
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="遷出年 (民國)"
-                {...register("exitYear")}
-                fullWidth
-              >
-                {Array.from({ length: 112 }, (_, i) => (
-                  <MenuItem key={i} value={i}>
-                    {String(i).padStart(3, "0")} 年
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              <TextField select label="月" {...register("exitMonth")} fullWidth>
-                {Array.from({ length: 12 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 月
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              <TextField select label="日" {...register("exitDay")} fullWidth>
-                {Array.from({ length: 31 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 日
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-          </Grid>
-        </Grid>
 
+        {/* 遷出金額 */}
         <Grid item xs={12} md={6}>
           <TextField
             id="exit-amount"
             label="遷出金額"
             type="number"
-            autoComplete="current-password"
-            {...register("exitAmount", { required: false })}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            id="exit-location"
-            label="遷出地點"
-            type="text"
-            autoComplete="current-password"
-            {...register("exitLocation", { required: false })}
+            {...register("exitAmount")}
           />
         </Grid>
 
-        {/* 車輛資料 */}
-        <Grid item xs={12}>
-          <h3>車輛資料</h3>
+        {/* 驗車日期 */}
+        <Grid item xs={12} md={6}>
+          <TaiwanDatePicker
+            label="驗車日期"
+            fieldName="inspectionDate"
+            required={true}
+            defaultValue=""
+            onChange={(value) => {
+              setValue("inspectionDate", value);
+              trigger("inspectionDate");
+            }}
+            error={!!errors.inspectionDate} // 顯示錯誤樣式
+            //helperText={errors.inspectionDate?.message} // 錯誤提示
+            register={register}
+            trigger={trigger}
+          />
         </Grid>
 
+        {/* 換照日期 */}
         <Grid item xs={12} md={6}>
-          <Grid container spacing={2}>
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="發照年 (民國)"
-                error={!!errors.exitYear}
-                {...register("exitYear", { required: true })}
-                fullWidth
-              >
-                {Array.from({ length: 112 }, (_, i) => (
-                  <MenuItem key={i} value={i}>
-                    {String(i).padStart(3, "0")} 年
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="月"
-                error={!!errors.exitMonth}
-                {...register("exitMonth", { required: true })}
-                fullWidth
-              >
-                {Array.from({ length: 12 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 月
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="日"
-                error={!!errors.exitDay}
-                {...register("exitDay", { required: true })}
-                fullWidth
-              >
-                {Array.from({ length: 31 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 日
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-          </Grid>
+          <TaiwanDatePicker
+            label="換照日期"
+            fieldName="renewalDate"
+            required={true}
+            defaultValue=""
+            onChange={(value) => {
+              setValue("renewalDate", value);
+              trigger("renewalDate");
+            }}
+            error={!!errors.renewalDate} // 顯示錯誤樣式
+            //helperText={errors.inspectionDate?.message} // 錯誤提示
+            register={register}
+            trigger={trigger}
+          />
         </Grid>
 
+        {/* 超載到期日期 */}
         <Grid item xs={12} md={6}>
-          <Grid container spacing={2}>
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="出廠年 (民國)"
-                error={!!errors.exitYear}
-                {...register("exitYear", { required: true })}
-                fullWidth
-              >
-                {Array.from({ length: 112 }, (_, i) => (
-                  <MenuItem key={i} value={i}>
-                    {String(i).padStart(3, "0")} 年
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="月"
-                error={!!errors.exitMonth}
-                {...register("exitMonth", { required: true })}
-                fullWidth
-              >
-                {Array.from({ length: 12 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 月
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="日"
-                error={!!errors.exitDay}
-                {...register("exitDay", { required: true })}
-                fullWidth
-              >
-                {Array.from({ length: 31 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 日
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            id="year"
-            label="年份"
-            type="text"
-            helperText="西式(1999)"
-            autoComplete="current-password"
-            error={!!errors.year}
-            {...register("year", { required: true })}
+          <TaiwanDatePicker
+            label="超載到期日期"
+            fieldName="overloadExpirationDate"
+            required={true}
+            defaultValue=""
+            onChange={(value) => {
+              setValue("overloadExpirationDate", value);
+              trigger("overloadExpirationDate");
+            }}
+            error={!!errors.overloadExpirationDate} // 顯示錯誤樣式
+            //helperText={errors.inspectionDate?.message} // 錯誤提示
+            register={register}
+            trigger={trigger}
           />
         </Grid>
+
+        {/* 停報日期 */}
         <Grid item xs={12} md={6}>
-          <TextField
-            id="brand"
-            label="廠牌"
-            type="text"
-            autoComplete="current-password"
-            error={!!errors.brand}
-            {...register("brand", { required: true })}
+          <TaiwanDatePicker
+            label="停報日期"
+            fieldName="suspensionDate"
+            required={true}
+            defaultValue=""
+            onChange={(value) => {
+              setValue("suspensionDate", value);
+              trigger("suspensionDate");
+            }}
+            error={!!errors.suspensionDate} // 顯示錯誤樣式
+            //helperText={errors.inspectionDate?.message} // 錯誤提示
+            register={register}
+            trigger={trigger}
           />
         </Grid>
+
+        {/* 報銷日期 */}
         <Grid item xs={12} md={6}>
-          <TextField
-            id="cc"
-            label="噸位CC數"
-            type="number"
-            autoComplete="current-password"
-            error={!!errors.cc}
-            {...register("cc", { required: true })}
+          <TaiwanDatePicker
+            label="停報日期"
+            fieldName="writeOffDate"
+            required={true}
+            defaultValue=""
+            onChange={(value) => {
+              setValue("writeOffDate", value);
+              trigger("writeOffDate");
+            }}
+            error={!!errors.writeOffDate} // 顯示錯誤樣式
+            //helperText={errors.inspectionDate?.message} // 錯誤提示
+            register={register}
+            trigger={trigger}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            id="engine-number"
-            label="引擎號碼"
-            type="text"
-            autoComplete="current-password"
-            error={!!errors.engineNumber}
-            {...register("engineNumber", { required: true })}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Grid container spacing={2}>
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="驗車日期_年 (民國)"
-                error={!!errors.exitYear}
-                {...register("exitYear", { required: true })}
-                fullWidth
-              >
-                {Array.from({ length: 112 }, (_, i) => (
-                  <MenuItem key={i} value={i}>
-                    {String(i).padStart(3, "0")} 年
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="月"
-                error={!!errors.exitMonth}
-                {...register("exitMonth", { required: true })}
-                fullWidth
-              >
-                {Array.from({ length: 12 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 月
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="日"
-                error={!!errors.exitDay}
-                {...register("exitDay", { required: true })}
-                fullWidth
-              >
-                {Array.from({ length: 31 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 日
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Grid container spacing={2}>
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="換照日期_年 (民國)"
-                error={!!errors.exitYear}
-                {...register("exitYear", { required: true })}
-                fullWidth
-              >
-                {Array.from({ length: 112 }, (_, i) => (
-                  <MenuItem key={i} value={i}>
-                    {String(i).padStart(3, "0")} 年
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="月"
-                error={!!errors.exitMonth}
-                {...register("exitMonth", { required: true })}
-                fullWidth
-              >
-                {Array.from({ length: 12 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 月
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="日"
-                error={!!errors.exitDay}
-                {...register("exitDay", { required: true })}
-                fullWidth
-              >
-                {Array.from({ length: 31 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 日
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            id="body-style"
-            label="車身樣式"
-            type="text"
-            autoComplete="current-password"
-            error={!!errors.bodyStyle}
-            {...register("bodyStyle", { required: true })}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            id="permit"
-            label="通行證"
-            type="text"
-            autoComplete="current-password"
-            {...register("permit", { required: false })}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            id="vehicle-weight"
-            label="車重"
-            type="number"
-            autoComplete="current-password"
-            error={!!errors.vehicleWeight}
-            {...register("vehicleWeight", { required: true })}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            id="load"
-            label="載重"
-            type="number"
-            autoComplete="current-password"
-            error={!!errors.load}
-            {...register("load", { required: true })}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            id="vehicle-type"
-            label="車輛種類"
-            type="text"
-            autoComplete="current-password"
-            error={!!errors.vehicleType}
-            {...register("vehicleType", { required: true })}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            id="inspection-method"
-            label="驗車方式"
-            type="text"
-            autoComplete="current-password"
-            helperText="1:半/5 2:1/1 3:無"
-            error={!!errors.inspectionMethod}
-            {...register("inspectionMethod", { required: true })}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Grid container spacing={2}>
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="超載到期_年 (民國)"
-                {...register("exitYear")}
-                fullWidth
-              >
-                {Array.from({ length: 112 }, (_, i) => (
-                  <MenuItem key={i} value={i}>
-                    {String(i).padStart(3, "0")} 年
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              <TextField select label="月" {...register("exitMonth")} fullWidth>
-                {Array.from({ length: 12 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 月
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              <TextField select label="日" {...register("exitDay")} fullWidth>
-                {Array.from({ length: 31 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 日
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Grid container spacing={2}>
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="停報日期年 (民國)"
-                {...register("exitYear")}
-                fullWidth
-              >
-                {Array.from({ length: 112 }, (_, i) => (
-                  <MenuItem key={i} value={i}>
-                    {String(i).padStart(3, "0")} 年
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              <TextField select label="月" {...register("exitMonth")} fullWidth>
-                {Array.from({ length: 12 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 月
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              <TextField select label="日" {...register("exitDay")} fullWidth>
-                {Array.from({ length: 31 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 日
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Grid container spacing={2}>
-            <Grid item xs={4}>
-              <TextField
-                select
-                label="報銷日期_年 (民國)"
-                {...register("exitYear")}
-                fullWidth
-              >
-                {Array.from({ length: 112 }, (_, i) => (
-                  <MenuItem key={i} value={i}>
-                    {String(i).padStart(3, "0")} 年
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              <TextField select label="月" {...register("exitMonth")} fullWidth>
-                {Array.from({ length: 12 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 月
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              <TextField select label="日" {...register("exitDay")} fullWidth>
-                {Array.from({ length: 31 }, (_, i) => (
-                  <MenuItem key={i} value={i + 1}>
-                    {String(i + 1).padStart(2, "0")} 日
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-          </Grid>
-        </Grid>
+
+        {/* 其他欄位 */}
         <Grid item xs={12} md={6}>
           <TextField
             id="old-plate-number"
             label="舊車牌號"
             type="text"
-            autoComplete="current-password"
-            {...register("oldPlateNumber", { required: false })}
+            {...register("oldPlateNumber")}
           />
         </Grid>
 
@@ -627,13 +231,15 @@ const VehicleSetting: React.FC<VehicleSettingProps> = ({ mode }) => {
             {...register("remarks")}
           />
         </Grid>
+
+        {/* 按鈕 */}
         <Grid item xs={12} sx={{ display: "flex", justifyContent: "center" }}>
           {mode !== "view" && (
             <>
               <Button
                 variant="contained"
                 sx={{ marginRight: "1%" }}
-                onClick={handleCancleClick}
+                onClick={() => router.push(`/vehicle-management`)}
               >
                 取消
               </Button>

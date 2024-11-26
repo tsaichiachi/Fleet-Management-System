@@ -23,6 +23,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/(DashboardLayout)/create-car-cegistration/page.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/(DashboardLayout)/create-car-cegistration/page.tsx", "src/app/(DashboardLayout)/vehicle-management/apihooks.js", "src/app/(DashboardLayout)/vehicle-management/[id]/PolicyManagement/page.js"],
   "exclude": ["node_modules"]
 }

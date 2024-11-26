@@ -1,36 +1,54 @@
-//保單管理表單
 "use client";
 import React from "react";
 import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import { Button, Grid } from "@mui/material";
+import { Button, Grid, TextField } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-
+import TaiwanDatePicker from "../TaiwanDatePicker";
+import { useAddInsurance } from "../../apihooks";
 
 interface VehicleSettingProps {
   mode: string;
 }
 
 const PolicyManagement: React.FC<VehicleSettingProps> = ({ mode }) => {
-  console.log(mode);
   const router = useRouter();
+  const { mutate: addInsurance, isLoading } = useAddInsurance();
+
   const handleCancelClick = (id: any) => {
     router.push(`/vehicle-management/${id}/PolicyManagement`);
   };
-
-  
 
   const {
     register,
     handleSubmit,
     setValue,
+    trigger,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data: any) => {
-    console.log(data);
-  };
+   const onSubmit = (data: any) => {
+     const carLicenseNum = "ABC1234"; // 假设车牌号是静态的，也可以从其他来源动态获取
+     const formData = {
+       ...data,
+       carLicenseNum, // 添加车牌号字段
+     };
+
+     console.log("表單提交數據：", formData);
+
+     addInsurance(formData, {
+       onSuccess: () => {
+         alert("保單新增成功！");
+         router.push(
+           `/vehicle-management/${formData.carLicenseNum}/PolicyManagement`
+         );
+       },
+       onError: (error) => {
+         console.error("新增保單失敗：", error);
+         alert("新增失敗，請檢查表單資料！");
+       },
+     });
+   };
 
   return (
     <Box
@@ -40,71 +58,89 @@ const PolicyManagement: React.FC<VehicleSettingProps> = ({ mode }) => {
       }}
       noValidate
       autoComplete="off"
+      onSubmit={handleSubmit(onSubmit)}
     >
       <Grid container spacing={2}>
-    
+        {/* 保險公司 */}
         <Grid item xs={12} md={6}>
           <TextField
             required
-            id="outlined-insurance-company"
+            id="insuranceCom"
             label="保險公司"
             type="text"
             autoComplete="off"
-            error={!!errors.insuranceCompany}
-            {...register("insuranceCompany", { required: true })}
+            error={!!errors.insuranceCom}
+            {...register("insuranceCom", { required: true })}
           />
         </Grid>
 
+        {/* 起日 */}
         <Grid item xs={12} md={6}>
-          <TextField
-            id="outlined-start-date"
+          <TaiwanDatePicker
             label="起日"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            autoComplete="off"
+            fieldName="startDate"
+            required={true}
+            defaultValue=""
+            onChange={(value) => {
+              setValue("startDate", value);
+              trigger("startDate");
+            }}
             error={!!errors.startDate}
-            {...register("startDate", { required: true })}
+            register={register}
+            trigger={trigger}
           />
         </Grid>
 
+        {/* 止日 */}
         <Grid item xs={12} md={6}>
-          <TextField
-            id="outlined-end-date"
+          <TaiwanDatePicker
             label="止日"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            autoComplete="off"
+            fieldName="endDate"
+            required={true}
+            defaultValue=""
+            onChange={(value) => {
+              setValue("endDate", value);
+              trigger("endDate");
+            }}
             error={!!errors.endDate}
-            {...register("endDate", { required: true })}
+            register={register}
+            trigger={trigger}
           />
         </Grid>
 
+        {/* 入帳月 */}
         <Grid item xs={12} md={6}>
-          <TextField
-            id="outlined-entry-month"
+          <TaiwanDatePicker
             label="入帳月"
-            type="month"
-            InputLabelProps={{ shrink: true }}
-            autoComplete="off"
-            error={!!errors.entryMonth}
-            {...register("entryMonth", { required: true })}
+            fieldName="payUsDate"
+            required={true}
+            defaultValue=""
+            onChange={(value) => {
+              setValue("payUsDate", value);
+              trigger("payUsDate");
+            }}
+            error={!!errors.payUsDate}
+            register={register}
+            trigger={trigger}
           />
         </Grid>
 
+        {/* 保費 */}
         <Grid item xs={12} md={6}>
           <TextField
-            id="outlined-premium"
+            id="outlined-amount"
             label="保費"
             type="number"
             autoComplete="off"
-            error={!!errors.premium}
-            {...register("premium", { required: true })}
+            error={!!errors.amount}
+            {...register("amount", { required: true })}
           />
         </Grid>
 
+        {/* 保險種類 */}
         <Grid item xs={12} md={6}>
           <TextField
-            id="outlined-insurance-type"
+            id="insuranceType"
             label="保險種類"
             type="text"
             autoComplete="off"
@@ -113,40 +149,49 @@ const PolicyManagement: React.FC<VehicleSettingProps> = ({ mode }) => {
           />
         </Grid>
 
+        {/* 保單號碼 */}
         <Grid item xs={12} md={6}>
           <TextField
-            id="outlined-policy-number"
+            id="insuranceNum"
             label="保單號碼"
             type="text"
             autoComplete="off"
-            error={!!errors.policyNumber}
-            {...register("policyNumber", { required: true })}
+            error={!!errors.insuranceNum}
+            {...register("insuranceNum", { required: true })}
           />
         </Grid>
 
+        {/* 保卡資料 */}
         <Grid item xs={12} md={6}>
           <TextField
-            id="outlined-insurance-card-data"
+            id="insuranceCardNum"
             label="保卡資料"
             type="text"
             autoComplete="off"
-            error={!!errors.insuranceCardData}
-            {...register("insuranceCardData", { required: true })}
+            error={!!errors.insuranceCardNum}
+            {...register("insuranceCardNum", { required: true })}
           />
         </Grid>
 
+        {/* 退日 */}
         <Grid item xs={12} md={6}>
-          <TextField
-            id="outlined-refund-date"
+          <TaiwanDatePicker
             label="退日"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            autoComplete="off"
-            error={!!errors.refundDate}
-            {...register("refundDate", { required: true })}
+            fieldName="quitDate"
+            required={true}
+            defaultValue=""
+            onChange={(value) => {
+              setValue("quitDate", value);
+              trigger("quitDate");
+            }}
+            error={!!errors.quitDate}
+            register={register}
+            trigger={trigger}
           />
         </Grid>
       </Grid>
+
+      {/* 按鈕 */}
       <Grid item xs={12} sx={{ display: "flex", justifyContent: "center" }}>
         {mode !== "view" && (
           <>
@@ -166,8 +211,5 @@ const PolicyManagement: React.FC<VehicleSettingProps> = ({ mode }) => {
     </Box>
   );
 };
-
-
-
 
 export default PolicyManagement;

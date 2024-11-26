@@ -44,13 +44,9 @@ export const requestHttp = (
     }
   }
 
-  // const url = initConfig.isDefault
-  //   ? process.env.NEXT_PUBLIC_API_DEFAULT || ""
-  //   : "http://192.168.50.240:8080";
-
      const url = initConfig.isDefault
-       ? process.env.NEXT_PUBLIC_API_DEFAULT || ""
-       : "http://192.168.50.240:8080";
+       ? process.env.NEXT_PUBLIC_API_BASE_URL || ""
+       : "http://218.35.172.213:8082";
 
   // 調試信息，檢查 URL 和配置
   console.log("Request URL:", url + `/${endStr}`);

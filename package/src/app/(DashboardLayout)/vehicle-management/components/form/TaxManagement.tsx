@@ -6,6 +6,7 @@ import TextField from "@mui/material/TextField";
 import { Button, Grid } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import TaiwanDatePicker from "../TaiwanDatePicker"; 
 
 interface VehicleSettingProps {
   mode: string;
@@ -22,6 +23,7 @@ const TaxManagement: React.FC<VehicleSettingProps> = ({ mode }) => {
     register,
     handleSubmit,
     setValue,
+    trigger,
     formState: { errors },
   } = useForm();
 
@@ -37,6 +39,7 @@ const TaxManagement: React.FC<VehicleSettingProps> = ({ mode }) => {
       }}
       noValidate
       autoComplete="off"
+      onSubmit={handleSubmit(onSubmit)}
     >
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
@@ -415,13 +418,18 @@ const TaxManagement: React.FC<VehicleSettingProps> = ({ mode }) => {
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <TextField
-            id="printDate"
+          <TaiwanDatePicker
             label="列印日期"
-            type="date"
-            InputLabelProps={{ shrink: true }}
+            fieldName="printDate"
+            required={true}
+            defaultValue=""
+            onChange={(value) => {
+              setValue("printDate", value);
+              trigger("printDate");
+            }}
             error={!!errors.printDate}
-            {...register("printDate", { required: true })}
+            register={register}
+            trigger={trigger}
           />
         </Grid>
       </Grid>

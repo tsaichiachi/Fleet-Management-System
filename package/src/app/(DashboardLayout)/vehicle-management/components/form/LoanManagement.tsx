@@ -1,34 +1,29 @@
-//貸款管理表單
-"use client";
 import React from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { Button, Grid } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import FormControl from "@mui/material/Box";
-import { FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import TaiwanDatePicker from "../TaiwanDatePicker";
 
 interface VehicleSettingProps {
   mode: string;
 }
 
 const LoanManagement: React.FC<VehicleSettingProps> = ({ mode }) => {
-  console.log(mode);
   const router = useRouter();
-  const handleCancelClick = (id: any) => {
-    router.push(`/vehicle-management/${id}/LoanManagement`);
-  };
-
-  const {
+   const {
     register,
     handleSubmit,
     setValue,
+    trigger,
     formState: { errors },
   } = useForm();
 
+  // 提交表單的處理邏輯
   const onSubmit = (data: any) => {
-    console.log(data);
+    console.log("提交的資料：", data);
+    // 您可以將資料發送到 API
   };
 
   return (
@@ -39,8 +34,10 @@ const LoanManagement: React.FC<VehicleSettingProps> = ({ mode }) => {
       }}
       noValidate
       autoComplete="off"
+      onSubmit={handleSubmit(onSubmit)}
     >
       <Grid container spacing={2}>
+        {/* 其他欄位 */}
         <Grid item xs={12} md={6}>
           <TextField
             required
@@ -53,30 +50,43 @@ const LoanManagement: React.FC<VehicleSettingProps> = ({ mode }) => {
           />
         </Grid>
 
+        {/* 發票日期 (TaiwanDatePicker 整合) */}
         <Grid item xs={12} md={6}>
-          <TextField
-            id="outlined-start-date"
+          <TaiwanDatePicker
             label="起日"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            autoComplete="off"
-            error={!!errors.startDate}
-            {...register("startDate", { required: true })}
+            fieldName="startDate"
+            required={true} // 必填
+            defaultValue=""
+            onChange={(value) => {
+              setValue("startDate", value);
+              trigger("startDate");
+            }}
+            error={!!errors.startDate} // 動態顯示錯誤樣式
+            //helperText={errors.entryDate?.message} // 顯示錯誤訊息
+            register={register}
+            trigger={trigger}
           />
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <TextField
-            id="outlined-end-date"
+          <TaiwanDatePicker
             label="止日"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            autoComplete="off"
-            error={!!errors.endDate}
-            {...register("endDate", { required: true })}
+            fieldName="endDate"
+            required={true} // 必填
+            defaultValue=""
+            onChange={(value) => {
+              setValue("endDate", value);
+              trigger("endDate");
+            }}
+            error={!!errors.endDate} // 動態顯示錯誤樣式
+            //helperText={errors.entryDate?.message} // 顯示錯誤訊息
+            register={register}
+            trigger={trigger}
           />
+       
         </Grid>
 
+        {/* 其他表單欄位 */}
         <Grid item xs={12} md={6}>
           <TextField
             id="outlined-loan-amount"
@@ -87,7 +97,6 @@ const LoanManagement: React.FC<VehicleSettingProps> = ({ mode }) => {
             {...register("loanAmount", { required: true })}
           />
         </Grid>
-
         <Grid item xs={12} md={6}>
           <TextField
             id="outlined-monthly-repayment"
@@ -96,16 +105,6 @@ const LoanManagement: React.FC<VehicleSettingProps> = ({ mode }) => {
             autoComplete="off"
             error={!!errors.monthlyRepayment}
             {...register("monthlyRepayment", { required: true })}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            id="outlined-monthly-repayment"
-            label="是否入帳"
-            type="number"
-            autoComplete="off"
-            error={!!errors.isEntry}
-            {...register("isEntry", { required: true })}
           />
         </Grid>
 
@@ -122,13 +121,15 @@ const LoanManagement: React.FC<VehicleSettingProps> = ({ mode }) => {
           />
         </Grid>
       </Grid>
+
+      {/* 按鈕 */}
       <Grid item xs={12} sx={{ display: "flex", justifyContent: "center" }}>
         {mode !== "view" && (
           <>
             <Button
               variant="contained"
               sx={{ marginRight: "1%" }}
-              onClick={handleCancelClick}
+              onClick={() => router.push(`/vehicle-management`)}
             >
               取消
             </Button>
@@ -141,6 +142,5 @@ const LoanManagement: React.FC<VehicleSettingProps> = ({ mode }) => {
     </Box>
   );
 };
-
 
 export default LoanManagement;
