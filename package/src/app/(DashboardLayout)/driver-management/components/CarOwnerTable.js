@@ -1,5 +1,4 @@
 "use client";
-
 import React from "react";
 import {
   Typography,
@@ -16,38 +15,30 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/navigation";
-import { format } from "date-fns";
 
-// Define the CarOwner type
-interface CarOwner {
-  id: number;
-  ownerName: string;
-  licenseNumber: string;
-}
-
-interface CarOwnerTableProps {
-  data: CarOwner[];
-  // totalPages: number;
-  // currentPage: number;
-  //onPageChange: (page: number) => void;
-}
-
-const CarOwnerTable: React.FC<CarOwnerTableProps> = ({
+const CarOwnerTable = ({
   data,
   // totalPages,
   // currentPage,
 }) => {
+  //console.log(data);
+  const owner = data;
+  console.log(owner);
   const router = useRouter();
+ 
 
-  const handleViewClick = (id: number) => {
+  const handleViewClick = (id) => {
+    localStorage.setItem("owner", id);
     router.push(`/driver-management/${id}/View`);
   };
 
-  const handleEditClick = (id: number) => {
+  const handleEditClick = (id) => {
+    localStorage.setItem("owner", id);
     router.push(`/driver-management/${id}/Edit`);
   };
 
-  const handleDeleteClick = (id: number) => {
+  const handleDeleteClick = (id) => {
+    localStorage.setItem("owner", id);
     console.log(`Deleting owner ID: ${id}`);
   };
 
@@ -74,17 +65,12 @@ const CarOwnerTable: React.FC<CarOwnerTableProps> = ({
           <TableRow>
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
-                ID
-              </Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="subtitle2" fontWeight={600}>
                 車主姓名
               </Typography>
             </TableCell>
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
-                車牌號碼
+                編號
               </Typography>
             </TableCell>
             <TableCell>
@@ -98,13 +84,8 @@ const CarOwnerTable: React.FC<CarOwnerTableProps> = ({
           {data.map((owner) => (
             <TableRow key={owner.id}>
               <TableCell>
-                <Typography sx={{ fontSize: "15px", fontWeight: "500" }}>
-                  {owner.id}
-                </Typography>
-              </TableCell>
-              <TableCell>
                 <Typography variant="subtitle2" fontWeight={400}>
-                  {owner.ownerName}
+                  {owner.name}
                 </Typography>
               </TableCell>
               <TableCell>
@@ -113,7 +94,7 @@ const CarOwnerTable: React.FC<CarOwnerTableProps> = ({
                   variant="subtitle2"
                   fontWeight={400}
                 >
-                  {owner.licenseNumber}
+                  {owner.idNum}
                 </Typography>
               </TableCell>
               <TableCell>
@@ -142,13 +123,13 @@ const CarOwnerTable: React.FC<CarOwnerTableProps> = ({
           ))}
         </TableBody>
       </Table>
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+      {/* <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
         <Pagination
-          // count={totalPages}
-          // page={currentPage}
-          //onChange={(event, value) => onPageChange(value)}
+        // count={totalPages}
+        // page={currentPage}
+        //onChange={(event, value) => onPageChange(value)}
         />
-      </Box>
+      </Box> */}
     </Box>
   );
 };

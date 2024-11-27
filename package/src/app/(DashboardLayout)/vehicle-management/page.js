@@ -6,44 +6,38 @@ import DashboardCard from "@/app/(DashboardLayout)/components/shared/DashboardCa
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { useRouter } from "next/navigation";
-import CarOwnerTable from "./components/CarOwnerTable";
-import { useGetCarOwners } from "./apihooks";
+import VehicleTable from "./components/VehicleTable";
+import { useGetCars } from "./apihooks";
 
-interface CarOwner {
-  id: number;
-  licenseNumber: string;
-  ownerName: string;
-}
-
-function DriverManagementPage() {
+function VehicleManagementPage() {
   const router = useRouter();
-  const [search, setSearch] = useState(""); // 用於輸入框綁定
-  const [query, setQuery] = useState(""); // 用於觸發搜尋的實際字串
+  const [search, setSearch] = useState("");
+  const [query, setQuery] = useState("");
 
-  const { data } = useGetCarOwners();
-  const owners: CarOwner[] = data?.data || [];
+  const { data } = useGetCars();
+  //console.log("Fetched car data:", data);
 
-  // 按搜尋按鈕後更新 query 狀態，觸發重新篩選
+  // 處理搜尋按鈕點擊
   const handleSearchClick = () => {
-    setQuery(search);
+    setQuery(search.trim());
   };
 
-  // 根據 query 狀態篩選數據
-  const filteredOwners = owners.filter(
-    (owner: CarOwner) =>
-      owner.ownerName.includes(query) || owner.licenseNumber.includes(query)
-  );
+  // 根據搜尋條件篩選車輛列表
+  const filteredCars = query
+    ? data?.filter(
+        (car) =>
+          car.licenseNumber?.includes(query) || car.ownerName?.includes(query)
+      )
+    : data || [];
 
-  // 新增車主按鈕處理邏輯
   const handleAddNewClick = () => {
-    router.push(`/driver-management/AddNew`);
+    router.push(`/vehicle-management/AddNew`);
   };
 
   return (
-    <PageContainer title="" description="">
-      <DashboardCard title="車主資料">
+    <PageContainer title="車籍管理" description="">
+      <DashboardCard title="車籍資料">
         <Box sx={{ overflow: "auto", width: { xs: "400px", sm: "auto" } }}>
-          {/* 搜尋輸入框與按鈕 */}
           <Box>
             <TextField
               label="搜尋"
@@ -65,15 +59,14 @@ function DriverManagementPage() {
               onClick={handleAddNewClick}
               sx={{ marginRight: "1%", marginTop: "1%" }}
             >
-              新增車主
+              新增車輛
             </Button>
           </Box>
-          {/* 車主列表表格 */}
-          <CarOwnerTable data={filteredOwners} />
+          <VehicleTable data={filteredCars} />
         </Box>
       </DashboardCard>
     </PageContainer>
   );
 }
 
-export default DriverManagementPage;
+export default VehicleManagementPage;

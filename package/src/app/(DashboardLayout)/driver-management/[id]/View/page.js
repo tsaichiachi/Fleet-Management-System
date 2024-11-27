@@ -11,7 +11,6 @@ const OwnerEdit = () => {
     <PageContainer title="車籍資料建立" description="this is Sample page">
       <DashboardCard title="檢視車主資料">
         <CarOwnerSetting mode="view" />
-        
         <VehicleTable  />
       </DashboardCard>
     </PageContainer>
