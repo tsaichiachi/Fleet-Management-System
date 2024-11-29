@@ -1,9 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { requestHttp } from "@/utils/requestHttp";
 
-/**
- * API: 取得所有車
- */
+
+// API: 取得所有車輛
 export const useGetCars = () => {
   return useQuery("cars", async () => {
     const response = await requestHttp("car/carInfoDropDownList", {
@@ -21,9 +20,8 @@ export const useGetCars = () => {
   });
 };
 
-/**
- * API: 新增車輛
- */
+
+//  API: 新增車輛
 export const useAddCars = () => {
   const queryClient = useQueryClient();
 
@@ -80,8 +78,6 @@ export const useGetCarOwnerDropDownList = () => {
     }
   );
 };
-
-
 
 // API: 取得保險列表
 export const useGetInsuranceList = (page, size) => {
@@ -153,4 +149,42 @@ export const useDeleteInsurance = () => {
       },
     }
   );
+};
+
+
+//管費設定
+// 取得管費表單預設資料
+export const useGetCarFee = (carLicenseNum) => {
+  return useQuery(
+    ["carFee", carLicenseNum],
+    async () => {
+      const response = await requestHttp("car/getCarFee", {
+        method: "POST",
+        data: { carLicenseNum },
+      });
+      return response.data;
+      
+    },
+    {
+      enabled: !!carLicenseNum, // 僅當車牌號碼存在時請求
+    }
+  );
+};
+
+// 新增或修改管費
+export const useAddOrUpdateCarFee = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(async (carFeeData) => {
+    const response = await requestHttp("car/addCarFee", {
+      method: "POST",
+      data: carFeeData,
+    });
+    return response;
+  },
+  {
+    onSuccess: () => {
+      queryClient.invalidateQueries(["carFee"]);
+    },
+  });
 };

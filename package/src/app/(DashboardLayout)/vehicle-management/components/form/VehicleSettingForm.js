@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import { Button, Grid } from "@mui/material";
+import { Button, Grid, Divider } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import TaiwanDatePicker from "../TaiwanDatePicker";
@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 
 const VehicleSetting = ({ mode }) => {
-  console.log("VehicleSetting mode:", mode);
+  //console.log("VehicleSetting mode:", mode);
   const router = useRouter();
   const { mutate: addCar } = useAddCars();
   const { data: carOwners } = useGetCarOwnerDropDownList();
@@ -98,7 +98,15 @@ const VehicleSetting = ({ mode }) => {
             {...register("carAgency", { required: true })}
           />
         </Grid>
-        <Grid item xs={12} md={12}></Grid>
+        <Grid item xs={12} md={12}>
+          <Divider
+            sx={{
+              borderStyle: "dashed",
+              borderColor: "grey.300",
+              marginY: 2, // 垂直間距
+            }}
+          />
+        </Grid>
         {/* 遷入日期和遷入金額 */}
         <Grid item xs={12} md={6}>
           <TaiwanDatePicker
@@ -410,7 +418,15 @@ const VehicleSetting = ({ mode }) => {
             {...register("oldLicenseNumber", { required: false })}
           />
         </Grid>
-        <Grid item xs={12} md={12}></Grid>
+        <Grid item xs={12} md={12}>
+          <Divider
+            sx={{
+              borderStyle: "dashed",
+              borderColor: "grey.300",
+              marginY: 2, // 垂直間距
+            }}
+          />
+        </Grid>
         {/* 備註 */}
         <Grid item xs={12}>
           <TextField

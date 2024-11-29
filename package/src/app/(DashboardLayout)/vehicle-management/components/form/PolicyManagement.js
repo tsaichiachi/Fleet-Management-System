@@ -1,21 +1,18 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import { Button, Grid, TextField } from "@mui/material";
+import { Button, Grid, TextField, Divider } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import TaiwanDatePicker from "../TaiwanDatePicker";
 import { useAddInsurance } from "../../apihooks";
 
-interface VehicleSettingProps {
-  mode: string;
-}
-
-const PolicyManagement: React.FC<VehicleSettingProps> = ({ mode }) => {
+const PolicyManagement = ({ mode }) => {
   const router = useRouter();
+  const [carLicenseNum, setCarLicenseNum] = useState("");
   const { mutate: addInsurance, isLoading } = useAddInsurance();
 
-  const handleCancelClick = (id: any) => {
+  const handleCancelClick = () => {
     router.push(`/vehicle-management/${id}/PolicyManagement`);
   };
 
@@ -27,28 +24,39 @@ const PolicyManagement: React.FC<VehicleSettingProps> = ({ mode }) => {
     formState: { errors },
   } = useForm();
 
-   const onSubmit = (data: any) => {
-     const carLicenseNum = "ABC1234"; // 假设车牌号是静态的，也可以从其他来源动态获取
-     const formData = {
-       ...data,
-       carLicenseNum, // 添加车牌号字段
-     };
+  const onSubmit = (data) => {
+    const carLicenseNum = "carLicenseNum"; 
+    const formData = {
+      ...data,
+      carLicenseNum, 
+    };
 
-     console.log("表單提交數據：", formData);
+    console.log("表單提交數據：", formData);
 
-     addInsurance(formData, {
-       onSuccess: () => {
-         alert("保單新增成功！");
-         router.push(
-           `/vehicle-management/${formData.carLicenseNum}/PolicyManagement`
-         );
-       },
-       onError: (error) => {
-         console.error("新增保單失敗：", error);
-         alert("新增失敗，請檢查表單資料！");
-       },
-     });
-   };
+    addInsurance(formData, {
+      onSuccess: () => {
+        alert("保單新增成功！");
+        router.push(
+          `/vehicle-management/${formData.carLicenseNum}/PolicyManagement`
+        );
+      },
+      onError: (error) => {
+        console.error("新增保單失敗：", error);
+        alert("新增失敗，請檢查表單資料！");
+      },
+    });
+  };
+
+  // 從 localStorage 獲取車牌號碼
+  useEffect(() => {
+    const licenseNum = localStorage.getItem("licenseNumber");
+    //console.log(licenseNum);
+    if (licenseNum) {
+      setCarLicenseNum(licenseNum);
+    } else {
+      console.error("車牌號碼不存在於 localStorage");
+    }
+  }, []);
 
   return (
     <Box
@@ -61,6 +69,29 @@ const PolicyManagement: React.FC<VehicleSettingProps> = ({ mode }) => {
       onSubmit={handleSubmit(onSubmit)}
     >
       <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>
+          <TextField
+            disabled
+            required
+            id="carLicenseNum"
+            label="車牌號碼"
+            value={carLicenseNum}
+            InputProps={{
+              readOnly: true,
+            }}
+          />
+        </Grid>
+
+        <Grid item xs={12} md={12}>
+          <Divider
+            sx={{
+              borderStyle: "dashed",
+              borderColor: "grey.300",
+              marginY: 2, // 垂直間距
+            }}
+          />
+        </Grid>
+
         {/* 保險公司 */}
         <Grid item xs={12} md={6}>
           <TextField

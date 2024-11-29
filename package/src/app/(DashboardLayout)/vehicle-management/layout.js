@@ -47,10 +47,10 @@ export default function RootLayout({ children }) {
       label: "貸款管理",
       url: `/vehicle-management/${licenseNumber}/LoanManagement`,
     },
-    {
-      label: "稅金管理",
-      url: `/vehicle-management/${licenseNumber}/TaxManagement`,
-    },
+    // {
+    //   label: "稅金管理",
+    //   url: `/vehicle-management/${licenseNumber}/TaxManagement`,
+    // },
     {
       label: "車輛總帳",
       url: `/vehicle-management/${licenseNumber}/Ledger`,
