@@ -5,14 +5,14 @@ import TextField from "@mui/material/TextField";
 import { Button, Grid, Divider } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { getLocalStorage, removeLocalStorage } from "@/utils/tool";
+import {  removeLocalStorage } from "@/utils/tool";
 import { useGetCarFee, useAddOrUpdateCarFee } from "../../apihooks";
 
 const ManagementFeeSettingForm = () => {
   const router = useRouter();
   const [carLicenseNum, setCarLicenseNum] = useState("");
   const { data: carFeeData } = useGetCarFee(carLicenseNum);
-  //console.log(carFeeData);  
+  console.log(carFeeData);  
   const { mutate: saveCarFee } = useAddOrUpdateCarFee();
 
   const {

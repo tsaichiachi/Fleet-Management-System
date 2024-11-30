@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import {
   TextField,
@@ -11,7 +12,7 @@ import {
 } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
-type TaiwanDatePickerProps = {
+type TaiwanYearMonthPickerProps = {
   label: string;
   defaultValue?: string | null;
   onChange?: (value: string | null) => void;
@@ -26,7 +27,7 @@ type TaiwanDatePickerProps = {
 const generateOptions = (start: number, end: number) =>
   Array.from({ length: end - start + 1 }, (_, i) => start + i);
 
-const TaiwanDatePicker: React.FC<TaiwanDatePickerProps> = ({
+const TaiwanYearMonthPickerSample: React.FC<TaiwanYearMonthPickerProps> = ({
   label,
   defaultValue = null,
   onChange,
@@ -44,9 +45,6 @@ const TaiwanDatePicker: React.FC<TaiwanDatePickerProps> = ({
   );
   const [month, setMonth] = useState<number>(
     defaultValue ? parseInt(defaultValue.split("-")[1]) : 1
-  );
-  const [day, setDay] = useState<number>(
-    defaultValue ? parseInt(defaultValue.split("-")[2]) : 1
   );
 
   // 在元件初始化時，註冊該欄位
@@ -67,7 +65,7 @@ const TaiwanDatePicker: React.FC<TaiwanDatePickerProps> = ({
   const handleConfirm = () => {
     const formattedDate = `${String(taiwanYear).padStart(3, "0")}-${String(
       month
-    ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    ).padStart(2, "0")}`;
     setValue(formattedDate);
     if (onChange) onChange(formattedDate);
     if (trigger) trigger(fieldName); // 手動觸發驗證
@@ -114,9 +112,9 @@ const TaiwanDatePicker: React.FC<TaiwanDatePickerProps> = ({
         }}
       >
         <Box sx={{ padding: 2, width: 300 }}>
-          {/* 年月日選擇 */}
+          {/* 年月選擇 */}
           <Grid container spacing={2} justifyContent="center">
-            <Grid item xs={4}>
+            <Grid item xs={6}>
               <Typography align="center">年</Typography>
               <TextField
                 select
@@ -126,12 +124,12 @@ const TaiwanDatePicker: React.FC<TaiwanDatePickerProps> = ({
               >
                 {generateOptions(1, 150).map((year) => (
                   <MenuItem key={year} value={year}>
-                    {String(year).padStart(3, "0")} 
+                    {String(year).padStart(3, "0")}
                   </MenuItem>
                 ))}
               </TextField>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={6}>
               <Typography align="center">月</Typography>
               <TextField
                 select
@@ -141,22 +139,7 @@ const TaiwanDatePicker: React.FC<TaiwanDatePickerProps> = ({
               >
                 {generateOptions(1, 12).map((month) => (
                   <MenuItem key={month} value={month}>
-                    {String(month).padStart(2, "0")} 
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={4}>
-              <Typography align="center">日</Typography>
-              <TextField
-                select
-                value={day}
-                onChange={(e) => setDay(Number(e.target.value))}
-                fullWidth
-              >
-                {generateOptions(1, 31).map((day) => (
-                  <MenuItem key={day} value={day}>
-                    {String(day).padStart(2, "0")} 
+                    {String(month).padStart(2, "0")}
                   </MenuItem>
                 ))}
               </TextField>
@@ -176,4 +159,4 @@ const TaiwanDatePicker: React.FC<TaiwanDatePickerProps> = ({
   );
 };
 
-export default TaiwanDatePicker;
+export default TaiwanYearMonthPickerSample;

@@ -80,28 +80,29 @@ export const useGetCarOwnerDropDownList = () => {
 };
 
 // API: 取得保險列表
-export const useGetInsuranceList = (page, size) => {
-  return useQuery({
-    queryKey: ["insuranceList", page, size], // 根據 page 和 size 做依賴更新
-    queryFn: async () => {
+export const useGetInsuranceList = (carLicenseNum) => {
+  return useQuery(
+    ["insuranceList", carLicenseNum],
+    async () => {
       const response = await requestHttp(
         "insuranceFeeSetting/getInsuranceFeeSetting",
         {
-          method: "POST", // 改用 POST 方法
-          data: { page, size }, // 傳遞 page 和 size 作為請求體
+          method: "POST",
+          data: { carLicenseNum },
         }
       );
 
       if (response?.code !== "G_0000") {
         throw new Error(response?.message || "無法獲取保險列表");
       }
-
-      console.log("保險列表數據：", response.data);
+      console.log("Insurance API Response:", response.data);
       return response.data; // 返回保險數據
     },
-    refetchOnWindowFocus: false, // 避免切回窗口時自動重新加載
-    staleTime: 300000, // 設置數據過期時間，單位為毫秒
-  });
+    {
+      enabled: !!carLicenseNum,
+      staleTime: 5 * 60 * 1000,
+    }
+  );
 };
 
 // API: 新增保險資料
@@ -151,6 +152,34 @@ export const useDeleteInsurance = () => {
   );
 };
 
+// API: 取得保險公司下拉列表
+export const useGetInsuranceComDropDownList = () => {
+  return useQuery(
+    "InsuranceComDropDownList",
+    async () => {
+      const response = await requestHttp("car/getInsuranceCompany", {
+        method: "POST",
+      });
+
+      if (response.code !== "G_0000") {
+        throw new Error(
+          response.message || "Failed to fetch car owner dropdown list"
+        );
+      }
+      console.log("Car Owner API Response:", response.data);
+      return response.data;
+    },
+    {
+      select: (data) =>
+        data.map((item) => ({
+          key: item.id,
+          value: item.companyName,
+          name: item.companyName,
+        })),
+    }
+  );
+};
+
 
 //管費設定
 // 取得管費表單預設資料
@@ -188,3 +217,69 @@ export const useAddOrUpdateCarFee = () => {
     },
   });
 };
+
+
+//車輛總帳
+// 取得車輛總帳
+export const useGetMonthBill = (params) => {
+  return useQuery(
+    ["monthBill", params],
+    async () => {
+      const response = await requestHttp("bill/monthBill", {
+        method: "POST",
+        data: {
+          carLicenseNum: params?.carLicenseNum,
+          owner: params?.owner,
+          billDate: params?.billDate,
+        },
+      });
+      return response.data;
+    },
+    {
+      enabled: !!params?.carLicenseNum && !!params?.owner && !!params?.billDate, 
+    }
+  );
+};
+
+//貸款設定
+// 取得貸款預設資料
+export const useGetLoanFee = (carLicenseNum) => {
+  return useQuery(
+    ["LoanFee", carLicenseNum],
+    async () => {
+      const response = await requestHttp(
+        "loanFeeSetting/queryByCarLicenseNum",
+        {
+          method: "POST",
+          data: { carLicenseNum },
+        }
+      );
+      return response.data.pageList;
+    },
+    {
+      enabled: !!carLicenseNum, // 僅當車牌號碼存在時請求
+    }
+  );
+};
+
+// 新增或修改貸款
+export const useAddOrUpdateLoanFee = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (LoanFeeData) => {
+      const response = await requestHttp("loanFeeSetting/addLoanFeeSetting", {
+        method: "POST",
+        data: LoanFeeData,
+      });
+      return response;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["LoanFee"]);
+      },
+    }
+  );
+};
+
+

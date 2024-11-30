@@ -24,16 +24,7 @@ export default function RootLayout({ children }) {
   const [value, setValue] = useState(0);
   const [licenseNumber, setLicenseNumber] = useState("");
 
-  // 從LocalStorage取得車牌號碼
-  useEffect(() => {
-    const storedLicenseNumber = localStorage.getItem("licenseNumber");
-    if (storedLicenseNumber) {
-      setLicenseNumber(storedLicenseNumber);
-    } else {
-      console.error("在 LocalStorage 中未找到車牌號碼");
-    }
-  }, []);
-
+  // Tabs 配置
   const Tabitem = [
     {
       label: "管費設定",
@@ -47,35 +38,59 @@ export default function RootLayout({ children }) {
       label: "貸款管理",
       url: `/vehicle-management/${licenseNumber}/LoanManagement`,
     },
-    // {
-    //   label: "稅金管理",
-    //   url: `/vehicle-management/${licenseNumber}/TaxManagement`,
-    // },
     {
       label: "車輛總帳",
       url: `/vehicle-management/${licenseNumber}/Ledger`,
     },
   ];
 
-  useEffect(() => {
-    const currentIndex = Tabitem.findIndex((item) =>
-      pathname.includes(item.url)
-    );
-    if (currentIndex !== -1) {
-      setValue(currentIndex);
-    }
-  }, [pathname, licenseNumber]);
-
+  // Tab 切換處理
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
     router.push(Tabitem[newValue].url);
   };
 
+  // 從 LocalStorage 取得車牌號碼
+  useEffect(() => {
+    const storedLicenseNumber = localStorage.getItem("licenseNumber");
+    if (storedLicenseNumber) {
+      setLicenseNumber(storedLicenseNumber);
+    } else {
+      //console.warn("在 LocalStorage 中未找到車牌號碼");
+      setLicenseNumber(""); // 初始化為空字串以避免判斷失效
+    }
+  }, []);
+
+
+  
   const shouldRenderTabs = !(
-    pathname === "/vehicle-management" ||
-    pathname === "/vehicle-management/AddNew" ||
-    pathname.match(/\/vehicle-management\/\d+\/Edit/)
+    (
+      pathname === "/vehicle-management" ||
+      pathname === "/vehicle-management/AddNew" ||
+      pathname.match(/\/vehicle-management\/[^/]+\/Edit$/) || // 確保 Edit 頁面不顯示 Tabs
+      !licenseNumber
+    ) 
   );
+
+  // 更新當前選中的 Tab
+  useEffect(() => {
+    if (licenseNumber) {
+      const currentIndex = Tabitem.findIndex((item) =>
+        pathname.includes(item.url)
+      );
+      if (currentIndex !== -1) {
+        setValue(currentIndex);
+      } else {
+        setValue(0);
+      }
+    }
+  }, [pathname, licenseNumber]);
+
+  useEffect(() => {
+    //console.log("Current pathname:", pathname);
+    // console.log("License Number:", licenseNumber);
+    // console.log("Should Render Tabs:", shouldRenderTabs);
+  }, [pathname, licenseNumber]);
 
   return (
     <MainWrapper className="mainwrapper">
@@ -86,7 +101,7 @@ export default function RootLayout({ children }) {
             maxWidth: "1200px",
           }}
         >
-          {shouldRenderTabs && licenseNumber && (
+          {shouldRenderTabs && (
             <Tabs
               value={value}
               onChange={handleTabChange}

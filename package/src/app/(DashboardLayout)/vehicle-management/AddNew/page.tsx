@@ -8,7 +8,7 @@ import VehicleSetting from "../components/form/VehicleSettingForm";
 const OwnerAdd = () => {
   return (
     <PageContainer title="" description="">
-      <DashboardCard title="新增車輛資料">
+      <DashboardCard title="車輛資料_新增">
         <VehicleSetting mode="add"/>
       </DashboardCard>
     </PageContainer>

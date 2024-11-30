@@ -1,19 +1,24 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import { Button, Grid, TextField, Divider } from "@mui/material";
+import { Button, Grid, TextField, Divider, MenuItem } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import TaiwanDatePicker from "../TaiwanDatePicker";
-import { useAddInsurance } from "../../apihooks";
+import {
+  useAddInsurance,
+  useGetInsuranceComDropDownList,
+} from "../../apihooks";
 
 const PolicyManagement = ({ mode }) => {
   const router = useRouter();
   const [carLicenseNum, setCarLicenseNum] = useState("");
   const { mutate: addInsurance, isLoading } = useAddInsurance();
+  //const { data: InsuranceComs } = useGetInsuranceComDropDownList();
+  //console.log(carLicenseNum);
 
   const handleCancelClick = () => {
-    router.push(`/vehicle-management/${id}/PolicyManagement`);
+    router.push(`/vehicle-management/${carLicenseNum}/PolicyManagement`);
   };
 
   const {
@@ -25,10 +30,10 @@ const PolicyManagement = ({ mode }) => {
   } = useForm();
 
   const onSubmit = (data) => {
-    const carLicenseNum = "carLicenseNum"; 
+    
     const formData = {
       ...data,
-      carLicenseNum, 
+      carLicenseNum,
     };
 
     console.log("表單提交數據：", formData);
@@ -93,6 +98,26 @@ const PolicyManagement = ({ mode }) => {
         </Grid>
 
         {/* 保險公司 */}
+        {/* <Grid item xs={12} sm={6}>
+          <TextField
+            select
+            required
+            label="保險公司"
+            error={!!errors.insuranceCom}
+            {...register("insuranceCom", { required: true })}
+            fullWidth
+            disabled={mode === "view"}
+          >
+            {InsuranceComs?.map((importnsuranceCom) => (
+              <MenuItem
+                key={importnsuranceCom.key}
+                value={importnsuranceCom.value}
+              >
+                {`${importnsuranceCom.name}`}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid> */}
         <Grid item xs={12} md={6}>
           <TextField
             required
@@ -159,6 +184,7 @@ const PolicyManagement = ({ mode }) => {
         {/* 保費 */}
         <Grid item xs={12} md={6}>
           <TextField
+            required
             id="outlined-amount"
             label="保費"
             type="number"
@@ -171,6 +197,7 @@ const PolicyManagement = ({ mode }) => {
         {/* 保險種類 */}
         <Grid item xs={12} md={6}>
           <TextField
+            required
             id="insuranceType"
             label="保險種類"
             type="text"
@@ -183,6 +210,7 @@ const PolicyManagement = ({ mode }) => {
         {/* 保單號碼 */}
         <Grid item xs={12} md={6}>
           <TextField
+            required
             id="insuranceNum"
             label="保單號碼"
             type="text"
@@ -195,6 +223,7 @@ const PolicyManagement = ({ mode }) => {
         {/* 保卡資料 */}
         <Grid item xs={12} md={6}>
           <TextField
+            required
             id="insuranceCardNum"
             label="保卡資料"
             type="text"

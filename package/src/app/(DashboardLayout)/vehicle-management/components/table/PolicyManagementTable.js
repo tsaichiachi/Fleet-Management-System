@@ -14,34 +14,18 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/navigation";
 
-interface Policy {
-  id: number;
-  insuranceCom: string;
-  startDate: string;
-  endDate: string;
-  payUsDate: string;
-  amount: number;
-  insuranceType: string;
-  insuranceNum: string;
-  insuranceCardNum: string;
-  
-}
 
-interface PolicyManagmentTableProps {
-  data: Policy[];
-}
-
-const PolicyManagmentTable: React.FC<PolicyManagmentTableProps> = ({
+const PolicyManagmentTable = ({
   data,
 }) => {
   console.log("data:", data);
   const router = useRouter();
 
-  const handleEditClick = (id: number) => {
+  const handleEditClick = (id) => {
     router.push(`/vehicle-management/${id}/PolicyManagement/Edit`);
   };
 
-  const handleDeleteClick = (id: number) => {
+  const handleDeleteClick = (id) => {
     console.log(`Deleting policy with ID: ${id}`);
   };
 
@@ -56,11 +40,11 @@ const PolicyManagmentTable: React.FC<PolicyManagmentTableProps> = ({
       >
         <TableHead>
           <TableRow>
-            <TableCell sx={{ width: "6%" }}>
+            {/* <TableCell sx={{ width: "6%" }}>
               <Typography variant="subtitle2" fontWeight={600}>
                 Id
               </Typography>
-            </TableCell>
+            </TableCell> */}
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
                 保險公司
@@ -116,9 +100,9 @@ const PolicyManagmentTable: React.FC<PolicyManagmentTableProps> = ({
         <TableBody>
           {data?.map((product) => (
             <TableRow key={product.id}>
-              <TableCell>
+              {/* <TableCell>
                 <Typography fontWeight={500}>{product.id}</Typography>
-              </TableCell>
+              </TableCell> */}
               <TableCell>
                 <Typography fontWeight={400}>{product.insuranceCom}</Typography>
               </TableCell>
@@ -148,7 +132,7 @@ const PolicyManagmentTable: React.FC<PolicyManagmentTableProps> = ({
                 </Typography>
               </TableCell>
               <TableCell>
-                <Typography fontWeight={400}>{product.endDate}</Typography>
+                <Typography fontWeight={400}>{product.quitDate}</Typography>
               </TableCell>
               <TableCell>
                 <IconButton
@@ -168,9 +152,9 @@ const PolicyManagmentTable: React.FC<PolicyManagmentTableProps> = ({
           ))}
         </TableBody>
       </Table>
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+      {/* <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
         <Pagination count={10} />
-      </Box>
+      </Box> */}
     </Box>
   );
 };
