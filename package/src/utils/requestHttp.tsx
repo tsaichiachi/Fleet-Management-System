@@ -44,13 +44,14 @@ export const requestHttp = (
     }
   }
 
+     console.log(process.env.NEXT_PUBLIC_API_BASE_URL);
      const url = initConfig.isDefault
        ? process.env.NEXT_PUBLIC_API_BASE_URL || ""
        : "http://218.35.172.213:8082";
 
   // 調試信息，檢查 URL 和配置
-  console.log("Request URL:", url + `/${endStr}`);
-  console.log("Request Config:", initConfig);
+  //console.log("Request URL:", url + `/${endStr}`);
+  //console.log("Request Config:", initConfig);
 
   return fetch(url + `/${endStr}`, initConfig)
     .then(async (res) => {

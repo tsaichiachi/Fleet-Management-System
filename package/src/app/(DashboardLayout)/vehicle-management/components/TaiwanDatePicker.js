@@ -25,34 +25,26 @@ const TaiwanDatePicker = ({
   fieldName,
   trigger,
 }) => {
-  console.log("TaiwanDatePicker defaultValue:", defaultValue);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [value, setValue] = useState(defaultValue);
-  console.log("TaiwanDatePicker value:", value);
-  const [taiwanYear, setTaiwanYear] = useState(
-    defaultValue ? parseInt(defaultValue.split("-")[0]) : 1
-  );
-  const [month, setMonth] = useState(
-    defaultValue ? parseInt(defaultValue.split("-")[1]) : 1
-  );
-  const [day, setDay] = useState(
-    defaultValue ? parseInt(defaultValue.split("-")[2]) : 1
-  );
+  const [value, setValue] = useState(defaultValue || ""); 
+  const [taiwanYear, setTaiwanYear] = useState(1);
+  const [month, setMonth] = useState(1);
+  const [day, setDay] = useState(1);
 
-  // 在元件初始化時，註冊該欄位
+  // 註冊字段
   useEffect(() => {
     register(fieldName, {
       required: required ? `${label}是必填項目` : false,
     });
   }, [register, fieldName, required, label]);
 
-  // 在元件初始化時，設置預設值
+  // 預設值變更時更新狀態
   useEffect(() => {
     if (defaultValue) {
       const [year, month, day] = defaultValue.split("-");
-      setTaiwanYear(parseInt(year));
-      setMonth(parseInt(month));
-      setDay(parseInt(day));
+      setTaiwanYear(parseInt(year, 10));
+      setMonth(parseInt(month, 10));
+      setDay(parseInt(day, 10));
       setValue(defaultValue);
     }
   }, [defaultValue]);
@@ -77,9 +69,11 @@ const TaiwanDatePicker = ({
 
   const open = Boolean(anchorEl);
 
+  console.log("TaiwanDatePicker defaultValue:", defaultValue);
+  console.log("TaiwanDatePicker value:", value);
+
   return (
     <Box>
-      {/* 顯示輸入框 */}
       <TextField
         label={
           <Box component="span" style={{ color: error ? "red" : "inherit" }}>
@@ -89,9 +83,9 @@ const TaiwanDatePicker = ({
             )}
           </Box>
         }
-        value={value || ""}
-        error={error} // 錯誤狀態
-        helperText={helperText} // 錯誤提示訊息
+        value={value}
+        error={error}
+        helperText={helperText}
         onClick={handleOpen}
         InputProps={{
           readOnly: true,
@@ -104,7 +98,6 @@ const TaiwanDatePicker = ({
         fullWidth
       />
 
-      {/* 彈出日期選擇器 */}
       <Popover
         open={open}
         anchorEl={anchorEl}
@@ -115,7 +108,6 @@ const TaiwanDatePicker = ({
         }}
       >
         <Box sx={{ padding: 2, width: 300 }}>
-          {/* 年月日選擇 */}
           <Grid container spacing={2} justifyContent="center">
             <Grid item xs={4}>
               <Typography align="center">年</Typography>
@@ -164,7 +156,6 @@ const TaiwanDatePicker = ({
             </Grid>
           </Grid>
 
-          {/* 確認和取消按鈕 */}
           <Grid container justifyContent="space-between" sx={{ marginTop: 2 }}>
             <Button onClick={handleClose}>取消</Button>
             <Button variant="contained" onClick={handleConfirm}>

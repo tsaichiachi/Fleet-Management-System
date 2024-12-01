@@ -12,7 +12,7 @@ const LoanManagementForm = ({ mode }) => {
   const router = useRouter();
   const [carLicenseNum, setCarLicenseNum] = useState("");
   const { data: LoanFeeData, isLoading } = useGetLoanFee(carLicenseNum);
-  console.log("LoanFeeData:", LoanFeeData);
+  //console.log("LoanFeeData:", LoanFeeData);
   const { mutate: saveLoanFee } = useAddOrUpdateLoanFee();
 
   const {
@@ -56,9 +56,9 @@ const LoanManagementForm = ({ mode }) => {
   useEffect(() => {
     if (LoanFeeData && LoanFeeData.length > 0) {
       const loanFee = LoanFeeData[0]; // 提取對象
-      console.log("Setting form values with loanFee:", loanFee);
+      //console.log("Setting form values with loanFee:", loanFee);
       Object.entries(loanFee).forEach(([key, value]) => {
-        console.log(`Setting ${key} to ${value}`);
+       // console.log(`Setting ${key} to ${value}`);
         setValue(key, value || ""); // 設置預設值
       });
     }
@@ -113,9 +113,9 @@ const LoanManagementForm = ({ mode }) => {
             label="起日"
             fieldName="startDate"
             required={true}
-            defaultValue=""
+            defaultValue={LoanFeeData?.[0]?.startDate || ""}
             onChange={(value) => {
-              console.log("Setting startDate to", value);
+              //console.log("Setting startDate to", value);
               setValue("startDate", value);
               trigger("startDate");
             }}
@@ -131,9 +131,9 @@ const LoanManagementForm = ({ mode }) => {
             label="止日"
             fieldName="endDate"
             required={true}
-            defaultValue=""
+            defaultValue={LoanFeeData?.[0]?.endDate || ""}
             onChange={(value) => {
-              console.log("Setting endDate to", value);
+              //console.log("Setting endDate to", value);
               setValue("endDate", value);
               trigger("endDate");
             }}
@@ -175,9 +175,9 @@ const LoanManagementForm = ({ mode }) => {
             label="是否入帳"
             fieldName="payUsDate"
             required={true}
-            defaultValue=""
+            defaultValue={LoanFeeData?.[0]?.payUsDate || ""}
             onChange={(value) => {
-              console.log("Setting payUsDate to", value);
+              //console.log("Setting payUsDate to", value);
               setValue("payUsDate", value);
               trigger("payUsDate");
             }}

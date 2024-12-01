@@ -65,7 +65,7 @@ export const useGetCarOwnerDropDownList = () => {
           response.message || "Failed to fetch car owner dropdown list"
         );
       }
-      console.log("Car Owner API Response:", response.data);
+      //console.log("Car Owner API Response:", response.data);
       return response.data;
     },
     {
@@ -95,7 +95,7 @@ export const useGetInsuranceList = (carLicenseNum) => {
       if (response?.code !== "G_0000") {
         throw new Error(response?.message || "無法獲取保險列表");
       }
-      console.log("Insurance API Response:", response.data);
+      //console.log("Insurance API Response:", response.data);
       return response.data; // 返回保險數據
     },
     {
@@ -222,6 +222,7 @@ export const useAddOrUpdateCarFee = () => {
 //車輛總帳
 // 取得車輛總帳
 export const useGetMonthBill = (params) => {
+  console.log("params", params)
   return useQuery(
     ["monthBill", params],
     async () => {
@@ -229,14 +230,16 @@ export const useGetMonthBill = (params) => {
         method: "POST",
         data: {
           carLicenseNum: params?.carLicenseNum,
-          owner: params?.owner,
+          ownerName: '王大帥',
           billDate: params?.billDate,
         },
       });
+      console.log("response", response.data)
       return response.data;
     },
     {
-      enabled: !!params?.carLicenseNum && !!params?.owner && !!params?.billDate, 
+      enabled:
+        !!params?.carLicenseNum && !!params?.ownerName && !!params?.billDate,
     }
   );
 };
@@ -281,5 +284,7 @@ export const useAddOrUpdateLoanFee = () => {
     }
   );
 };
+
+
 
 

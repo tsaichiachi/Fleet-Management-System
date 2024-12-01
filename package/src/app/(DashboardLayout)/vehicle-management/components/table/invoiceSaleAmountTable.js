@@ -109,27 +109,27 @@ const TaxManagementTable = () => {
           <TableRow>
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
-                稅金月份
+                處理日期
               </Typography>
             </TableCell>
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
-                稅金名稱
+                發票日期
               </Typography>
             </TableCell>
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
-                稅金
+                發票號碼
               </Typography>
             </TableCell>
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
-                已繳日期
+                銷貨金額
               </Typography>
             </TableCell>
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
-                備註
+                銷貨稅
               </Typography>
             </TableCell>
             <TableCell>

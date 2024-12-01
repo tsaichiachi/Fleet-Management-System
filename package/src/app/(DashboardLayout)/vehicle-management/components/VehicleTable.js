@@ -17,21 +17,19 @@ import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/navigation";
 
-
-
 const VehicleTable = (data) => {
-  //console.log(data);
   const router = useRouter();
   const cars = data?.data;
-  //console.log(cars);  
 
-
-  const handleViewClick = (licenseNumber) => {
+  const handleViewClick = (licenseNumber, ownerName) => {
     localStorage.setItem("licenseNumber", licenseNumber);
+    localStorage.setItem("ownerName", ownerName);
     router.push(`/vehicle-management/${licenseNumber}/ManagementFeeSetting`);
   };
-  const handleEditClick = (licenseNumber) => {
+
+  const handleEditClick = (licenseNumber, ownerName) => {
     localStorage.setItem("licenseNumber", licenseNumber);
+    localStorage.setItem("ownerName", ownerName);
     router.push(`/vehicle-management/${licenseNumber}/Edit`);
   };
 
@@ -104,13 +102,17 @@ const VehicleTable = (data) => {
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <IconButton
                     aria-label="view"
-                    onClick={() => handleViewClick(car.licenseNumber)}
+                    onClick={() =>
+                      handleViewClick(car.licenseNumber, car.ownerName)
+                    }
                   >
                     <VisibilityRoundedIcon />
                   </IconButton>
                   <IconButton
                     aria-label="edit"
-                    onClick={() => handleEditClick(car.licenseNumber)}
+                    onClick={() =>
+                      handleEditClick(car.licenseNumber, car.ownerName)
+                    }
                   >
                     <EditIcon />
                   </IconButton>

@@ -6,18 +6,19 @@ import { Button, Grid, Divider } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { removeLocalStorage } from "@/utils/tool";
-import { useGetCarFee, useAddOrUpdateCarFee } from "../../apihooks";
+import { useGetMonthBill } from "../../apihooks";
 import TaiwanYearMonthPickerSample from "../TaiwanDatePickerSample";
 import FieldWithDialog from "../FieldWithDialog";
 import LoanManagementTable from "../table/LoanManagementTable";
 import InvoiceSaleAmountTable from "../table/InvoiceSaleAmountTable";
+import axios from "axios";
 
 const LedgerForm = () => {
   const router = useRouter();
   const [carLicenseNum, setCarLicenseNum] = useState("");
-  const { data: carFeeData } = useGetCarFee(carLicenseNum);
-  //console.log(carFeeData);
-  const { mutate: saveCarFee } = useAddOrUpdateCarFee();
+  const [ownerName, setOwnerName] = useState("");
+  const [searchParams, setSearchParams] = useState(null);
+  //console.log("searchParams", searchParams);
 
   const {
     register,
@@ -27,28 +28,77 @@ const LedgerForm = () => {
     formState: { errors },
   } = useForm();
 
-  const handleCancelClick = () => {
-    router.push(`/vehicle-management`);
-    removeLocalStorage("licenseNumber");
-  };
-
-  const onSubmit = (data) => {
-    // 確保所有數字字段是數字格式
-   
-  };
-
-  // 從 localStorage 獲取車牌號碼
   useEffect(() => {
     const licenseNum = localStorage.getItem("licenseNumber");
-    //console.log(licenseNum);
-    if (licenseNum) {
+    const owner = localStorage.getItem("ownerName");
+
+    if (licenseNum && owner) {
       setCarLicenseNum(licenseNum);
+      setOwnerName(owner);
     } else {
-      console.error("車牌號碼不存在於 localStorage");
+      console.error("車牌和車主不存在 localStorage");
     }
   }, []);
 
-  
+  const { data: monthBillData, refetch } = useGetMonthBill(searchParams);
+  //console.log(monthBillData);
+
+  useEffect(() => {
+    if (monthBillData) {
+      Object.entries(monthBillData).forEach(([key, value]) => {
+        setValue(key, value || "");
+      });
+    }
+  }, [monthBillData, setValue]);
+
+  const onSubmit = (data) => {
+    const params = {
+      carLicenseNum,
+      ownerName,
+      billDate: data.billDate,
+    };
+    setSearchParams(params);
+    refetch();
+  };
+   //console.log("searchParams", searchParams);
+  //下載
+  const handleDownload = async () => {
+    if (!searchParams) {
+      alert("請先搜尋年月份");
+      return;
+    }
+    try {
+      const response = await axios.post(
+        "http://218.35.172.213:8082/bill/monthBillDetail",
+        {
+          carLicenseNum,
+          ownerName: "王大帥",
+          billDateList: [searchParams?.billDate],
+          id: 1,
+          print: "Y",
+        },
+        {
+          responseType: "blob",
+        }
+      );
+
+      // 创建下载链接
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `車輛總帳明細_${carLicenseNum}_${searchParams?.billDate}.pdf`
+      ); 
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      alert("下載成功");
+    } catch (error) {
+      console.error("下載失敗:", error);
+      alert("下載失敗，請稍後重試");
+    }
+  };
 
   return (
     <Box
@@ -68,6 +118,9 @@ const LedgerForm = () => {
             id="carLicenseNum"
             label="車牌號碼"
             value={carLicenseNum}
+            error={!!errors.carLicenseNum}
+            {...register("carLicenseNum", { required: false })}
+            InputLabelProps={{ shrink: true }}
             InputProps={{
               readOnly: true,
             }}
@@ -79,28 +132,32 @@ const LedgerForm = () => {
             required
             id="ownerName"
             label="車主"
-            value={carLicenseNum}
+            value={ownerName}
+            error={!!errors.ownerName}
+            {...register("ownerName", { required: false })}
+            InputLabelProps={{ shrink: true }}
             InputProps={{
               readOnly: true,
             }}
           />
         </Grid>
+        {/* 年月份 */}
         <Grid item xs={12} md={6}>
           <TaiwanYearMonthPickerSample
             label="年月份"
             fieldName="billDate"
-            required={true} // 必填
+            required={true}
             defaultValue=""
             onChange={(value) => {
               setValue("billDate", value);
               trigger("billDate");
             }}
             error={!!errors.billDate}
-            //helperText={errors.entryDate?.message} // 顯示錯誤訊息
             register={register}
             trigger={trigger}
           />
         </Grid>
+        {/* 搜尋和下載按鈕 */}
         <Grid item xs={12} md={6}>
           <Button
             variant="contained"
@@ -111,8 +168,8 @@ const LedgerForm = () => {
           </Button>
           <Button
             variant="contained"
-            type="submit"
             sx={{ margin: "10px", marginTop: "15px" }}
+            onClick={handleDownload}
           >
             下載
           </Button>
@@ -136,7 +193,7 @@ const LedgerForm = () => {
             label="上月欠款"
             type="number"
             error={!!errors.lastMonthOweAmount}
-            {...register("lastMonthOweAmount", { required: true })}
+            {...register("lastMonthOweAmount", { required: false })}
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
@@ -148,7 +205,7 @@ const LedgerForm = () => {
             label="管理費"
             type="number"
             error={!!errors.manageFee}
-            {...register("manageFee", { required: true })}
+            {...register("manageFee", { required: false })}
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
@@ -186,7 +243,7 @@ const LedgerForm = () => {
             label="公會費"
             type="number"
             error={!!errors.unionFee}
-            {...register("unionFee", { required: true })}
+            {...register("unionFee", { required: false })}
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
@@ -198,7 +255,7 @@ const LedgerForm = () => {
             label="車貸款"
             type="number"
             error={!!errors.loanFee}
-            {...register("loanFee", { required: true })}
+            {...register("loanFee", { required: false })}
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
@@ -222,7 +279,7 @@ const LedgerForm = () => {
             label="勞保費"
             type="number"
             error={!!errors.laborInsuranceFee}
-            {...register("laborInsuranceFee", { required: true })}
+            {...register("laborInsuranceFee", { required: false })}
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
@@ -234,7 +291,7 @@ const LedgerForm = () => {
             label="保險費"
             type="number"
             error={!!errors.insuranceFee}
-            {...register("insuranceFee", { required: true })}
+            {...register("insuranceFee", { required: false })}
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
@@ -258,7 +315,7 @@ const LedgerForm = () => {
             label="健保費"
             type="number"
             error={!!errors.healthFee}
-            {...register("healthFee", { required: true })}
+            {...register("healthFee", { required: false })}
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
@@ -270,7 +327,7 @@ const LedgerForm = () => {
             label="牌照稅"
             type="number"
             error={!!errors.licenseTaxFee}
-            {...register("licenseTaxFee", { required: true })}
+            {...register("licenseTaxFee", { required: false })}
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
@@ -306,7 +363,7 @@ const LedgerForm = () => {
             label="燃料稅"
             type="number"
             error={!!errors.fuelTaxFee}
-            {...register("fuelTaxFee", { required: true })}
+            {...register("fuelTaxFee", { required: false })}
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
@@ -373,7 +430,7 @@ const LedgerForm = () => {
             label="銷發票稅"
             type="number"
             error={!!errors.invoiceSaleAmountTax}
-            {...register("invoiceSaleAmountTax", { required: true })}
+            {...register("invoiceSaleAmountTax", { required: false })}
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
@@ -386,7 +443,7 @@ const LedgerForm = () => {
             label="抵發稅額"
             type="number"
             error={!!errors.invoiceOffsetAmountTax}
-            {...register("invoiceOffsetAmountTax", { required: true })}
+            {...register("invoiceOffsetAmountTax", { required: false })}
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
@@ -399,7 +456,7 @@ const LedgerForm = () => {
             label="抵發稅額"
             type="number"
             error={!!errors.invoiceGasAmountTax}
-            {...register("invoiceGasAmountTax", { required: true })}
+            {...register("invoiceGasAmountTax", { required: false })}
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
@@ -464,7 +521,7 @@ const LedgerForm = () => {
             label="借款利息"
             type="number"
             error={!!errors.lendMoneyInterest}
-            {...register("lendMoneyInterest", { required: true })}
+            {...register("lendMoneyInterest", { required: false })}
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
@@ -476,7 +533,7 @@ const LedgerForm = () => {
             label="入票利息"
             type="number"
             error={!!errors.giveBackInterest}
-            {...register("giveBackInterest", { required: true })}
+            {...register("giveBackInterest", { required: false })}
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
@@ -576,11 +633,10 @@ const LedgerForm = () => {
             label="本月欠款"
             type="number"
             error={!!errors.totalSum}
-            {...register("totalSum", { required: true })}
+            {...register("totalSum", { required: false })}
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
-        {/* 本月欠款 */}
       </Grid>
     </Box>
   );

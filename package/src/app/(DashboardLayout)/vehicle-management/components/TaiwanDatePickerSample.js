@@ -12,71 +12,75 @@ import {
 } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
-type TaiwanYearMonthPickerProps = {
-  label: string;
-  defaultValue?: string | null;
-  onChange?: (value: string | null) => void;
-  error?: boolean; // 是否顯示錯誤樣式
-  helperText?: string; // 錯誤提示訊息
-  required?: boolean; // 是否必填
-  register: (name: string, options?: any) => void; // React Hook Form 的 `register`
-  fieldName: string; // 表單欄位名稱
-  trigger?: (name: string) => Promise<boolean>; // React Hook Form 的 `trigger`
-};
-
-const generateOptions = (start: number, end: number) =>
+// 產生範圍內的年份或月份選項
+const generateOptions = (start, end) =>
   Array.from({ length: end - start + 1 }, (_, i) => start + i);
 
-const TaiwanYearMonthPickerSample: React.FC<TaiwanYearMonthPickerProps> = ({
-  label,
-  defaultValue = null,
-  onChange,
-  error = false,
-  helperText = "",
-  required = false,
-  register,
-  fieldName,
-  trigger,
+const TaiwanYearMonthPickerSample = ({
+  label, // 標籤
+  defaultValue = null, // 預設值
+  onChange, // 當日期改變時的回呼
+  error = false, // 是否顯示錯誤樣式
+  helperText = "", // 錯誤提示訊息
+  required = false, // 是否必填
+  register, // React Hook Form 的 `register` 方法
+  fieldName, // 對應表單的欄位名稱
+  trigger, // React Hook Form 的 `trigger` 方法，用於手動觸發驗證
 }) => {
-  const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
-  const [value, setValue] = useState<string | null>(defaultValue);
-  const [taiwanYear, setTaiwanYear] = useState<number>(
+  const [anchorEl, setAnchorEl] = useState(null); // 控制彈跳視窗的狀態
+  const [value, setValue] = useState(defaultValue); // 當前選擇的值
+  const [taiwanYear, setTaiwanYear] = useState(
     defaultValue ? parseInt(defaultValue.split("-")[0]) : 1
   );
-  const [month, setMonth] = useState<number>(
+  const [month, setMonth] = useState(
     defaultValue ? parseInt(defaultValue.split("-")[1]) : 1
   );
 
-  // 在元件初始化時，註冊該欄位
+  // 當元件初始化時，註冊欄位到 React Hook Form
   useEffect(() => {
-    register(fieldName, {
-      required: required ? `${label}是必填項目` : false,
-    });
+    if (register) {
+      register(fieldName, {
+        required: required ? `${label}是必填項目` : false,
+      });
+    }
   }, [register, fieldName, required, label]);
 
-  const handleOpen = (event: React.MouseEvent<HTMLDivElement>) => {
+  // 設定預設值
+  useEffect(() => {
+    if (defaultValue) {
+      const [year, month] = defaultValue.split("-");
+      setTaiwanYear(parseInt(year));
+      setMonth(parseInt(month));
+      setValue(defaultValue);
+    }
+  }, [defaultValue]);
+
+  // 開啟彈跳視窗
+  const handleOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
+  // 關閉彈跳視窗
   const handleClose = () => {
     setAnchorEl(null);
   };
 
+  // 確認選擇日期
   const handleConfirm = () => {
     const formattedDate = `${String(taiwanYear).padStart(3, "0")}-${String(
       month
     ).padStart(2, "0")}`;
     setValue(formattedDate);
-    if (onChange) onChange(formattedDate);
+    if (onChange) onChange(formattedDate); // 傳遞改變的值
     if (trigger) trigger(fieldName); // 手動觸發驗證
     handleClose();
   };
 
-  const open = Boolean(anchorEl);
+  const open = Boolean(anchorEl); // 判斷彈跳視窗是否開啟
 
   return (
     <Box>
-      {/* 顯示輸入框 */}
+      {/* 顯示日期輸入框 */}
       <TextField
         label={
           <Box component="span" style={{ color: error ? "red" : "inherit" }}>
@@ -86,8 +90,8 @@ const TaiwanYearMonthPickerSample: React.FC<TaiwanYearMonthPickerProps> = ({
             )}
           </Box>
         }
-        value={value || ""}
-        error={error} // 錯誤狀態
+        value={value || ""} // 顯示目前選擇的日期
+        error={error} // 顯示錯誤樣式
         helperText={helperText} // 錯誤提示訊息
         onClick={handleOpen}
         InputProps={{
@@ -101,7 +105,7 @@ const TaiwanYearMonthPickerSample: React.FC<TaiwanYearMonthPickerProps> = ({
         fullWidth
       />
 
-      {/* 彈出日期選擇器 */}
+      {/* 彈跳視窗 */}
       <Popover
         open={open}
         anchorEl={anchorEl}
@@ -112,8 +116,8 @@ const TaiwanYearMonthPickerSample: React.FC<TaiwanYearMonthPickerProps> = ({
         }}
       >
         <Box sx={{ padding: 2, width: 300 }}>
-          {/* 年月選擇 */}
           <Grid container spacing={2} justifyContent="center">
+            {/* 年份選擇 */}
             <Grid item xs={6}>
               <Typography align="center">年</Typography>
               <TextField
@@ -129,6 +133,7 @@ const TaiwanYearMonthPickerSample: React.FC<TaiwanYearMonthPickerProps> = ({
                 ))}
               </TextField>
             </Grid>
+            {/* 月份選擇 */}
             <Grid item xs={6}>
               <Typography align="center">月</Typography>
               <TextField
@@ -146,7 +151,7 @@ const TaiwanYearMonthPickerSample: React.FC<TaiwanYearMonthPickerProps> = ({
             </Grid>
           </Grid>
 
-          {/* 確認和取消按鈕 */}
+          {/* 按鈕區域 */}
           <Grid container justifyContent="space-between" sx={{ marginTop: 2 }}>
             <Button onClick={handleClose}>取消</Button>
             <Button variant="contained" onClick={handleConfirm}>

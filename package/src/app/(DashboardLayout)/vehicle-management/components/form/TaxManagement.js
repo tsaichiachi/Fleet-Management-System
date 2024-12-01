@@ -8,14 +8,11 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import TaiwanDatePicker from "../TaiwanDatePicker"; 
 
-interface VehicleSettingProps {
-  mode: string;
-}
 
-const TaxManagement: React.FC<VehicleSettingProps> = ({ mode }) => {
+const TaxManagement= ({ mode }) => {
   console.log(mode);
   const router = useRouter();
-  const handleCancelClick = (id: any) => {
+  const handleCancelClick = (id) => {
     router.push(`/vehicle-management/${id}/TaxManagement`);
   };
 
@@ -27,7 +24,7 @@ const TaxManagement: React.FC<VehicleSettingProps> = ({ mode }) => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data) => {
     console.log(data);
   };
 
