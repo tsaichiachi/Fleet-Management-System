@@ -10,7 +10,7 @@ import { useGetMonthBill } from "../../apihooks";
 import TaiwanYearMonthPickerSample from "../TaiwanDatePickerSample";
 import FieldWithDialog from "../FieldWithDialog";
 import LoanManagementTable from "../table/LoanManagementTable";
-import InvoiceSaleAmountTable from "../table/InvoiceSaleAmountTable";
+import InvoiceSaleAmountTable from "../table/invoiceSaleAmountTable";
 import axios from "axios";
 
 const LedgerForm = () => {
@@ -386,7 +386,11 @@ const LedgerForm = () => {
             error={errors.invoiceSaleAmount}
             dialogContent={
               <Box>
-                <InvoiceSaleAmountTable />
+                <InvoiceSaleAmountTable
+                  carLicenseNum={carLicenseNum}
+                  type={"SALE"}
+                  expenseYearMonth={searchParams?.billDate}
+                />
               </Box>
             }
           />

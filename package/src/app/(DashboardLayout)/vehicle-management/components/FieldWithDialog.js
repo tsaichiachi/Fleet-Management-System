@@ -45,15 +45,15 @@ const FieldWithDialog = ({
             variant="contained"
             onClick={handleOpenDialog}
             sx={{
-              backgroundColor: "grey.300", 
-              color: "white", 
-              height: "30px", 
-              width: "20%", 
+              backgroundColor: "grey.300",
+              color: "white",
+              height: "30px",
+              width: "20%",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               "&:hover": {
-                backgroundColor: "grey.400", 
+                backgroundColor: "grey.400",
               },
             }}
           >
@@ -63,7 +63,7 @@ const FieldWithDialog = ({
       </Grid>
 
       {/* 彈跳視窗 */}
-      <Dialog open={open} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+      <Dialog open={open} onClose={handleCloseDialog} maxWidth="xl" fullWidth>
         <DialogTitle>{`${label}`}</DialogTitle>
         <DialogContent>{dialogContent}</DialogContent>
         <DialogActions>

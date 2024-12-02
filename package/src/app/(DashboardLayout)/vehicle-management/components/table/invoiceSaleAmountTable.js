@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import {
   Typography,
   Box,
@@ -7,7 +8,6 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Pagination,
   TextField,
   IconButton,
   Button,
@@ -16,30 +16,32 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { requestHttp } from "@/utils/requestHttp";
 
-const initialTaxManagement = [
-  {
-    id: "1",
-    month: "2023-01",
-    taxName: "車輛牌照稅",
-    taxAmount: 5000,
-    paidDate: "2023-01-15",
-    remarks: "已繳稅",
-  },
-  {
-    id: "2",
-    month: "2023-02",
-    taxName: "燃料使用費",
-    taxAmount: 3000,
-    paidDate: "2023-02-20",
-    remarks: "已繳稅",
-  },
-];
-
-const TaxManagementTable = () => {
-  const [taxData, setTaxData] = useState(initialTaxManagement);
+const InvoiceSaleAmountTable = ({ carLicenseNum, type, expenseYearMonth }) => {
+  console.log("carLicenseNum:", carLicenseNum);
+  console.log("type:", type);
+  console.log("expenseYearMonth:", expenseYearMonth);
+  const [taxData, setTaxData] = useState([]); // 表格數據
+  console.log("taxData:", taxData);
   const [editingRowId, setEditingRowId] = useState(null);
   const [editedRow, setEditedRow] = useState(null);
+
+  // 初始化抓取預設資料
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        const response = await requestHttp("invoice/getInvoice", {
+          method: "POST",
+          data: { carLicenseNum, type, expenseYearMonth },
+        });
+        setTaxData(response.data.pageList);
+      } catch (error) {
+        console.error("抓取預設資料失敗:", error);
+      }
+    };
+    fetchInitialData();
+  }, []);
 
   // 進入編輯模式
   const handleEditClick = (rowId) => {
@@ -55,18 +57,30 @@ const TaxManagementTable = () => {
   };
 
   // 保存編輯數據
-  const handleSaveClick = () => {
-    // 如果是新增模式
-    if (editingRowId === "new") {
-      setTaxData((prev) => [...prev, { ...editedRow, id: String(Date.now()) }]);
-    } else {
-      // 如果是編輯模式
-      setTaxData((prev) =>
-        prev.map((item) => (item.id === editingRowId ? editedRow : item))
-      );
+  const handleSaveClick = async () => {
+    try {
+      if (editingRowId === "new") {
+        // 新增資料
+        const response = await requestHttp("invoice/addInvoice", {
+          method: "POST",
+          data: editedRow,
+        });
+        setTaxData((prev) => [...prev, { ...editedRow,  }]);
+      } else {
+        // 修改資料
+        await requestHttp("invoice/updateInvoice", {
+          method: "POST",
+          data: editedRow,
+        });
+        setTaxData((prev) =>
+          prev.map((item) => (item.id === editingRowId ? editedRow : item))
+        );
+      }
+      setEditingRowId(null);
+      setEditedRow(null);
+    } catch (error) {
+      console.error("保存失敗:", error);
     }
-    setEditingRowId(null);
-    setEditedRow(null);
   };
 
   // 更新編輯行的值
@@ -82,125 +96,73 @@ const TaxManagementTable = () => {
     setEditingRowId("new");
     setEditedRow({
       id: "new",
-      month: "",
-      taxName: "",
-      taxAmount: "",
-      paidDate: "",
-      remarks: "",
+      handleDate: "",
+      invoiceDate: "",
+      invoiceNum: "",
+      invoiceAmount: "",
+      invoiceTax: "",
+      carAgency: "",
+      note: "",
+      taxMonth: "",
+      disable: "",
     });
   };
 
   return (
-    <Box sx={{ overflow: "auto", width: { xs: "auto", sm: "auto" } }}>
-      
+    <Box sx={{ overflow: "auto", width: "100%" }}>
       <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
         <Button variant="contained" color="primary" onClick={handleAddRow}>
           新增
         </Button>
       </Box>
-      <Table
-        aria-label="simple table"
-        sx={{
-          whiteSpace: "nowrap",
-          mt: 2,
-        }}
-      >
+      <Table aria-label="simple table" sx={{ whiteSpace: "nowrap", mt: 2 }}>
         <TableHead>
           <TableRow>
-            <TableCell>
-              <Typography variant="subtitle2" fontWeight={600}>
-                處理日期
-              </Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="subtitle2" fontWeight={600}>
-                發票日期
-              </Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="subtitle2" fontWeight={600}>
-                發票號碼
-              </Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="subtitle2" fontWeight={600}>
-                銷貨金額
-              </Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="subtitle2" fontWeight={600}>
-                銷貨稅
-              </Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="subtitle2" fontWeight={600}>
-                操作
-              </Typography>
-            </TableCell>
+            {[
+              "處理日期",
+              "發票日期",
+              "發票號碼",
+              "銷貨金額",
+              "銷貨稅",
+              "車行名稱",
+              "摘要",
+              "稅捐月份",
+              "作廢",
+              "操作",
+            ].map((header, index) => (
+              <TableCell key={index}>
+                <Typography variant="subtitle2" fontWeight={600}>
+                  {header}
+                </Typography>
+              </TableCell>
+            ))}
           </TableRow>
         </TableHead>
         <TableBody>
-          {taxData.map((row) => (
+          {taxData?.map((row) => (
             <TableRow key={row.id}>
-              <TableCell>
-                {editingRowId === row.id ? (
-                  <TextField
-                    value={editedRow?.month || ""}
-                    onChange={(e) => handleInputChange("month", e.target.value)}
-                  />
-                ) : (
-                  <Typography>{row.month}</Typography>
-                )}
-              </TableCell>
-              <TableCell>
-                {editingRowId === row.id ? (
-                  <TextField
-                    value={editedRow?.taxName || ""}
-                    onChange={(e) =>
-                      handleInputChange("taxName", e.target.value)
-                    }
-                  />
-                ) : (
-                  <Typography>{row.taxName}</Typography>
-                )}
-              </TableCell>
-              <TableCell>
-                {editingRowId === row.id ? (
-                  <TextField
-                    type="number"
-                    value={editedRow?.taxAmount || ""}
-                    onChange={(e) =>
-                      handleInputChange("taxAmount", e.target.value)
-                    }
-                  />
-                ) : (
-                  <Typography>{row.taxAmount}</Typography>
-                )}
-              </TableCell>
-              <TableCell>
-                {editingRowId === row.id ? (
-                  <TextField
-                    value={editedRow?.paidDate || ""}
-                    onChange={(e) =>
-                      handleInputChange("paidDate", e.target.value)
-                    }
-                  />
-                ) : (
-                  <Typography>{row.paidDate}</Typography>
-                )}
-              </TableCell>
-              <TableCell>
-                {editingRowId === row.id ? (
-                  <TextField
-                    value={editedRow?.remarks || ""}
-                    onChange={(e) =>
-                      handleInputChange("remarks", e.target.value)
-                    }
-                  />
-                ) : (
-                  <Typography>{row.remarks}</Typography>
-                )}
-              </TableCell>
+              {[
+                "handleDate",
+                "invoiceDate",
+                "invoiceNum",
+                "invoiceAmount",
+                "invoiceTax",
+                "carAgency",
+                "note",
+                "taxMonth",
+                "disable",
+              ].map((field, index) => (
+                <TableCell key={index}>
+                  {editingRowId === row.id ? (
+                    <TextField
+                      value={editedRow?.[field] || ""}
+                      onChange={(e) => handleInputChange(field, e.target.value)}
+                    />
+                  ) : (
+                    <Typography>{row[field]}</Typography>
+                  )}
+                </TableCell>
+              ))}
               <TableCell>
                 {editingRowId === row.id ? (
                   <>
@@ -219,7 +181,15 @@ const TaxManagementTable = () => {
                     >
                       <EditIcon />
                     </IconButton>
-                    <IconButton aria-label="delete" color="error">
+                    <IconButton
+                      aria-label="delete"
+                      onClick={() =>
+                        setTaxData((prev) =>
+                          prev.filter((item) => item.id !== row.id)
+                        )
+                      }
+                      color="error"
+                    >
                       <DeleteIcon />
                     </IconButton>
                   </>
@@ -227,44 +197,26 @@ const TaxManagementTable = () => {
               </TableCell>
             </TableRow>
           ))}
-          {/* 新增行 */}
           {editingRowId === "new" && (
             <TableRow>
-              <TableCell>
-                <TextField
-                  value={editedRow?.month || ""}
-                  onChange={(e) => handleInputChange("month", e.target.value)}
-                />
-              </TableCell>
-              <TableCell>
-                <TextField
-                  value={editedRow?.taxName || ""}
-                  onChange={(e) => handleInputChange("taxName", e.target.value)}
-                />
-              </TableCell>
-              <TableCell>
-                <TextField
-                  type="number"
-                  value={editedRow?.taxAmount || ""}
-                  onChange={(e) =>
-                    handleInputChange("taxAmount", e.target.value)
-                  }
-                />
-              </TableCell>
-              <TableCell>
-                <TextField
-                  value={editedRow?.paidDate || ""}
-                  onChange={(e) =>
-                    handleInputChange("paidDate", e.target.value)
-                  }
-                />
-              </TableCell>
-              <TableCell>
-                <TextField
-                  value={editedRow?.remarks || ""}
-                  onChange={(e) => handleInputChange("remarks", e.target.value)}
-                />
-              </TableCell>
+              {[
+                "handleDate",
+                "invoiceDate",
+                "invoiceNum",
+                "invoiceAmount",
+                "invoiceTax",
+                "carAgency",
+                "note",
+                "taxMonth",
+                "disable",
+              ].map((field, index) => (
+                <TableCell key={index}>
+                  <TextField
+                    value={editedRow?.[field] || ""}
+                    onChange={(e) => handleInputChange(field, e.target.value)}
+                  />
+                </TableCell>
+              ))}
               <TableCell>
                 <IconButton onClick={handleSaveClick} color="primary">
                   <SaveIcon />
@@ -281,4 +233,4 @@ const TaxManagementTable = () => {
   );
 };
 
-export default TaxManagementTable;
+export default InvoiceSaleAmountTable;
