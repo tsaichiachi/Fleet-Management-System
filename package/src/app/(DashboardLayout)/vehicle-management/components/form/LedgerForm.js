@@ -390,6 +390,7 @@ const LedgerForm = () => {
                   carLicenseNum={carLicenseNum}
                   type={"SALE"}
                   expenseYearMonth={searchParams?.billDate}
+                  refetch={refetch}
                 />
               </Box>
             }
@@ -405,7 +406,12 @@ const LedgerForm = () => {
             error={errors.invoiceOffsetAmount}
             dialogContent={
               <Box>
-                <LoanManagementTable />
+                <InvoiceSaleAmountTable
+                  carLicenseNum={carLicenseNum}
+                  type={"OFFSET"}
+                  expenseYearMonth={searchParams?.billDate}
+                  refetch={refetch}
+                />
               </Box>
             }
           />
@@ -420,7 +426,12 @@ const LedgerForm = () => {
             error={errors.invoiceGasAmount}
             dialogContent={
               <Box>
-                <LoanManagementTable />
+                <InvoiceSaleAmountTable
+                  carLicenseNum={carLicenseNum}
+                  type={"GAS"}
+                  expenseYearMonth={searchParams?.billDate}
+                  refetch={refetch}
+                />
               </Box>
             }
           />

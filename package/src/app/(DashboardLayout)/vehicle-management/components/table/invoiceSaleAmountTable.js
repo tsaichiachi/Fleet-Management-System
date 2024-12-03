@@ -11,6 +11,8 @@ import {
   TextField,
   IconButton,
   Button,
+  Switch,
+  Select,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -18,30 +20,41 @@ import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { requestHttp } from "@/utils/requestHttp";
 
-const InvoiceSaleAmountTable = ({ carLicenseNum, type, expenseYearMonth }) => {
-  console.log("carLicenseNum:", carLicenseNum);
-  console.log("type:", type);
-  console.log("expenseYearMonth:", expenseYearMonth);
+const InvoiceSaleAmountTable = ({
+  carLicenseNum,
+  type,
+  expenseYearMonth,
+  refetch,
+}) => {
   const [taxData, setTaxData] = useState([]); // 表格數據
-  console.log("taxData:", taxData);
   const [editingRowId, setEditingRowId] = useState(null);
   const [editedRow, setEditedRow] = useState(null);
 
-  // 初始化抓取預設資料
+  // 抓取數據函數
+  const fetchInitialData = async () => {
+    try {
+      const response = await requestHttp("invoice/getInvoice", {
+        method: "POST",
+        data: { carLicenseNum, type, expenseYearMonth },
+      });
+
+      const processedData = response.data.pageList.map((item) => ({
+        ...item,
+        disable: String(item.disable), // 將 disable 轉換為字串
+      }));
+
+      setTaxData(processedData);
+      //console.log("刷新數據成功:", response.data.pageList);
+    } catch (error) {
+      console.error("刷新數據失敗:", error);
+      alert("刷新數據失敗，請稍後再試！");
+    }
+  };
+
+  // 組件加載時調用
   useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        const response = await requestHttp("invoice/getInvoice", {
-          method: "POST",
-          data: { carLicenseNum, type, expenseYearMonth },
-        });
-        setTaxData(response.data.pageList);
-      } catch (error) {
-        console.error("抓取預設資料失敗:", error);
-      }
-    };
     fetchInitialData();
-  }, []);
+  }, []); // 空依賴陣列，確保只執行一次
 
   // 進入編輯模式
   const handleEditClick = (rowId) => {
@@ -56,34 +69,54 @@ const InvoiceSaleAmountTable = ({ carLicenseNum, type, expenseYearMonth }) => {
     setEditedRow(null);
   };
 
-  // 保存編輯數據
   const handleSaveClick = async () => {
     try {
+      const { handleDate, invoiceDate, taxMonth } = editedRow;
+
+      const dataToSave = {
+        ...editedRow,
+        handleDate,
+        invoiceDate,
+        taxMonth,
+        type,
+        carLicenseNum,
+      };
+
       if (editingRowId === "new") {
-        // 新增資料
         const response = await requestHttp("invoice/addInvoice", {
           method: "POST",
-          data: editedRow,
+          data: dataToSave,
         });
-        setTaxData((prev) => [...prev, { ...editedRow,  }]);
+
+        if (response?.code === "G_0000") {
+          alert("新增成功！");
+          refetch();
+          await fetchInitialData(); // 刷新數據
+        } else {
+          alert(`新增失敗: ${response?.message || "未知錯誤"}`);
+        }
       } else {
-        // 修改資料
-        await requestHttp("invoice/updateInvoice", {
+        const response = await requestHttp("invoice/updateInvoice", {
           method: "POST",
-          data: editedRow,
+          data: dataToSave,
         });
-        setTaxData((prev) =>
-          prev.map((item) => (item.id === editingRowId ? editedRow : item))
-        );
+
+        if (response?.code === "G_0000") {
+          alert("修改成功！");
+          refetch();
+          await fetchInitialData(); // 刷新數據
+        } else {
+          alert(`修改失敗: ${response?.message || "未知錯誤"}`);
+        }
       }
       setEditingRowId(null);
       setEditedRow(null);
     } catch (error) {
       console.error("保存失敗:", error);
+      alert("保存失敗，請稍後再試！");
     }
   };
 
-  // 更新編輯行的值
   const handleInputChange = (field, value) => {
     setEditedRow((prev) => ({
       ...prev,
@@ -91,7 +124,6 @@ const InvoiceSaleAmountTable = ({ carLicenseNum, type, expenseYearMonth }) => {
     }));
   };
 
-  // 新增行
   const handleAddRow = () => {
     setEditingRowId("new");
     setEditedRow({
@@ -99,12 +131,12 @@ const InvoiceSaleAmountTable = ({ carLicenseNum, type, expenseYearMonth }) => {
       handleDate: "",
       invoiceDate: "",
       invoiceNum: "",
-      invoiceAmount: "",
-      invoiceTax: "",
+      amount: "",
+      amountTax: "",
       carAgency: "",
       note: "",
       taxMonth: "",
-      disable: "",
+      disable: "0", // 預設為 "否"
     });
   };
 
@@ -119,14 +151,14 @@ const InvoiceSaleAmountTable = ({ carLicenseNum, type, expenseYearMonth }) => {
         <TableHead>
           <TableRow>
             {[
-              "處理日期",
-              "發票日期",
+              "處理日期(YYY-MM-DD)",
+              "發票日期(YYY-MM-DD)",
               "發票號碼",
               "銷貨金額",
               "銷貨稅",
               "車行名稱",
               "摘要",
-              "稅捐月份",
+              "稅捐月份(YYY-MM)",
               "作廢",
               "操作",
             ].map((header, index) => (
@@ -139,18 +171,18 @@ const InvoiceSaleAmountTable = ({ carLicenseNum, type, expenseYearMonth }) => {
           </TableRow>
         </TableHead>
         <TableBody>
+          {/* 已有數據的渲染 */}
           {taxData?.map((row) => (
             <TableRow key={row.id}>
               {[
                 "handleDate",
                 "invoiceDate",
                 "invoiceNum",
-                "invoiceAmount",
-                "invoiceTax",
+                "amount",
+                "amountTax",
                 "carAgency",
                 "note",
                 "taxMonth",
-                "disable",
               ].map((field, index) => (
                 <TableCell key={index}>
                   {editingRowId === row.id ? (
@@ -165,6 +197,19 @@ const InvoiceSaleAmountTable = ({ carLicenseNum, type, expenseYearMonth }) => {
               ))}
               <TableCell>
                 {editingRowId === row.id ? (
+                  <Switch
+                    checked={editedRow?.disable === "1"} // 確保字串比較
+                    onChange={(e) =>
+                      handleInputChange("disable", e.target.checked ? "1" : "0")
+                    }
+                    color="primary"
+                  />
+                ) : (
+                  <Typography>{row.disable === "1" ? "是" : "否"}</Typography>
+                )}
+              </TableCell>
+              <TableCell>
+                {editingRowId === row.id ? (
                   <>
                     <IconButton onClick={handleSaveClick} color="primary">
                       <SaveIcon />
@@ -174,41 +219,29 @@ const InvoiceSaleAmountTable = ({ carLicenseNum, type, expenseYearMonth }) => {
                     </IconButton>
                   </>
                 ) : (
-                  <>
-                    <IconButton
-                      aria-label="edit"
-                      onClick={() => handleEditClick(row.id)}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      aria-label="delete"
-                      onClick={() =>
-                        setTaxData((prev) =>
-                          prev.filter((item) => item.id !== row.id)
-                        )
-                      }
-                      color="error"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </>
+                  <IconButton
+                    aria-label="edit"
+                    onClick={() => handleEditClick(row.id)}
+                  >
+                    <EditIcon />
+                  </IconButton>
                 )}
               </TableCell>
             </TableRow>
           ))}
+
+          {/* 新增行的渲染 */}
           {editingRowId === "new" && (
             <TableRow>
               {[
                 "handleDate",
                 "invoiceDate",
                 "invoiceNum",
-                "invoiceAmount",
-                "invoiceTax",
+                "amount",
+                "amountTax",
                 "carAgency",
                 "note",
                 "taxMonth",
-                "disable",
               ].map((field, index) => (
                 <TableCell key={index}>
                   <TextField
@@ -217,6 +250,15 @@ const InvoiceSaleAmountTable = ({ carLicenseNum, type, expenseYearMonth }) => {
                   />
                 </TableCell>
               ))}
+              <TableCell>
+                <Switch
+                  checked={editedRow?.disable === "1"} // 確保字串比較
+                  onChange={(e) =>
+                    handleInputChange("disable", e.target.checked ? "1" : "0")
+                  }
+                  color="primary"
+                />
+              </TableCell>
               <TableCell>
                 <IconButton onClick={handleSaveClick} color="primary">
                   <SaveIcon />
