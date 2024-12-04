@@ -1,3 +1,4 @@
+//罰單
 //銷發票額,抵發票額，抵油單額
 "use client";
 import React, { useEffect, useState } from "react";
@@ -22,7 +23,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import { requestHttp } from "@/utils/requestHttp";
 import { validateDate, areDatesInExpenseMonth } from "@/utils/tool";
 
-const InvoiceSaleAmountTable = ({
+const TrafficTicketTable = ({
   carLicenseNum,
   type,
   expenseYearMonth,
@@ -35,7 +36,7 @@ const InvoiceSaleAmountTable = ({
   // 抓取數據函數
   const fetchInitialData = async () => {
     try {
-      const response = await requestHttp("invoice/getInvoice", {
+      const response = await requestHttp("trafficTicket/getTrafficTicket", {
         method: "POST",
         data: { carLicenseNum, type, expenseYearMonth },
       });
@@ -73,39 +74,44 @@ const InvoiceSaleAmountTable = ({
 
   const handleSaveClick = async () => {
     try {
-      const { handleDate, invoiceDate, taxMonth } = editedRow;
-      
+      const { handleDate, ticketDate, goPoliceDate, payDate } = editedRow;
+
       // 驗證處理日期和發票日期的格式
       if (!validateDate(handleDate, "YYY-MM-DD")) {
         alert("處理日期格式錯誤，應為 YYY-MM-DD");
         return;
       }
-      if (!validateDate(invoiceDate, "YYY-MM-DD")) {
-        alert("發票日期格式錯誤，應為 YYY-MM-DD");
+      if (!validateDate(ticketDate, "YYY-MM-DD")) {
+        alert("罰單日期格式錯誤，應為 YYY-MM-DD");
         return;
       }
-       if (!validateDate(taxMonth, "YYY-MM")) {
-         alert("稅捐月份格式錯誤，應為 YYY-MM");
-         return;
-       }
+      if (!validateDate(goPoliceDate, "YYY-MM-DD")) {
+        alert("到案日期格式錯誤，應為 YYY-MM");
+        return;
+      }
+      if (!validateDate(payDate, "YYY-MM-DD")) {
+        alert("代繳日期格式錯誤，應為 YYY-MM");
+        return;
+      }
 
-       if (!areDatesInExpenseMonth(handleDate, expenseYearMonth)) {
-         alert(`處理日期必須在 ${expenseYearMonth} 當月內`);
-         return;
-       }
-
+      if (!areDatesInExpenseMonth(handleDate, expenseYearMonth)) {
+        alert(`處理日期必須在 ${expenseYearMonth} 當月內`);
+        return;
+      }
 
       const dataToSave = {
         ...editedRow,
         handleDate,
-        invoiceDate,
-        taxMonth,
-        type,
+        ticketDate,
+        goPoliceDate,
+        payDate,
         carLicenseNum,
       };
 
+      console.log("保存的數據:", dataToSave);   
+
       if (editingRowId === "new") {
-        const response = await requestHttp("invoice/addInvoice", {
+        const response = await requestHttp("trafficTicket/addTrafficTicket", {
           method: "POST",
           data: dataToSave,
         });
@@ -118,10 +124,13 @@ const InvoiceSaleAmountTable = ({
           alert(`新增失敗: ${response?.message || "未知錯誤"}`);
         }
       } else {
-        const response = await requestHttp("invoice/updateInvoice", {
-          method: "POST",
-          data: dataToSave,
-        });
+        const response = await requestHttp(
+          "trafficTicket/updateTrafficTicket",
+          {
+            method: "POST",
+            data: dataToSave,
+          }
+        );
 
         if (response?.code === "G_0000") {
           alert("修改成功！");
@@ -149,16 +158,13 @@ const InvoiceSaleAmountTable = ({
   const handleAddRow = () => {
     setEditingRowId("new");
     setEditedRow({
-      id: "new",
       handleDate: "",
-      invoiceDate: "",
-      invoiceNum: "",
+      ticketDate: "",
+      ticketNum: "",
+      goPoliceDate: "",
       amount: "",
-      amountTax: "",
-      carAgency: "",
+      payDate: "",
       note: "",
-      taxMonth: "",
-      disable: "0", // 預設為 "否"
     });
   };
 
@@ -172,7 +178,13 @@ const InvoiceSaleAmountTable = ({
           mb: 2,
         }}
       >
-        <Box sx={{ color: "red", fontWeight: "bold", textAlign: "center" }}>
+        <Box
+          sx={{
+            color: "red",
+            fontWeight: "bold",
+            textAlign: "center",
+          }}
+        >
           車牌{carLicenseNum}，
           {expenseYearMonth
             ? `[處理日期]僅能新增和修改 ${expenseYearMonth} 當月資料`
@@ -187,14 +199,12 @@ const InvoiceSaleAmountTable = ({
           <TableRow>
             {[
               "處理日期(YYY-MM-DD)",
-              "發票日期(YYY-MM-DD)",
-              "發票號碼",
-              "銷貨金額",
-              "銷貨稅",
-              "車行名稱",
-              "摘要",
-              "稅捐月份(YYY-MM)",
-              "作廢",
+              "罰單日期(YYY-MM-DD)",
+              "罰單案號",
+              "到案日期(YYY-MM-DD)",
+              "罰單金額",
+              "代繳日期(YYY-MM-DD)",
+              "備註",
               "操作",
             ].map((header, index) => (
               <TableCell key={index}>
@@ -211,13 +221,12 @@ const InvoiceSaleAmountTable = ({
             <TableRow key={row.id}>
               {[
                 "handleDate",
-                "invoiceDate",
-                "invoiceNum",
+                "ticketDate",
+                "ticketNum",
+                "goPoliceDate",
                 "amount",
-                "amountTax",
-                "carAgency",
+                "payDate",
                 "note",
-                "taxMonth",
               ].map((field, index) => (
                 <TableCell key={index}>
                   {editingRowId === row.id ? (
@@ -230,19 +239,6 @@ const InvoiceSaleAmountTable = ({
                   )}
                 </TableCell>
               ))}
-              <TableCell>
-                {editingRowId === row.id ? (
-                  <Switch
-                    checked={editedRow?.disable === "1"} // 確保字串比較
-                    onChange={(e) =>
-                      handleInputChange("disable", e.target.checked ? "1" : "0")
-                    }
-                    color="primary"
-                  />
-                ) : (
-                  <Typography>{row.disable === "1" ? "是" : "否"}</Typography>
-                )}
-              </TableCell>
               <TableCell>
                 {editingRowId === row.id ? (
                   <>
@@ -270,13 +266,12 @@ const InvoiceSaleAmountTable = ({
             <TableRow>
               {[
                 "handleDate",
-                "invoiceDate",
-                "invoiceNum",
+                "ticketDate",
+                "ticketNum",
+                "goPoliceDate",
                 "amount",
-                "amountTax",
-                "carAgency",
+                "payDate",
                 "note",
-                "taxMonth",
               ].map((field, index) => (
                 <TableCell key={index}>
                   <TextField
@@ -285,15 +280,6 @@ const InvoiceSaleAmountTable = ({
                   />
                 </TableCell>
               ))}
-              <TableCell>
-                <Switch
-                  checked={editedRow?.disable === "1"} // 確保字串比較
-                  onChange={(e) =>
-                    handleInputChange("disable", e.target.checked ? "1" : "0")
-                  }
-                  color="primary"
-                />
-              </TableCell>
               <TableCell>
                 <IconButton onClick={handleSaveClick} color="primary">
                   <SaveIcon />
@@ -310,4 +296,4 @@ const InvoiceSaleAmountTable = ({
   );
 };
 
-export default InvoiceSaleAmountTable;
+export default TrafficTicketTable;

@@ -5,13 +5,21 @@ import TextField from "@mui/material/TextField";
 import { Button, Grid, Divider } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { removeLocalStorage } from "@/utils/tool";
 import { useGetMonthBill } from "../../apihooks";
 import TaiwanYearMonthPickerSample from "../TaiwanDatePickerSample";
 import FieldWithDialog from "../FieldWithDialog";
 import LoanManagementTable from "../table/LoanManagementTable";
 import InvoiceSaleAmountTable from "../table/invoiceSaleAmountTable";
 import axios from "axios";
+import BorrowingAmountTable from "../table/BorrowingAmountTable";
+import DepositAmountTable from "../table/DepositAmountTable";
+import OtherReceivablesTable from "../table/OtherReceivablesTable";
+import OtherCreditsTable from "../table/OtherCreditsTable";
+import InterestPaymentTable from "../table/InterestPaymentTable"; 
+import ReceiptOffsetTable from "../table/ReceiptOffsetTable";
+import DepositRefundTable from "../table/DepositRefundTable";
+import TrafficTicketTable from "../table/TrafficTicketTable";
+
 
 const LedgerForm = () => {
   const router = useRouter();
@@ -494,7 +502,12 @@ const LedgerForm = () => {
             error={errors.lendMoney}
             dialogContent={
               <Box>
-                <LoanManagementTable />
+                <BorrowingAmountTable
+                  carLicenseNum={carLicenseNum}
+                  type={"CASH"}
+                  expenseYearMonth={searchParams?.billDate}
+                  refetch={refetch}
+                />
               </Box>
             }
           />
@@ -509,7 +522,12 @@ const LedgerForm = () => {
             error={errors.giveBackMoney}
             dialogContent={
               <Box>
-                <LoanManagementTable />
+                <DepositAmountTable
+                  carLicenseNum={carLicenseNum}
+                  // type={"GAS"}
+                  expenseYearMonth={searchParams?.billDate}
+                  refetch={refetch}
+                />
               </Box>
             }
           />
@@ -523,7 +541,12 @@ const LedgerForm = () => {
             error={errors.otherLendMoneyAmount}
             dialogContent={
               <Box>
-                <LoanManagementTable />
+                <OtherReceivablesTable
+                  carLicenseNum={carLicenseNum}
+                  // type={"GAS"}
+                  expenseYearMonth={searchParams?.billDate}
+                  refetch={refetch}
+                />
               </Box>
             }
           />
@@ -561,7 +584,12 @@ const LedgerForm = () => {
             error={errors.otherGiveBackMoneyAmount}
             dialogContent={
               <Box>
-                <LoanManagementTable />
+                <OtherCreditsTable
+                  carLicenseNum={carLicenseNum}
+                  // type={"GAS"}
+                  expenseYearMonth={searchParams?.billDate}
+                  refetch={refetch}
+                />
               </Box>
             }
           />
@@ -586,7 +614,12 @@ const LedgerForm = () => {
             error={errors.payInterest}
             dialogContent={
               <Box>
-                <LoanManagementTable />
+                <InterestPaymentTable
+                  carLicenseNum={carLicenseNum}
+                  // type={"GAS"}
+                  expenseYearMonth={searchParams?.billDate}
+                  refetch={refetch}
+                />
               </Box>
             }
           />
@@ -601,7 +634,12 @@ const LedgerForm = () => {
             error={errors.receiveOffset}
             dialogContent={
               <Box>
-                <LoanManagementTable />
+                <ReceiptOffsetTable
+                  carLicenseNum={carLicenseNum}
+                  // type={"GAS"}
+                  expenseYearMonth={searchParams?.billDate}
+                  refetch={refetch}
+                />
               </Box>
             }
           />
@@ -616,7 +654,12 @@ const LedgerForm = () => {
             error={errors.returnMoney}
             dialogContent={
               <Box>
-                <LoanManagementTable />
+                <DepositRefundTable
+                  carLicenseNum={carLicenseNum}
+                  // type={"GAS"}
+                  expenseYearMonth={searchParams?.billDate}
+                  refetch={refetch}
+                />
               </Box>
             }
           />
@@ -631,7 +674,12 @@ const LedgerForm = () => {
             error={errors.trafficSum}
             dialogContent={
               <Box>
-                <LoanManagementTable />
+                <TrafficTicketTable
+                  carLicenseNum={carLicenseNum}
+                  // type={"GAS"}
+                  expenseYearMonth={searchParams?.billDate}
+                  refetch={refetch}
+                />
               </Box>
             }
           />
