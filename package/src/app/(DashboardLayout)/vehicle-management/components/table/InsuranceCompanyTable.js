@@ -1,4 +1,4 @@
-//收據抵收
+//保險公司
 "use client";
 import React, { useEffect, useState } from "react";
 import {
@@ -21,12 +21,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import { requestHttp } from "@/utils/requestHttp";
 import { validateDate, areDatesInExpenseMonth } from "@/utils/tool";
 
-const ReceiptOffsetTable = ({
-  carLicenseNum,
-  type,
-  expenseYearMonth,
-  refetch,
-}) => {
+const InsuranceCompanyTable = () => {
   const [taxData, setTaxData] = useState([]); // 表格數據
   const [editingRowId, setEditingRowId] = useState(null);
   const [editedRow, setEditedRow] = useState(null);
@@ -34,10 +29,12 @@ const ReceiptOffsetTable = ({
   // 抓取數據函數
   const fetchInitialData = async () => {
     try {
-      const response = await requestHttp("receiveOffset/getReceiveOffset", {
-        method: "POST",
-        data: { carLicenseNum, expenseYearMonth },
-      });
+      const response = await requestHttp(
+        "insuranceCompany/getInsuranceCompany",
+        {
+          method: "POST",
+        }
+      );
 
       const processedData = response.data.pageList.map((item) => ({
         ...item,
@@ -74,44 +71,31 @@ const ReceiptOffsetTable = ({
 
   const handleSaveClick = async () => {
     try {
-      const { payDate, expireDate } = editedRow;
-
-      // 驗證處理日期和發票日期的格式
-      if (!validateDate(payDate, "YYY-MM-DD")) {
-        alert("日期格式錯誤，應為 YYY-MM-DD");
-        return;
-      }
-
-      if (!areDatesInExpenseMonth(payDate, expenseYearMonth)) {
-        alert(`日期必須在 ${expenseYearMonth} 當月內`);
-        return;
-      }
-
+    
       const dataToSave = {
         ...editedRow,
-        payDate,
-        expireDate,
-        carLicenseNum,
       };
 
       //console.log("dataToSave", dataToSave);
 
       if (editingRowId === "new") {
-        const response = await requestHttp("receiveOffset/addReceiveOffset", {
-          method: "POST",
-          data: dataToSave,
-        });
+        const response = await requestHttp(
+          "insuranceCompany/addInsuranceCompany",
+          {
+            method: "POST",
+            data: dataToSave,
+          }
+        );
 
         if (response?.code === "G_0000") {
           alert("新增成功！");
-          refetch();
           await fetchInitialData(); // 刷新數據
         } else {
           alert(`新增失敗: ${response?.message || "未知錯誤"}`);
         }
       } else {
         const response = await requestHttp(
-          "receiveOffset/updateReceiveOffset",
+          "insuranceCompany/updateInsuranceCompany",
           {
             method: "POST",
             data: dataToSave,
@@ -120,8 +104,8 @@ const ReceiptOffsetTable = ({
 
         if (response?.code === "G_0000") {
           alert("修改成功！");
-          refetch();
-          await fetchInitialData(); // 刷新數據
+       
+          await fetchInitialData(); 
         } else {
           alert(`修改失敗: ${response?.message || "未知錯誤"}`);
         }
@@ -144,11 +128,11 @@ const ReceiptOffsetTable = ({
   const handleAddRow = () => {
     setEditingRowId("new");
     setEditedRow({
-      payDate: "",
-      receiptAmount: "",
-      amount: "",
+      companyName: "",
+      shortName: "",
+      contactor: "",
+      phone: "",
       note: "",
-      //   disable: "0", // 預設為 "否"
     });
   };
 
@@ -157,17 +141,11 @@ const ReceiptOffsetTable = ({
       <Box
         sx={{
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: "flex-end",
           alignItems: "center",
           mb: 2,
         }}
       >
-        <Box sx={{ color: "red", fontWeight: "bold", textAlign: "center" }}>
-          車牌{carLicenseNum}，
-          {expenseYearMonth
-            ? `[日期]僅能新增和修改 ${expenseYearMonth} 當月資料`
-            : "請提供有效的年月份進行資料搜尋"}
-        </Box>
         <Button variant="contained" color="primary" onClick={handleAddRow}>
           新增
         </Button>
@@ -176,7 +154,7 @@ const ReceiptOffsetTable = ({
       <Table aria-label="simple table" sx={{ whiteSpace: "nowrap", mt: 2 }}>
         <TableHead>
           <TableRow>
-            {["日期(YYY-MM-DD)", "收據金額", "抵收金額", "備註", "操作"].map(
+            {["名稱", "簡稱", "聯絡人", "電話", "備註", "操作"].map(
               (header, index) => (
                 <TableCell key={index}>
                   <Typography variant="subtitle2" fontWeight={600}>
@@ -190,7 +168,7 @@ const ReceiptOffsetTable = ({
         <TableBody>
           {taxData?.map((row) => (
             <TableRow key={row.id}>
-              {["payDate", "receiptAmount", "amount", "note"].map(
+              {["companyName", "shortName", "contactor", "phone", "note"].map(
                 (field, index) => (
                   <TableCell key={index}>
                     {editingRowId === row.id && field === "type" ? (
@@ -245,7 +223,7 @@ const ReceiptOffsetTable = ({
 
           {editingRowId === "new" && (
             <TableRow>
-              {["payDate", "receiptAmount", "amount", "note"].map(
+              {["companyName", "shortName", "contactor", "phone", "note"].map(
                 (field, index) => (
                   <TableCell key={index}>
                     {field === "type" ? (
@@ -286,4 +264,4 @@ const ReceiptOffsetTable = ({
   );
 };
 
-export default ReceiptOffsetTable;
+export default InsuranceCompanyTable;

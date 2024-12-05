@@ -157,9 +157,12 @@ export const useGetInsuranceComDropDownList = () => {
   return useQuery(
     "InsuranceComDropDownList",
     async () => {
-      const response = await requestHttp("car/getInsuranceCompany", {
-        method: "POST",
-      });
+      const response = await requestHttp(
+        "insuranceCompany/getInsuranceCompanyDropDown",
+        {
+          method: "POST",
+        }
+      );
 
       if (response.code !== "G_0000") {
         throw new Error(
@@ -222,7 +225,7 @@ export const useAddOrUpdateCarFee = () => {
 //車輛總帳
 // 取得車輛總帳
 export const useGetMonthBill = (params) => {
-  console.log("params", params)
+  //console.log("params", params)
   return useQuery(
     ["monthBill", params],
     async () => {
@@ -234,12 +237,11 @@ export const useGetMonthBill = (params) => {
           billDate: params?.billDate,
         },
       });
-      console.log("response", response.data)
+      //console.log("response", response.data)
       return response.data;
     },
     {
-      enabled:
-        !!params?.carLicenseNum && !!params?.ownerName && !!params?.billDate,
+      enabled:!!params?.carLicenseNum && !!params?.ownerName && !!params?.billDate,
     }
   );
 };
@@ -285,6 +287,84 @@ export const useAddOrUpdateLoanFee = () => {
   );
 };
 
+//貸款公司下拉列表
+//取得貸款公司下拉列表
+export const useGetLoanCompanyDropDownList = () => {
+  return useQuery(
+    "LoanCompanyDropDownList",
+    async () => {
+      const response = await requestHttp("loanCompany/getLoanCompany", {
+        method: "POST",
+      });
+
+      if (response.code !== "G_0000") {
+        throw new Error(
+          response.message || "Failed to fetch car owner dropdown list"
+        );
+      }
+      //console.log("Car Owner API Response:", response.data);
+      return response.data.pageList;
+    },
+    {
+      select: (data) =>
+        data.map((item) => ({
+          key: item.id,
+          value: item.companyName,
+          name: item.companyName,
+        })),
+    }
+  );
+};
+
+//取得車行下拉列表
+// API: 取得車主下拉列表
+export const useGetCarAgencyDropDownList = () => {
+  return useQuery(
+    "CarAgencyDropDownList",
+    async () => {
+      const response = await requestHttp("carAgency/getCarAgency", {
+        method: "POST",
+      });
+
+      if (response.code !== "G_0000") {
+        throw new Error(
+          response.message || "Failed to fetch car owner dropdown list"
+        );
+      }
+      //console.log("Car Owner API Response:", response.data);
+      return response.data.pageList;
+    },
+    {
+      select: (data) =>
+        data.map((item) => ({
+          key: item.id,
+          value: item.agencyName,
+          name: item.agencyName,
+        })),
+    }
+  );
+};
+
+
+//取得車主個人資料
+// API: 取得車主個人資料
+export const useGetCarOwnerInfo = (id) => {
+  return useQuery(
+    ["carOwnerInfo", id],
+    async () => {
+      const response = await requestHttp("car/getCarOwnerById", {
+        method: "POST",
+        data: { id },
+      });
+
+      console.log("Car Owner Info API Response:", response);
+      return response.data;
+    },
+    {
+      enabled: !!id,
+    }
+  );
+};
 
 
 

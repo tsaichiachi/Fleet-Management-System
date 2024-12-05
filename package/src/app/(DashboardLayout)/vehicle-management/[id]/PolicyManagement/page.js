@@ -5,8 +5,16 @@ import DashboardCard from "@/app/(DashboardLayout)/components/shared/DashboardCa
 import Box from "@mui/material/Box";
 import PolicyManagmentTable from "../../components/table/PolicyManagementTable";
 import { useRouter } from "next/navigation";
-import {  Button, TextField } from "@mui/material";
+import {
+  Button,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 import { useGetInsuranceList } from "@/app/(DashboardLayout)/vehicle-management/apihooks";
+import InsuranceCompanyTable from "../../components/table/InsuranceCompanyTable";
 
 
 const PolicyManagement = () => {
@@ -16,7 +24,8 @@ const PolicyManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(4);
   const [carLicenseNum, setCarLicenseNumber] = useState("");
-  console.log("licenseNumber:", carLicenseNum);
+  //console.log("licenseNumber:", carLicenseNum);
+  const [openDialog, setOpenDialog] = useState(false);
 
   const { data: insuranceList, isLoading } = useGetInsuranceList(
     // currentPage,
@@ -30,16 +39,24 @@ const PolicyManagement = () => {
   //console.log(insurance);
 
   // 搜尋過濾
-  const filteredInsurance =query ? insurance?.filter(
-    (item) => item.insuranceCardNum?.includes(query)) : insurance || []
-  ;
-
+  const filteredInsurance = query
+    ? insurance?.filter((item) => item.insuranceCardNum?.includes(query))
+    : insurance || [];
   const handleSearchClick = () => {
     setQuery(search);
   };
 
   const handleAddNewClick = () => {
     router.push(`/vehicle-management/${currentPage}/PolicyManagement/AddNew`);
+  };
+
+  //保險公司彈跳視窗
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
   };
 
   // 從 LocalStorage 取得車牌號碼
@@ -55,7 +72,7 @@ const PolicyManagement = () => {
 
   return (
     <PageContainer title="保單管理" description="管理車輛保險相關資料">
-      <DashboardCard title="保單管理">
+      <DashboardCard title="">
         <Box sx={{ overflow: "auto", width: { xs: "400px", sm: "auto" } }}>
           <Box>
             <TextField
@@ -80,10 +97,32 @@ const PolicyManagement = () => {
             >
               新增保單
             </Button>
+            <Button
+              variant="contained"
+              onClick={handleOpenDialog}
+              sx={{ marginRight: "1%", marginTop: "1%" }}
+            >
+              保險公司
+            </Button>
           </Box>
           <PolicyManagmentTable data={filteredInsurance} />
         </Box>
       </DashboardCard>
+      {/* Modal for Insurance Company */}
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="xl"
+        fullWidth
+      >
+        <DialogTitle>保險公司列表</DialogTitle>
+        <DialogContent>
+          <InsuranceCompanyTable  />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>關閉</Button>
+        </DialogActions>
+      </Dialog>
     </PageContainer>
   );
 };

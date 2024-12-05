@@ -24,21 +24,22 @@ const TaiwanDatePicker = ({
   register,
   fieldName,
   trigger,
+  disabled = false, // New disabled prop
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [value, setValue] = useState(defaultValue || ""); 
+  const [value, setValue] = useState(defaultValue || "");
   const [taiwanYear, setTaiwanYear] = useState(1);
   const [month, setMonth] = useState(1);
   const [day, setDay] = useState(1);
 
-  // 註冊字段
+  // Register field
   useEffect(() => {
     register(fieldName, {
       required: required ? `${label}是必填項目` : false,
     });
   }, [register, fieldName, required, label]);
 
-  // 預設值變更時更新狀態
+  // Update state when defaultValue changes
   useEffect(() => {
     if (defaultValue) {
       const [year, month, day] = defaultValue.split("-");
@@ -50,7 +51,9 @@ const TaiwanDatePicker = ({
   }, [defaultValue]);
 
   const handleOpen = (event) => {
-    setAnchorEl(event.currentTarget);
+    if (!disabled) {
+      setAnchorEl(event.currentTarget);
+    }
   };
 
   const handleClose = () => {
@@ -63,14 +66,11 @@ const TaiwanDatePicker = ({
     ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
     setValue(formattedDate);
     if (onChange) onChange(formattedDate);
-    if (trigger) trigger(fieldName); // 手動觸發驗證
+    if (trigger) trigger(fieldName); // Manually trigger validation
     handleClose();
   };
 
   const open = Boolean(anchorEl);
-
-  console.log("TaiwanDatePicker defaultValue:", defaultValue);
-  console.log("TaiwanDatePicker value:", value);
 
   return (
     <Box>
@@ -91,11 +91,14 @@ const TaiwanDatePicker = ({
           readOnly: true,
           endAdornment: (
             <InputAdornment position="end">
-              <CalendarMonthIcon sx={{ cursor: "pointer" }} />
+              <CalendarMonthIcon
+                sx={{ cursor: disabled ? "not-allowed" : "pointer" }}
+              />
             </InputAdornment>
           ),
         }}
         fullWidth
+        disabled={disabled} // Disable TextField if disabled is true
       />
 
       <Popover

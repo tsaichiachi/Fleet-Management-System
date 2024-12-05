@@ -1,20 +1,19 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { Button, Grid, MenuItem } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import TaiwanDatePicker from "../../vehicle-management/components/TaiwanDatePicker";
 import { useAddCarOwner, useEditCarOwner } from "../apihooks";
+import { useGetCarOwnerInfo } from "../../vehicle-management/apihooks";
 
-
-const CarOwnerSetting = ({ mode, data }) => {
+const CarOwnerSetting = ({ mode }) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const carOwnerId = searchParams.get("id");
-
+  const [carOwnerId, setCarOwnerId] = useState(null);
+  const { data: carOwnerInfo } = useGetCarOwnerInfo(carOwnerId);
   const { mutate: addCarOwner } = useAddCarOwner();
-  const { mutate: editCarOwner } = useEditCarOwner(); // 引入修改車主的 API
+  const { mutate: editCarOwner } = useEditCarOwner();
 
   const {
     register,
@@ -22,19 +21,36 @@ const CarOwnerSetting = ({ mode, data }) => {
     setValue,
     trigger,
     formState: { errors },
+    watch,
   } = useForm();
 
-  // 編輯模式或檢視模式預填表單數據
+  // Fetch carOwnerId from localStorage
   useEffect(() => {
-    if ((mode === "edit" || mode === "view") && carOwnerId && data) {
-      const owner = data.find((owner) => owner.id === parseInt(carOwnerId));
-      if (owner) {
-        Object.entries(owner).forEach(([key, value]) => {
-          setValue(key, value || ""); // 填充表單數據
-        });
-      }
+    const ownerId = localStorage.getItem("owner_edit");
+    if (ownerId) {
+      setCarOwnerId(ownerId);
+    } else {
+      console.error("車主 ID 不存在於 localStorage 中");
+      setCarOwnerId("");
     }
-  }, [mode, carOwnerId, data, setValue]);
+  }, []);
+
+  // Set default values for edit/view mode
+  useEffect(() => {
+    if ((mode === "edit" || mode === "view") && carOwnerId && carOwnerInfo) {
+      Object.entries(carOwnerInfo).forEach(([key, value]) => {
+        setValue(key, value || ""); // Populate form fields
+      });
+    }
+  }, [mode, carOwnerId, carOwnerInfo, setValue]);
+
+  // Clear gender and birthday for "add" mode
+  useEffect(() => {
+    if (mode === "add") {
+      setValue("sex", ""); // Clear gender
+      setValue("birthday", ""); // Clear birthday
+    }
+  }, [mode, setValue]);
 
   const onSubmit = (formData) => {
     if (mode === "add") {
@@ -44,22 +60,22 @@ const CarOwnerSetting = ({ mode, data }) => {
       };
       addCarOwner(submissionData, {
         onSuccess: () => {
-          console.log("新增成功！");
-          router.push(`/driver-management`); // 新增成功後跳轉列表頁
+          alert("新增成功！");
+          router.push(`/driver-management`); // Navigate to list page
         },
         onError: (error) => {
+          alert("新增失敗，請檢查輸入資料！");
           console.error("新增失敗：", error);
         },
       });
     } else if (mode === "edit") {
       const submissionData = {
         ...formData,
-        id: parseInt(carOwnerId), // 確保包含車主 ID
+        id: parseInt(carOwnerId, 10), // Ensure car owner ID is included
       };
       editCarOwner(submissionData, {
         onSuccess: () => {
-          console.log("編輯成功！");
-          router.push(`/driver-management`); // 編輯成功後跳轉列表頁
+          router.push(`/driver-management`); // Navigate to list page
         },
         onError: (error) => {
           console.error("編輯失敗：", error);
@@ -92,6 +108,7 @@ const CarOwnerSetting = ({ mode, data }) => {
             fullWidth
             error={!!errors.name}
             disabled={mode === "view"}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -103,18 +120,26 @@ const CarOwnerSetting = ({ mode, data }) => {
             fullWidth
             error={!!errors.idNum}
             disabled={mode === "view"}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
             select
             label="性別"
-            {...register("sex")}
+            value={watch("sex") || ""}
+            onChange={(e) => setValue("sex", e.target.value)}
+            error={!!errors.sex}
+            {...register("sex", { required: false })}
             fullWidth
             disabled={mode === "view"}
+            InputLabelProps={{ shrink: true }}
           >
-            <MenuItem value="male">男</MenuItem>
-            <MenuItem value="female">女</MenuItem>
+            <MenuItem value="" disabled>
+              請選擇
+            </MenuItem>
+            <MenuItem value="Male">男</MenuItem>
+            <MenuItem value="Female">女</MenuItem>
           </TextField>
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -122,7 +147,7 @@ const CarOwnerSetting = ({ mode, data }) => {
             label="生日"
             fieldName="birthday"
             required={true}
-            defaultValue=""
+            defaultValue={mode === "add" ? "" : carOwnerInfo?.birthday || ""}
             onChange={(value) => {
               setValue("birthday", value);
               trigger("birthday");
@@ -130,6 +155,7 @@ const CarOwnerSetting = ({ mode, data }) => {
             error={!!errors.birthday}
             register={register}
             trigger={trigger}
+            disabled={mode === "view"}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -139,6 +165,7 @@ const CarOwnerSetting = ({ mode, data }) => {
             {...register("phone1")}
             fullWidth
             disabled={mode === "view"}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -148,6 +175,7 @@ const CarOwnerSetting = ({ mode, data }) => {
             {...register("phone2")}
             fullWidth
             disabled={mode === "view"}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -157,6 +185,7 @@ const CarOwnerSetting = ({ mode, data }) => {
             {...register("mobile")}
             fullWidth
             disabled={mode === "view"}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -166,6 +195,7 @@ const CarOwnerSetting = ({ mode, data }) => {
             {...register("fax")}
             fullWidth
             disabled={mode === "view"}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -175,6 +205,7 @@ const CarOwnerSetting = ({ mode, data }) => {
             {...register("address")}
             fullWidth
             disabled={mode === "view"}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -184,6 +215,7 @@ const CarOwnerSetting = ({ mode, data }) => {
             {...register("mailAddress")}
             fullWidth
             disabled={mode === "view"}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         <Grid item xs={12} sx={{ display: "flex", justifyContent: "center" }}>

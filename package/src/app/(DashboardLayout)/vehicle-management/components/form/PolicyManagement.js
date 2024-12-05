@@ -14,8 +14,8 @@ const PolicyManagement = ({ mode }) => {
   const router = useRouter();
   const [carLicenseNum, setCarLicenseNum] = useState("");
   const { mutate: addInsurance, isLoading } = useAddInsurance();
-  //const { data: InsuranceComs } = useGetInsuranceComDropDownList();
-  //console.log(carLicenseNum);
+  const { data: InsuranceComs } = useGetInsuranceComDropDownList();
+  //console.log(InsuranceComs);
 
   const handleCancelClick = () => {
     router.push(`/vehicle-management/${carLicenseNum}/PolicyManagement`);
@@ -27,7 +27,9 @@ const PolicyManagement = ({ mode }) => {
     setValue,
     trigger,
     formState: { errors },
+    watch,
   } = useForm();
+
 
   const onSubmit = (data) => {
     
@@ -62,6 +64,8 @@ const PolicyManagement = ({ mode }) => {
       console.error("車牌號碼不存在於 localStorage");
     }
   }, []);
+
+
 
   return (
     <Box
@@ -98,27 +102,29 @@ const PolicyManagement = ({ mode }) => {
         </Grid>
 
         {/* 保險公司 */}
-        {/* <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={6}>
           <TextField
             select
             required
+            value={watch("insuranceCom") || ""}
+            onChange={(e) => setValue("insuranceCom", e.target.value)}
             label="保險公司"
             error={!!errors.insuranceCom}
             {...register("insuranceCom", { required: true })}
             fullWidth
-            disabled={mode === "view"}
+            InputLabelProps={{ shrink: true }}
           >
-            {InsuranceComs?.map((importnsuranceCom) => (
-              <MenuItem
-                key={importnsuranceCom.key}
-                value={importnsuranceCom.value}
-              >
-                {`${importnsuranceCom.name}`}
+            <MenuItem value="" disabled>
+              請選擇
+            </MenuItem>
+            {InsuranceComs?.map((InsuranceCom) => (
+              <MenuItem key={InsuranceCom.key} value={InsuranceCom.value}>
+                {`${InsuranceCom.name}`}
               </MenuItem>
             ))}
           </TextField>
-        </Grid> */}
-        <Grid item xs={12} md={6}>
+        </Grid>
+        {/* <Grid item xs={12} md={6}>
           <TextField
             required
             id="insuranceCom"
@@ -128,7 +134,7 @@ const PolicyManagement = ({ mode }) => {
             error={!!errors.insuranceCom}
             {...register("insuranceCom", { required: true })}
           />
-        </Grid>
+        </Grid> */}
 
         {/* 起日 */}
         <Grid item xs={12} md={6}>
@@ -191,6 +197,7 @@ const PolicyManagement = ({ mode }) => {
             autoComplete="off"
             error={!!errors.amount}
             {...register("amount", { required: true })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
 
@@ -204,6 +211,7 @@ const PolicyManagement = ({ mode }) => {
             autoComplete="off"
             error={!!errors.insuranceType}
             {...register("insuranceType", { required: true })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
 
@@ -217,6 +225,7 @@ const PolicyManagement = ({ mode }) => {
             autoComplete="off"
             error={!!errors.insuranceNum}
             {...register("insuranceNum", { required: true })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
 
@@ -230,6 +239,7 @@ const PolicyManagement = ({ mode }) => {
             autoComplete="off"
             error={!!errors.insuranceCardNum}
             {...register("insuranceCardNum", { required: true })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
 

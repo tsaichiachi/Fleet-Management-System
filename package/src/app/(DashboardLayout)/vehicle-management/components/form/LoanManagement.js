@@ -1,12 +1,14 @@
+//貸款管理Form
 "use client";
 import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import { Button, Grid } from "@mui/material";
+import { Button, Grid, Select, MenuItem } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import TaiwanDatePicker from "../TaiwanDatePicker";
 import { useGetLoanFee, useAddOrUpdateLoanFee } from "../../apihooks";
+import { useGetLoanCompanyDropDownList } from "../../apihooks";
 
 const LoanManagementForm = ({ mode }) => {
   const router = useRouter();
@@ -14,6 +16,8 @@ const LoanManagementForm = ({ mode }) => {
   const { data: LoanFeeData, isLoading } = useGetLoanFee(carLicenseNum);
   //console.log("LoanFeeData:", LoanFeeData);
   const { mutate: saveLoanFee } = useAddOrUpdateLoanFee();
+  const { data: loanCompanyList } = useGetLoanCompanyDropDownList();
+  //console.log("loanCompanyList:", loanCompanyList);
 
   const {
     register,
@@ -21,6 +25,7 @@ const LoanManagementForm = ({ mode }) => {
     setValue,
     trigger,
     formState: { errors },
+    watch
   } = useForm();
 
   // 提交表單的處理邏輯
@@ -63,6 +68,16 @@ const LoanManagementForm = ({ mode }) => {
     }
   }, [LoanFeeData, setValue]);
 
+ useEffect(() => {
+   if (LoanFeeData && LoanFeeData.length > 0) {
+     const loanFee = LoanFeeData[0];
+     setValue("loanCompany", loanFee.loanCompany || ""); // 設定貸款公司預設值
+   }
+ }, [LoanFeeData, setValue]);
+
+ 
+
+
   // 加載中處理
   if (isLoading) {
     return <p>資料加載中...</p>;
@@ -96,14 +111,25 @@ const LoanManagementForm = ({ mode }) => {
         {/* 貸款公司 */}
         <Grid item xs={12} md={6}>
           <TextField
+            select
             required
-            id="loanCompany"
+            value={watch("loanCompany") || ""}
+            onChange={(e) => setValue("loanCompany", e.target.value)}
             label="貸款公司"
-            type="text"
             error={!!errors.loanCompany}
             {...register("loanCompany", { required: true })}
+            fullWidth
             InputLabelProps={{ shrink: true }}
-          />
+          >
+            <MenuItem value="" disabled>
+              請選擇
+            </MenuItem>
+            {loanCompanyList?.map((loanCompany) => (
+              <MenuItem key={loanCompany.key} value={loanCompany.value}>
+                {`${loanCompany.name}`}
+              </MenuItem>
+            ))}
+          </TextField>
         </Grid>
 
         {/* 起日 */}
@@ -169,7 +195,7 @@ const LoanManagementForm = ({ mode }) => {
         </Grid>
 
         {/* 是否入帳 */}
-        <Grid item xs={12} md={6}>
+        {/* <Grid item xs={12} md={6}>
           <TaiwanDatePicker
             label="是否入帳"
             fieldName="payUsDate"
@@ -184,7 +210,7 @@ const LoanManagementForm = ({ mode }) => {
             register={register}
             trigger={trigger}
           />
-        </Grid>
+        </Grid> */}
 
         {/* 備註 */}
         <Grid item xs={12} md={12}>

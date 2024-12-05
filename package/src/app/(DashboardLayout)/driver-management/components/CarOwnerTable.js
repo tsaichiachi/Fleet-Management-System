@@ -16,6 +16,7 @@ import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/navigation";
 
+
 const CarOwnerTable = ({
   data,
   // totalPages,
@@ -25,10 +26,10 @@ const CarOwnerTable = ({
   const owner = data;
   console.log(owner);
   const router = useRouter();
- 
+
 
   const handleViewClick = (id) => {
-    localStorage.setItem("owner", id);
+    localStorage.setItem("owner_edit", id);
     router.push(`/driver-management/${id}/View`);
   };
 
@@ -70,7 +71,7 @@ const CarOwnerTable = ({
             </TableCell>
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
-                編號
+                手機
               </Typography>
             </TableCell>
             <TableCell>
@@ -94,7 +95,7 @@ const CarOwnerTable = ({
                   variant="subtitle2"
                   fontWeight={400}
                 >
-                  {owner.idNum}
+                  {owner.mobile}
                 </Typography>
               </TableCell>
               <TableCell>

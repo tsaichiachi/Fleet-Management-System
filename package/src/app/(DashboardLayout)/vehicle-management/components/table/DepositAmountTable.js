@@ -189,6 +189,7 @@ const DepositAmountTable = ({
               "借款利息",
               "入款方式",
               "備註",
+              "操作",
             ].map((header, index) => (
               <TableCell key={index}>
                 <Typography variant="subtitle2" fontWeight={600}>

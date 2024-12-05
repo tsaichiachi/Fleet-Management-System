@@ -50,11 +50,11 @@ const VehicleTable = (data) => {
       >
         <TableHead>
           <TableRow>
-            <TableCell sx={{ width: "6%" }}>
+            {/* <TableCell sx={{ width: "6%" }}>
               <Typography variant="subtitle2" fontWeight={600}>
                 ID
               </Typography>
-            </TableCell>
+            </TableCell> */}
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
                 車牌號碼
@@ -65,7 +65,6 @@ const VehicleTable = (data) => {
                 車主
               </Typography>
             </TableCell>
-
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
                 操作
@@ -76,11 +75,11 @@ const VehicleTable = (data) => {
         <TableBody>
           {cars?.map((car) => (
             <TableRow key={car.id}>
-              <TableCell>
+              {/* <TableCell>
                 <Typography sx={{ fontSize: "15px", fontWeight: "500" }}>
                   {car.id}
                 </Typography>
-              </TableCell>
+              </TableCell> */}
 
               <TableCell>
                 <Typography variant="subtitle2" fontWeight={400}>
@@ -128,9 +127,9 @@ const VehicleTable = (data) => {
           ))}
         </TableBody>
       </Table>
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+      {/* <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
         <Pagination count={10} />
-      </Box>
+      </Box> */}
     </Box>
   );
 };

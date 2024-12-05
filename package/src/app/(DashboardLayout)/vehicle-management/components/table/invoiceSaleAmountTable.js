@@ -14,6 +14,7 @@ import {
   Button,
   Switch,
   Select,
+  MenuItem,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -21,6 +22,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { requestHttp } from "@/utils/requestHttp";
 import { validateDate, areDatesInExpenseMonth } from "@/utils/tool";
+import { useGetCarAgencyDropDownList } from "../../apihooks";
 
 const InvoiceSaleAmountTable = ({
   carLicenseNum,
@@ -31,6 +33,9 @@ const InvoiceSaleAmountTable = ({
   const [taxData, setTaxData] = useState([]); // 表格數據
   const [editingRowId, setEditingRowId] = useState(null);
   const [editedRow, setEditedRow] = useState(null);
+
+  const { data: carAgencyList } = useGetCarAgencyDropDownList();
+  console.log("carAgencyList", carAgencyList);
 
   // 抓取數據函數
   const fetchInitialData = async () => {
@@ -191,9 +196,9 @@ const InvoiceSaleAmountTable = ({
               "發票號碼",
               "銷貨金額",
               "銷貨稅",
-              "車行名稱",
               "摘要",
               "稅捐月份(YYY-MM)",
+              "車行名稱",
               "作廢",
               "操作",
             ].map((header, index) => (
@@ -215,7 +220,6 @@ const InvoiceSaleAmountTable = ({
                 "invoiceNum",
                 "amount",
                 "amountTax",
-                "carAgency",
                 "note",
                 "taxMonth",
               ].map((field, index) => (
@@ -230,6 +234,26 @@ const InvoiceSaleAmountTable = ({
                   )}
                 </TableCell>
               ))}
+              {/* 車行名稱作為下拉選單 */}
+              <TableCell>
+                {editingRowId === row.id ? (
+                  <Select
+                    value={editedRow?.carAgency || ""}
+                    onChange={(e) =>
+                      handleInputChange("carAgency", e.target.value)
+                    }
+                    fullWidth
+                  >
+                    {carAgencyList?.map((agency) => (
+                      <MenuItem key={agency.id} value={agency.name}>
+                        {agency.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                ) : (
+                  <Typography>{row.carAgency}</Typography>
+                )}
+              </TableCell>
               <TableCell>
                 {editingRowId === row.id ? (
                   <Switch
@@ -274,7 +298,6 @@ const InvoiceSaleAmountTable = ({
                 "invoiceNum",
                 "amount",
                 "amountTax",
-                "carAgency",
                 "note",
                 "taxMonth",
               ].map((field, index) => (
@@ -285,6 +308,22 @@ const InvoiceSaleAmountTable = ({
                   />
                 </TableCell>
               ))}
+              {/* 新增行中的車行名稱欄位 */}
+              <TableCell>
+                <Select
+                  value={editedRow?.carAgency || ""}
+                  onChange={(e) =>
+                    handleInputChange("carAgency", e.target.value)
+                  }
+                  fullWidth
+                >
+                  {carAgencyList?.map((agency) => (
+                    <MenuItem key={agency.id} value={agency.name}>
+                      {agency.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </TableCell>
               <TableCell>
                 <Switch
                   checked={editedRow?.disable === "1"} // 確保字串比較
