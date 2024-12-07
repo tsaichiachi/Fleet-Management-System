@@ -138,7 +138,7 @@ const ManagementFeeSettingForm = () => {
             required
             id="licenseNumber"
             label="無息基準"
-            type="number"
+            type="text"
             error={!!errors.noInterestBasis}
             {...register("noInterestBasis", { required: true })}
           />
@@ -150,11 +150,10 @@ const ManagementFeeSettingForm = () => {
             required
             id="manageFee"
             label="管理費"
-            type="number"
+            type="text"
             error={!!errors.manageFee}
             {...register("manageFee", { required: true })}
             InputLabelProps={{ shrink: true }} // 確保標籤不被擋住
-            
           />
         </Grid>
         {/* 公會費 */}
@@ -163,7 +162,7 @@ const ManagementFeeSettingForm = () => {
             required
             id="unionFee"
             label="公會費"
-            type="number"
+            type="text"
             error={!!errors.unionFee}
             {...register("unionFee", { required: true })}
             InputLabelProps={{ shrink: true }}
@@ -176,7 +175,7 @@ const ManagementFeeSettingForm = () => {
             required
             id="laborFee"
             label="勞保費"
-            type="number"
+            type="text"
             error={!!errors.laborFee}
             {...register("laborFee", { required: true })}
             InputLabelProps={{ shrink: true }}
@@ -189,7 +188,7 @@ const ManagementFeeSettingForm = () => {
             required
             id="healthyFee"
             label="健保費"
-            type="number"
+            type="text"
             error={!!errors.healthyFee}
             {...register("healthyFee", { required: true })}
             InputLabelProps={{ shrink: true }}
@@ -201,7 +200,7 @@ const ManagementFeeSettingForm = () => {
             required
             id="readyFee"
             label="準備金"
-            type="number"
+            type="text"
             error={!!errors.readyFee}
             {...register("readyFee", { required: true })}
             InputLabelProps={{ shrink: true }}
@@ -212,7 +211,7 @@ const ManagementFeeSettingForm = () => {
             required
             id="peopleHelpFee"
             label="互助金"
-            type="number"
+            type="text"
             error={!!errors.peopleHelpFee}
             {...register("peopleHelpFee", { required: true })}
             InputLabelProps={{ shrink: true }}
@@ -233,11 +232,21 @@ const ManagementFeeSettingForm = () => {
           <TextField
             required
             id="saleTax"
-            label="銷項稅率"
-            type="number"
+            label="銷項稅率 (請輸入 0.001~1)"
+            type="text" 
             error={!!errors.saleTax}
-            {...register("saleTax", { required: true })}
+            helperText={errors.saleTax?.message}
+            {...register("saleTax", {
+              required: "此欄位為必填",
+              validate: (value) =>
+                (value >= 0.01 && value <= 1) || "稅率必須介於 0.01 到 1 之間",
+            })}
             InputLabelProps={{ shrink: true }}
+            inputProps={{
+              step: 0.01, // 限制輸入步進值
+              min: 0.01, // 最小值
+              max: 1, // 最大值
+            }}
           />
         </Grid>
 
@@ -246,11 +255,21 @@ const ManagementFeeSettingForm = () => {
           <TextField
             required
             id="buyTax"
-            label="進項稅率"
-            type="number"
+            label="進項稅率 (請輸入 0.001~1)"
+            type="text"
             error={!!errors.buyTax}
-            {...register("buyTax", { required: true })}
+            helperText={errors.buyTax?.message}
+            {...register("buyTax", {
+              required: "此欄位為必填",
+              validate: (value) =>
+                (value >= 0.01 && value <= 1) || "稅率必須介於 0.01 到 1 之間",
+            })}
             InputLabelProps={{ shrink: true }}
+            inputProps={{
+              step: 0.01,
+              min: 0.01,
+              max: 1,
+            }}
           />
         </Grid>
 
@@ -259,11 +278,21 @@ const ManagementFeeSettingForm = () => {
           <TextField
             required
             id="gasTax"
-            label="油單稅率"
-            type="number"
+            label="油單稅率 (請輸入 0.001~1)"
+            type="text"
             error={!!errors.gasTax}
-            {...register("gasTax", { required: true })}
+            helperText={errors.gasTax?.message}
+            {...register("gasTax", {
+              required: "此欄位為必填",
+              validate: (value) =>
+                (value >= 0.01 && value <= 1) || "稅率必須介於 0.01 到 1 之間",
+            })}
             InputLabelProps={{ shrink: true }}
+            inputProps={{
+              step: 0.01,
+              min: 0.01,
+              max: 1,
+            }}
           />
         </Grid>
 
@@ -272,11 +301,21 @@ const ManagementFeeSettingForm = () => {
           <TextField
             required
             id="oweTax"
-            label="欠款利息"
-            type="number"
+            label="欠款利息 (請輸入 0.001~1)"
+            type="text"
             error={!!errors.oweTax}
-            {...register("oweTax", { required: true })}
+            helperText={errors.oweTax?.message}
+            {...register("oweTax", {
+              required: "此欄位為必填",
+              validate: (value) =>
+                (value >= 0.01 && value <= 1) || "利息必須介於 0.01 到 1 之間",
+            })}
             InputLabelProps={{ shrink: true }}
+            inputProps={{
+              step: 0.01,
+              min: 0.01,
+              max: 1,
+            }}
           />
         </Grid>
 
@@ -285,13 +324,24 @@ const ManagementFeeSettingForm = () => {
           <TextField
             required
             id="receipTax"
-            label="收據稅率"
-            type="number"
+            label="收據稅率 (請輸入 0.001~1)"
+            type="text"
             error={!!errors.receipTax}
-            {...register("receipTax", { required: true })}
+            helperText={errors.receipTax?.message}
+            {...register("receipTax", {
+              required: "此欄位為必填",
+              validate: (value) =>
+                (value >= 0.01 && value <= 1) || "稅率必須介於 0.01 到 1 之間",
+            })}
             InputLabelProps={{ shrink: true }}
+            inputProps={{
+              step: 0.01,
+              min: 0.01,
+              max: 1,
+            }}
           />
         </Grid>
+
         <Grid item xs={12} md={12}>
           <Divider
             sx={{
@@ -308,7 +358,7 @@ const ManagementFeeSettingForm = () => {
             required
             id="licenseTaxFirstHalf"
             label="上牌照稅（上半年）"
-            type="number"
+            type="text"
             error={!!errors.licenseTaxFirstHalf}
             {...register("licenseTaxFirstHalf", { required: true })}
             InputLabelProps={{ shrink: true }}
@@ -321,7 +371,7 @@ const ManagementFeeSettingForm = () => {
             required
             id="licenseTaxSecondHalf"
             label="下牌照稅（下半年）"
-            type="number"
+            type="text"
             error={!!errors.licenseTaxSecondHalf}
             {...register("licenseTaxSecondHalf", { required: true })}
             InputLabelProps={{ shrink: true }}
@@ -344,7 +394,7 @@ const ManagementFeeSettingForm = () => {
             required
             id="fuelTaxSpring"
             label="春燃料費"
-            type="number"
+            type="text"
             error={!!errors.fuelTaxSpring}
             {...register("fuelTaxSpring", { required: true })}
             InputLabelProps={{ shrink: true }}
@@ -357,7 +407,7 @@ const ManagementFeeSettingForm = () => {
             required
             id="fuelTaxSummer"
             label="夏燃料費"
-            type="number"
+            type="text"
             error={!!errors.fuelTaxSummer}
             {...register("fuelTaxSummer", { required: true })}
             InputLabelProps={{ shrink: true }}
@@ -370,7 +420,7 @@ const ManagementFeeSettingForm = () => {
             required
             id="fuelTaxAutumn"
             label="秋燃料費"
-            type="number"
+            type="text"
             error={!!errors.fuelTaxAutumn}
             {...register("fuelTaxAutumn", { required: true })}
             InputLabelProps={{ shrink: true }}
@@ -383,7 +433,7 @@ const ManagementFeeSettingForm = () => {
             required
             id="fuelTaxWinter"
             label="冬燃料費"
-            type="number"
+            type="text"
             error={!!errors.fuelTaxWinter}
             {...register("fuelTaxWinter", { required: true })}
             InputLabelProps={{ shrink: true }}

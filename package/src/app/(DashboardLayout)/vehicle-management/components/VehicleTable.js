@@ -115,12 +115,12 @@ const VehicleTable = (data) => {
                   >
                     <EditIcon />
                   </IconButton>
-                  <IconButton
+                  {/* <IconButton
                     aria-label="delete"
                     onClick={() => handleDeleteClick(car.licenseNumber)}
                   >
                     <DeleteIcon />
-                  </IconButton>
+                  </IconButton> */}
                 </Box>
               </TableCell>
             </TableRow>

@@ -113,12 +113,12 @@ const CarOwnerTable = ({
                   >
                     <EditIcon />
                   </IconButton>
-                  <IconButton
+                  {/* <IconButton
                     aria-label="delete"
                     onClick={() => handleDeleteClick(owner.id)}
                   >
                     <DeleteIcon />
-                  </IconButton>
+                  </IconButton> */}
                 </Box>
               </TableCell>
             </TableRow>

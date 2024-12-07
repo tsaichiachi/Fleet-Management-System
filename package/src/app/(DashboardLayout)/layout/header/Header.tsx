@@ -55,18 +55,19 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
           aria-controls="msgs-menu"
           aria-haspopup="true"
         >
-          <Badge variant="dot" color="primary">
+          {/* <Badge variant="dot" color="primary">
             <IconBellRinging size="21" stroke="1.5" />
-          </Badge>
+          </Badge> */}
 
         </IconButton>
         <Box flexGrow={1} />
-        <Stack spacing={1} direction="row" alignItems="center">
+         {/* 使用者資料 */}
+        {/* <Stack spacing={1} direction="row" alignItems="center">
           <Button variant="contained" disableElevation color="primary" >
             Download
           </Button>
           <Profile />
-        </Stack>
+        </Stack> */}
       </ToolbarStyled>
     </AppBarStyled>
   );

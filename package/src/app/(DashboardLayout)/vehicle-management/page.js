@@ -31,7 +31,7 @@ function VehicleManagementPage() {
       const response = await requestHttp("car/carInfoDropDownList", {
         method: "POST",
       });
-      console.log("Cars API Response:", response);
+      //console.log("Cars API Response:", response);
 
       // 檢查 API 響應
       if (response.code !== "G_0000") {

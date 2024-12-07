@@ -130,9 +130,9 @@ const ManagementFeeSettingTable = () => {
                   >
                     <EditIcon />
                   </IconButton>
-                  <IconButton aria-label="delete">
+                  {/* <IconButton aria-label="delete">
                     <DeleteIcon />
-                  </IconButton>
+                  </IconButton> */}
                 </Typography>
               </TableCell>
             </TableRow>

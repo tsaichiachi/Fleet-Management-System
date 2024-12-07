@@ -12,8 +12,9 @@ const PageContainer = ({ title, description, children }: Props) => (
   <HelmetProvider>
     <div>
       <Helmet>
-        <title>{title}</title>
+        <title>智慧車載系統</title>
         <meta name="description" content={description} />
+        <link rel="icon" href="/images/logos/I-TRUCK-LOGO2.svg" />
       </Helmet>
       {children}
     </div>

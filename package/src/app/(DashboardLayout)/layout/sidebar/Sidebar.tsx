@@ -15,8 +15,8 @@ const Sidebar = ({
   onSidebarClose,
   isSidebarOpen,
 }: ItemType) => {
-  console.log(isMobileSidebarOpen);
-  console.log(isSidebarOpen);
+  // console.log(isMobileSidebarOpen);
+  // console.log(isSidebarOpen);
   const lgUp = useMediaQuery((theme: any) => theme.breakpoints.up("lg"));
   const sidebarWidth = "270px";
 
@@ -55,15 +55,23 @@ const Sidebar = ({
             {/* ------------------------------------------- */}
             {/* Logo */}
             {/* ------------------------------------------- */}
-            <Box px={3}>
+            <Box
+              px={2}
+              sx={{
+                display: "flex",
+                justifyContent: "center", // 水平居中
+                alignItems: "center", // 垂直居中
+                 // 根據需要設置父容器的高度
+              }}
+            >
               <Logo />
             </Box>
+
             <Box>
               {/* ------------------------------------------- */}
               {/* Sidebar Items */}
               {/* ------------------------------------------- */}
               <SidebarItems />
-             
             </Box>
           </Box>
         </Drawer>
@@ -87,14 +95,14 @@ const Sidebar = ({
       {/* ------------------------------------------- */}
       {/* Logo */}
       {/* ------------------------------------------- */}
-      <Box px={2}>
+      <Box px={3}>
         <Logo />
       </Box>
       {/* ------------------------------------------- */}
       {/* Sidebar For Mobile */}
       {/* ------------------------------------------- */}
       <SidebarItems />
-      <Upgrade />
+      {/* <Upgrade /> */}
     </Drawer>
   );
 };
