@@ -19,20 +19,20 @@ const VehicleSetting = ({ mode }) => {
   const { mutate: editCar } = useEditCars();
   const { data: carOwners } = useGetCarOwnerDropDownList();
   const { data: carAgency } = useGetCarAgencyDropDownList();
-  console.log("carAgency:", carAgency);
+  //console.log("carAgency:", carAgency);
   const [carLicenseNum, setCarLicenseNum] = useState("");
   //console.log("carLicenseNum:", carLicenseNum);
   const { data: car } = useGetCar(mode === "add" ? null : carLicenseNum, mode);
-  console.log("car:", car)
+  //console.log("car:", car)
 
   const {
     register,
     handleSubmit,
     setValue,
-    trigger,
     formState: { errors },
     watch,
     reset,
+    trigger,
   } = useForm();
 
   const onSubmit = (data) => {
@@ -79,6 +79,8 @@ const VehicleSetting = ({ mode }) => {
       setValue("ownerName", car.ownerName || "");
     }
   }, [car, setValue]);
+
+  console.log("errors:", errors.joinDate);
 
   return (
     <Box
@@ -430,6 +432,25 @@ const VehicleSetting = ({ mode }) => {
         {/* 驗車方式 */}
         <Grid item xs={12} md={6}>
           <TextField
+            select
+            required
+            value={watch("inspectionType") || ""}
+            onChange={(e) => setValue("inspectionType", e.target.value)}
+            label="驗車方式"
+            error={!!errors.carAgency}
+            {...register("inspectionType", { required: true })}
+            fullWidth
+            disabled={mode === "view"}
+            InputLabelProps={{ shrink: true }}
+          >
+            <MenuItem value="" disabled>
+              請選擇
+            </MenuItem>
+            <MenuItem value={1}>半年</MenuItem>
+            <MenuItem value={2}>一年</MenuItem>
+            <MenuItem value={3}>無</MenuItem>
+          </TextField>
+          {/* <TextField
             required
             id="inspectionType"
             label="驗車方式(:1:半/5 2:1/1 3:無)"
@@ -437,7 +458,7 @@ const VehicleSetting = ({ mode }) => {
             error={!!errors.inspectionType}
             {...register("inspectionType", { required: true })}
             InputLabelProps={{ shrink: true }}
-          />
+          /> */}
         </Grid>
 
         {/* 超載到期 */}

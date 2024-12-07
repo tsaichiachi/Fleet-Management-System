@@ -31,13 +31,13 @@ const LoanManagement = () => {
     <PageContainer title="" description="">
       <DashboardCard title="">
         <Box>
-          <Button
+          {/* <Button
             variant="contained"
             onClick={handleOpenDialog}
             sx={{ marginLeft: "1%", marginTop: "1%", marginBottom: "2%" }}
           >
             貸款公司
-          </Button>
+          </Button> */}
         </Box>
         <Box sx={{ width: { xs: "400px", sm: "auto" } }}>
           <Box>
@@ -45,7 +45,7 @@ const LoanManagement = () => {
           </Box>
         </Box>
       </DashboardCard>
-      <Dialog
+      {/* <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
         maxWidth="xl"
@@ -56,7 +56,7 @@ const LoanManagement = () => {
         <DialogActions>
           <Button onClick={handleCloseDialog}>關閉</Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
     </PageContainer>
   );
 };

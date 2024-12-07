@@ -17,10 +17,10 @@ const PolicyManagement = ({ mode }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const insuranceCardNum = searchParams.get("insuranceCardNum");
-  console.log("insuranceCardNum:", insuranceCardNum);
+  //console.log("insuranceCardNum:", insuranceCardNum);
   const [carLicenseNum, setCarLicenseNum] = useState("");
-  const { mutate: addInsurance, isLoading } = useAddInsurance();
-  const { mutate: editInsurance } = useEditInsurance();
+  const { mutate: addInsurance, isLoading } = useAddInsurance(carLicenseNum);
+  const { mutate: editInsurance } = useEditInsurance(carLicenseNum);
   const { data: InsuranceComs } = useGetInsuranceComDropDownList();
   const { data: InsuranceFee } = useGetSingleInsuranceFee(
     mode === "add" ? null : carLicenseNum,
@@ -116,6 +116,14 @@ const PolicyManagement = ({ mode }) => {
       autoComplete="off"
       onSubmit={handleSubmit(onSubmit)}
     >
+      {mode === "edit" && (
+     
+        <Box sx={{ color: "red", fontWeight: "bold", marginBottom: "30px" }}>
+          若修改保費的金額, 會由下期開始生效 <br />
+          ex: 每月一號產出帳單,若在二號修改金額, 則下個月帳單才是修改過後的金額
+        </Box>
+      )}
+
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <TextField

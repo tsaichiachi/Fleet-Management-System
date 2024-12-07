@@ -188,6 +188,43 @@ const ReceiptOffsetTable = ({
           </TableRow>
         </TableHead>
         <TableBody>
+          {editingRowId === "new" && (
+            <TableRow>
+              {["payDate", "receiptAmount", "amount", "note"].map(
+                (field, index) => (
+                  <TableCell key={index}>
+                    {field === "type" ? (
+                      <Select
+                        value={editedRow?.type || "CASH"}
+                        onChange={(e) =>
+                          handleInputChange("type", e.target.value)
+                        }
+                        fullWidth
+                      >
+                        <MenuItem value="CASH">現金</MenuItem>
+                        <MenuItem value="CHECK">支票</MenuItem>
+                      </Select>
+                    ) : (
+                      <TextField
+                        value={editedRow?.[field] || ""}
+                        onChange={(e) =>
+                          handleInputChange(field, e.target.value)
+                        }
+                      />
+                    )}
+                  </TableCell>
+                )
+              )}
+              <TableCell>
+                <IconButton onClick={handleSaveClick} color="primary">
+                  <SaveIcon />
+                </IconButton>
+                <IconButton onClick={handleCancelClick} color="secondary">
+                  <CancelIcon />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+          )}
           {taxData?.map((row) => (
             <TableRow key={row.id}>
               {["payDate", "receiptAmount", "amount", "note"].map(
@@ -242,44 +279,6 @@ const ReceiptOffsetTable = ({
               </TableCell>
             </TableRow>
           ))}
-
-          {editingRowId === "new" && (
-            <TableRow>
-              {["payDate", "receiptAmount", "amount", "note"].map(
-                (field, index) => (
-                  <TableCell key={index}>
-                    {field === "type" ? (
-                      <Select
-                        value={editedRow?.type || "CASH"}
-                        onChange={(e) =>
-                          handleInputChange("type", e.target.value)
-                        }
-                        fullWidth
-                      >
-                        <MenuItem value="CASH">現金</MenuItem>
-                        <MenuItem value="CHECK">支票</MenuItem>
-                      </Select>
-                    ) : (
-                      <TextField
-                        value={editedRow?.[field] || ""}
-                        onChange={(e) =>
-                          handleInputChange(field, e.target.value)
-                        }
-                      />
-                    )}
-                  </TableCell>
-                )
-              )}
-              <TableCell>
-                <IconButton onClick={handleSaveClick} color="primary">
-                  <SaveIcon />
-                </IconButton>
-                <IconButton onClick={handleCancelClick} color="secondary">
-                  <CancelIcon />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          )}
         </TableBody>
       </Table>
     </Box>

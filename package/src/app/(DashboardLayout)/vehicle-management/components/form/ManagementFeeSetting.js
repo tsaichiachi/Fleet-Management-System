@@ -154,6 +154,7 @@ const ManagementFeeSettingForm = () => {
             error={!!errors.manageFee}
             {...register("manageFee", { required: true })}
             InputLabelProps={{ shrink: true }} // 確保標籤不被擋住
+            
           />
         </Grid>
         {/* 公會費 */}

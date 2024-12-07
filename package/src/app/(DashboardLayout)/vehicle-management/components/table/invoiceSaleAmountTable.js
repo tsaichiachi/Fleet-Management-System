@@ -211,6 +211,60 @@ const InvoiceSaleAmountTable = ({
           </TableRow>
         </TableHead>
         <TableBody>
+          {/* 新增行的渲染 */}
+          {editingRowId === "new" && (
+            <TableRow>
+              {[
+                "handleDate",
+                "invoiceDate",
+                "invoiceNum",
+                "amount",
+                "amountTax",
+                "note",
+                "taxMonth",
+              ].map((field, index) => (
+                <TableCell key={index}>
+                  <TextField
+                    value={editedRow?.[field] || ""}
+                    onChange={(e) => handleInputChange(field, e.target.value)}
+                  />
+                </TableCell>
+              ))}
+              {/* 新增行中的車行名稱欄位 */}
+              <TableCell>
+                <Select
+                  value={editedRow?.carAgency || ""}
+                  onChange={(e) =>
+                    handleInputChange("carAgency", e.target.value)
+                  }
+                  fullWidth
+                >
+                  {carAgencyList?.map((agency) => (
+                    <MenuItem key={agency.id} value={agency.name}>
+                      {agency.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </TableCell>
+              <TableCell>
+                <Switch
+                  checked={editedRow?.disable === "1"} // 確保字串比較
+                  onChange={(e) =>
+                    handleInputChange("disable", e.target.checked ? "1" : "0")
+                  }
+                  color="primary"
+                />
+              </TableCell>
+              <TableCell>
+                <IconButton onClick={handleSaveClick} color="primary">
+                  <SaveIcon />
+                </IconButton>
+                <IconButton onClick={handleCancelClick} color="secondary">
+                  <CancelIcon />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+          )}
           {/* 已有數據的渲染 */}
           {taxData?.map((row) => (
             <TableRow key={row.id}>
@@ -288,61 +342,6 @@ const InvoiceSaleAmountTable = ({
               </TableCell>
             </TableRow>
           ))}
-
-          {/* 新增行的渲染 */}
-          {editingRowId === "new" && (
-            <TableRow>
-              {[
-                "handleDate",
-                "invoiceDate",
-                "invoiceNum",
-                "amount",
-                "amountTax",
-                "note",
-                "taxMonth",
-              ].map((field, index) => (
-                <TableCell key={index}>
-                  <TextField
-                    value={editedRow?.[field] || ""}
-                    onChange={(e) => handleInputChange(field, e.target.value)}
-                  />
-                </TableCell>
-              ))}
-              {/* 新增行中的車行名稱欄位 */}
-              <TableCell>
-                <Select
-                  value={editedRow?.carAgency || ""}
-                  onChange={(e) =>
-                    handleInputChange("carAgency", e.target.value)
-                  }
-                  fullWidth
-                >
-                  {carAgencyList?.map((agency) => (
-                    <MenuItem key={agency.id} value={agency.name}>
-                      {agency.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </TableCell>
-              <TableCell>
-                <Switch
-                  checked={editedRow?.disable === "1"} // 確保字串比較
-                  onChange={(e) =>
-                    handleInputChange("disable", e.target.checked ? "1" : "0")
-                  }
-                  color="primary"
-                />
-              </TableCell>
-              <TableCell>
-                <IconButton onClick={handleSaveClick} color="primary">
-                  <SaveIcon />
-                </IconButton>
-                <IconButton onClick={handleCancelClick} color="secondary">
-                  <CancelIcon />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          )}
         </TableBody>
       </Table>
     </Box>

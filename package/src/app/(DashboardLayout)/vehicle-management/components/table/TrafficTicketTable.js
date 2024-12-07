@@ -216,6 +216,35 @@ const TrafficTicketTable = ({
           </TableRow>
         </TableHead>
         <TableBody>
+          {/* 新增行的渲染 */}
+          {editingRowId === "new" && (
+            <TableRow>
+              {[
+                "handleDate",
+                "ticketDate",
+                "ticketNum",
+                "goPoliceDate",
+                "amount",
+                "payDate",
+                "note",
+              ].map((field, index) => (
+                <TableCell key={index}>
+                  <TextField
+                    value={editedRow?.[field] || ""}
+                    onChange={(e) => handleInputChange(field, e.target.value)}
+                  />
+                </TableCell>
+              ))}
+              <TableCell>
+                <IconButton onClick={handleSaveClick} color="primary">
+                  <SaveIcon />
+                </IconButton>
+                <IconButton onClick={handleCancelClick} color="secondary">
+                  <CancelIcon />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+          )}
           {/* 已有數據的渲染 */}
           {taxData?.map((row) => (
             <TableRow key={row.id}>
@@ -260,36 +289,6 @@ const TrafficTicketTable = ({
               </TableCell>
             </TableRow>
           ))}
-
-          {/* 新增行的渲染 */}
-          {editingRowId === "new" && (
-            <TableRow>
-              {[
-                "handleDate",
-                "ticketDate",
-                "ticketNum",
-                "goPoliceDate",
-                "amount",
-                "payDate",
-                "note",
-              ].map((field, index) => (
-                <TableCell key={index}>
-                  <TextField
-                    value={editedRow?.[field] || ""}
-                    onChange={(e) => handleInputChange(field, e.target.value)}
-                  />
-                </TableCell>
-              ))}
-              <TableCell>
-                <IconButton onClick={handleSaveClick} color="primary">
-                  <SaveIcon />
-                </IconButton>
-                <IconButton onClick={handleCancelClick} color="secondary">
-                  <CancelIcon />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          )}
         </TableBody>
       </Table>
     </Box>

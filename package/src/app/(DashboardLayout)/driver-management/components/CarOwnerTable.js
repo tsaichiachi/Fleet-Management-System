@@ -17,6 +17,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/navigation";
 
 
+
 const CarOwnerTable = ({
   data,
   // totalPages,
@@ -126,9 +127,9 @@ const CarOwnerTable = ({
       </Table>
       {/* <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
         <Pagination
-        // count={totalPages}
-        // page={currentPage}
-        //onChange={(event, value) => onPageChange(value)}
+        count={totalPages}
+        page={currentPage}
+        onChange={(event, value) => onPageChange(value)}
         />
       </Box> */}
     </Box>

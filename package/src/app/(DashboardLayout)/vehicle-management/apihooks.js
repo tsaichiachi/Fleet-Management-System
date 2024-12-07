@@ -26,6 +26,7 @@ export const useGetCars = () => {
 //  API: 新增車輛
 export const useAddCars = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation(
     async (newCar) => {
@@ -43,6 +44,7 @@ export const useAddCars = () => {
     {
       onSuccess: (response) => {
         alert("新增車輛成功！"); // 可視化成功訊息
+        router.push(`/vehicle-management`);
         queryClient.invalidateQueries("cars"); // 更新車主列表
       },
       onError: (error) => {
@@ -123,7 +125,7 @@ export const useGetInsuranceList = (carLicenseNum) => {
         "insuranceFeeSetting/getInsuranceFeeSetting",
         {
           method: "POST",
-          data: { carLicenseNum,size:1000,page:1  },
+          data: { carLicenseNum,size,page },
         }
       );
 
@@ -141,8 +143,9 @@ export const useGetInsuranceList = (carLicenseNum) => {
 };
 
 // API: 新增保險資料
-export const useAddInsurance = () => {
+export const useAddInsurance = (carLicenseNum) => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation(
     async (newInsurance) => {
@@ -163,7 +166,8 @@ export const useAddInsurance = () => {
     {
       onSuccess: (response) => {
         alert("新增保單成功！"); // 可視化成功訊息
-        queryClient.invalidateQueries("cars"); // 更新車主列表
+        router.push(`/vehicle-management/${carLicenseNum}/PolicyManagement`);
+        queryClient.invalidateQueries(["insuranceList"]);
       },
       onError: (error) => {
         alert(`新增保單失敗：${error.message}`); // 可視化錯誤訊息
@@ -174,7 +178,7 @@ export const useAddInsurance = () => {
 };
 
 // API: 修改保險資料
-export const useEditInsurance = () => {
+export const useEditInsurance = (carLicenseNum) => {
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -197,7 +201,8 @@ export const useEditInsurance = () => {
     {
       onSuccess: (response) => {
         alert("修改保單成功！"); // 可視化成功訊息
-        queryClient.invalidateQueries("cars"); // 更新車主列表
+        router.push(`/vehicle-management/${carLicenseNum}/PolicyManagement`);
+         queryClient.invalidateQueries(["insuranceList", carLicenseNum]);
       },
       onError: (error) => {
         alert(`修改保單失敗：${error.message}`); // 可視化錯誤訊息

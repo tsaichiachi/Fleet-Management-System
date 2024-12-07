@@ -4,10 +4,17 @@ import { requestHttp } from "@/utils/requestHttp";
 /**
  * API: 取得所有車主
  */
-export const useGetCarOwners = () => {
+export const useGetCarOwners = (fetchParams) => {
+  console.log("fetchParams:", fetchParams);
+  const { page, size, name } = fetchParams;
   return useQuery("carOwners", async () => {
     const response = await requestHttp("car/getCarOwner", {
       method: "POST",
+      data: {
+        page: page,
+        size: size,
+        searchName: name || "",
+      },
     });
     console.log("Car Owners API Response:", response);
     return response;

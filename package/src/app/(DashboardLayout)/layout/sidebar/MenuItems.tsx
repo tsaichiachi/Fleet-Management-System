@@ -12,6 +12,7 @@ import {
   IconHomeDollar,
   IconCarCrane,
   IconUsers,
+  IconHome2,
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -97,6 +98,28 @@ const Menuitems = [
     title: "車輛管理",
     icon: IconCarCrane,
     href: "/vehicle-management",
+  },
+  {
+    navlabel: true,
+    subheader: "基本代號2",
+  },
+  {
+    id: uniqueId(),
+    title: "車行",
+    icon: IconHome2,
+    href: "/CarAgency",
+  },
+  {
+    id: uniqueId(),
+    title: "保險公司",
+    icon: IconCarCrash,
+    href: "/InsuranceCompany",
+  },
+  {
+    id: uniqueId(),
+    title: "貸款公司",
+    icon: IconFileDollar,
+    href: "/LoanCompany",
   },
   // {
   //   id: uniqueId(),

@@ -1,4 +1,4 @@
-//貸款公司
+//保險公司
 "use client";
 import React, { useEffect, useState } from "react";
 import {
@@ -156,41 +156,76 @@ const CarAgencyTable = () => {
           </TableRow>
         </TableHead>
         <TableBody>
+          {editingRowId === "new" && (
+            <TableRow>
+              {["agencyName", "address", "owner", "taxId", "phone1"].map(
+                (field, index) => (
+                  <TableCell key={index}>
+                    {field === "type" ? (
+                      <Select
+                        value={editedRow?.type || "CASH"}
+                        onChange={(e) =>
+                          handleInputChange("type", e.target.value)
+                        }
+                        fullWidth
+                      >
+                        <MenuItem value="CASH">現金</MenuItem>
+                        <MenuItem value="CHECK">支票</MenuItem>
+                      </Select>
+                    ) : (
+                      <TextField
+                        value={editedRow?.[field] || ""}
+                        onChange={(e) =>
+                          handleInputChange(field, e.target.value)
+                        }
+                      />
+                    )}
+                  </TableCell>
+                )
+              )}
+              <TableCell>
+                <IconButton onClick={handleSaveClick} color="primary">
+                  <SaveIcon />
+                </IconButton>
+                <IconButton onClick={handleCancelClick} color="secondary">
+                  <CancelIcon />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+          )}
           {taxData?.map((row) => (
             <TableRow key={row.id}>
-              {[
-                "agencyName",
-                "address",
-                "owner",
-                "taxId",
-                "phone1",
-              ].map((field, index) => (
-                <TableCell key={index}>
-                  {editingRowId === row.id && field === "type" ? (
-                    <Select
-                      value={editedRow?.type || "CASH"}
-                      onChange={(e) =>
-                        handleInputChange("type", e.target.value)
-                      }
-                      fullWidth
-                    >
-                      <MenuItem value="CASH">現金</MenuItem>
-                      <MenuItem value="CHECK">支票</MenuItem>
-                    </Select>
-                  ) : field === "type" ? (
-                    <Typography>
-                      {row[field] === "CASH" ? "現金" : "支票"}
-                    </Typography>
-                  ) : editingRowId === row.id ? (
-                    <TextField
-                      value={editedRow?.[field] || ""}
-                      onChange={(e) => handleInputChange(field, e.target.value)}
-                    />
-                  ) : (
-                    <Typography>{row[field]}</Typography>
-                  )}
-                </TableCell>
-              ))}
+              {["agencyName", "address", "owner", "taxId", "phone1"].map(
+                (field, index) => (
+                  <TableCell key={index}>
+                    {editingRowId === row.id && field === "type" ? (
+                      <Select
+                        value={editedRow?.type || "CASH"}
+                        onChange={(e) =>
+                          handleInputChange("type", e.target.value)
+                        }
+                        fullWidth
+                      >
+                        <MenuItem value="CASH">現金</MenuItem>
+                        <MenuItem value="CHECK">支票</MenuItem>
+                      </Select>
+                    ) : field === "type" ? (
+                      <Typography>
+                        {row[field] === "CASH" ? "現金" : "支票"}
+                      </Typography>
+                    ) : editingRowId === row.id ? (
+                      <TextField
+                        value={editedRow?.[field] || ""}
+                        onChange={(e) =>
+                          handleInputChange(field, e.target.value)
+                        }
+                      />
+                    ) : (
+                      <Typography>{row[field]}</Typography>
+                    )}
+                  </TableCell>
+                )
+              )}
               <TableCell>
                 {editingRowId === row.id ? (
                   <>
@@ -213,36 +248,33 @@ const CarAgencyTable = () => {
             </TableRow>
           ))}
 
-          {editingRowId === "new" && (
+          {/* {editingRowId === "new" && (
             <TableRow>
-              {[
-                "agencyName",
-                
-                "address",
-                "owner",
-                "taxId",
-                "phone1",
-              ].map((field, index) => (
-                <TableCell key={index}>
-                  {field === "type" ? (
-                    <Select
-                      value={editedRow?.type || "CASH"}
-                      onChange={(e) =>
-                        handleInputChange("type", e.target.value)
-                      }
-                      fullWidth
-                    >
-                      <MenuItem value="CASH">現金</MenuItem>
-                      <MenuItem value="CHECK">支票</MenuItem>
-                    </Select>
-                  ) : (
-                    <TextField
-                      value={editedRow?.[field] || ""}
-                      onChange={(e) => handleInputChange(field, e.target.value)}
-                    />
-                  )}
-                </TableCell>
-              ))}
+              {["agencyName", "address", "owner", "taxId", "phone1"].map(
+                (field, index) => (
+                  <TableCell key={index}>
+                    {field === "type" ? (
+                      <Select
+                        value={editedRow?.type || "CASH"}
+                        onChange={(e) =>
+                          handleInputChange("type", e.target.value)
+                        }
+                        fullWidth
+                      >
+                        <MenuItem value="CASH">現金</MenuItem>
+                        <MenuItem value="CHECK">支票</MenuItem>
+                      </Select>
+                    ) : (
+                      <TextField
+                        value={editedRow?.[field] || ""}
+                        onChange={(e) =>
+                          handleInputChange(field, e.target.value)
+                        }
+                      />
+                    )}
+                  </TableCell>
+                )
+              )}
               <TableCell>
                 <IconButton onClick={handleSaveClick} color="primary">
                   <SaveIcon />
@@ -252,7 +284,7 @@ const CarAgencyTable = () => {
                 </IconButton>
               </TableCell>
             </TableRow>
-          )}
+          )} */}
         </TableBody>
       </Table>
     </Box>

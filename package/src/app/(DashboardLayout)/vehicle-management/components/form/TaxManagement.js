@@ -81,6 +81,7 @@ const TaxManagement= ({ mode }) => {
             autoComplete="off"
             error={!!errors.managementFee}
             {...register("managementFee", { required: true })}
+            
           />
         </Grid>
 

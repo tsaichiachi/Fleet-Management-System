@@ -71,6 +71,8 @@ const LedgerForm = () => {
    //console.log("searchParams", searchParams);
   //下載
   const handleDownload = async () => {
+    //console.log("searchParams", searchParams);
+
     if (!searchParams) {
       alert("請先輸入年月份");
       return;
@@ -80,9 +82,7 @@ const LedgerForm = () => {
         "http://218.35.172.213:8082/bill/monthBillDetail",
         {
           carLicenseNum,
-          ownerName: "王大帥",
           billDateList: [searchParams?.billDate],
-          id: 1,
           print: "Y",
         },
         {
@@ -179,7 +179,7 @@ const LedgerForm = () => {
             sx={{ margin: "10px", marginTop: "15px" }}
             onClick={handleDownload}
           >
-            下載
+            下載帳單
           </Button>
         </Grid>
 

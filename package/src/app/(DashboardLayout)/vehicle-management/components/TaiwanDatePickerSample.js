@@ -28,13 +28,25 @@ const TaiwanYearMonthPickerSample = ({
   trigger, // React Hook Form 的 `trigger` 方法，用於手動觸發驗證
 }) => {
   const [anchorEl, setAnchorEl] = useState(null); // 控制彈跳視窗的狀態
-  const [value, setValue] = useState(defaultValue); // 當前選擇的值
-  const [taiwanYear, setTaiwanYear] = useState(
-    defaultValue ? parseInt(defaultValue.split("-")[0]) : 1
-  );
-  const [month, setMonth] = useState(
-    defaultValue ? parseInt(defaultValue.split("-")[1]) : 1
-  );
+  const [value, setValue] = useState(""); // 輸入框的值預設為空白
+  const [taiwanYear, setTaiwanYear] = useState(1); // 下拉選單年份
+  const [month, setMonth] = useState(1); // 下拉選單月份
+
+  // 初始化預設值（僅設定下拉選單）
+  useEffect(() => {
+    const today = new Date();
+    const currentTaiwanYear = today.getFullYear() - 1911; // 轉為民國年
+    const currentMonth = today.getMonth() + 1; // 月份從0開始
+
+    if (defaultValue) {
+      const [year, month] = defaultValue.split("-");
+      setTaiwanYear(parseInt(year, 10));
+      setMonth(parseInt(month, 10));
+    } else {
+      setTaiwanYear(currentTaiwanYear);
+      setMonth(currentMonth);
+    }
+  }, [defaultValue]);
 
   // 當元件初始化時，註冊欄位到 React Hook Form
   useEffect(() => {
@@ -44,16 +56,6 @@ const TaiwanYearMonthPickerSample = ({
       });
     }
   }, [register, fieldName, required, label]);
-
-  // 設定預設值
-  useEffect(() => {
-    if (defaultValue) {
-      const [year, month] = defaultValue.split("-");
-      setTaiwanYear(parseInt(year));
-      setMonth(parseInt(month));
-      setValue(defaultValue);
-    }
-  }, [defaultValue]);
 
   // 開啟彈跳視窗
   const handleOpen = (event) => {
@@ -65,12 +67,12 @@ const TaiwanYearMonthPickerSample = ({
     setAnchorEl(null);
   };
 
-  // 確認選擇日期
+  // 確認選擇的日期
   const handleConfirm = () => {
     const formattedDate = `${String(taiwanYear).padStart(3, "0")}-${String(
       month
     ).padStart(2, "0")}`;
-    setValue(formattedDate);
+    setValue(formattedDate); // 使用者確認後才填入輸入框
     if (onChange) onChange(formattedDate); // 傳遞改變的值
     if (trigger) trigger(fieldName); // 手動觸發驗證
     handleClose();
@@ -90,7 +92,7 @@ const TaiwanYearMonthPickerSample = ({
             )}
           </Box>
         }
-        value={value || ""} // 顯示目前選擇的日期
+        value={value} // 輸入框預設為空
         error={error} // 顯示錯誤樣式
         helperText={helperText} // 錯誤提示訊息
         onClick={handleOpen}
@@ -126,7 +128,7 @@ const TaiwanYearMonthPickerSample = ({
                 onChange={(e) => setTaiwanYear(Number(e.target.value))}
                 fullWidth
               >
-                {generateOptions(1, 150).map((year) => (
+                {generateOptions(60, 150).map((year) => (
                   <MenuItem key={year} value={year}>
                     {String(year).padStart(3, "0")}
                   </MenuItem>

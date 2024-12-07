@@ -23,7 +23,7 @@ export default function RootLayout({ children }) {
   const pathname = usePathname();
   const [value, setValue] = useState(0);
   const [licenseNumber, setLicenseNumber] = useState("");
-  console.log(licenseNumber);
+  //console.log(licenseNumber);
 
   // Tabs 配置
   const Tabitem = useMemo(
@@ -48,7 +48,6 @@ export default function RootLayout({ children }) {
     [licenseNumber]
   );
 
-
   // Tab 切換處理
   const handleTabChange = (event, newValue) => {
     const storedLicenseNumber = localStorage.getItem("licenseNumber");
@@ -65,9 +64,9 @@ export default function RootLayout({ children }) {
     if (storedLicenseNumber) {
       setLicenseNumber(storedLicenseNumber);
     } else {
-      setLicenseNumber(""); 
+      setLicenseNumber("");
     }
-  }, [pathname]); 
+  }, [pathname]);
 
   const shouldRenderTabs = !(
     pathname === "/vehicle-management" ||
@@ -86,14 +85,11 @@ export default function RootLayout({ children }) {
     }
   }, [pathname, licenseNumber]);
 
-
-
   return (
     <MainWrapper className="mainwrapper">
-      <PageWrapper className="page-wrapper">
+      
         <Container
           sx={{
-            paddingTop: "20px",
             maxWidth: "1200px",
           }}
         >
@@ -110,7 +106,7 @@ export default function RootLayout({ children }) {
           )}
           <Box sx={{ minHeight: "calc(100vh - 170px)" }}>{children}</Box>
         </Container>
-      </PageWrapper>
+      
     </MainWrapper>
   );
 }

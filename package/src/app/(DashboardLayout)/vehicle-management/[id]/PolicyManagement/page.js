@@ -5,78 +5,101 @@ import DashboardCard from "@/app/(DashboardLayout)/components/shared/DashboardCa
 import Box from "@mui/material/Box";
 import PolicyManagmentTable from "../../components/table/PolicyManagementTable";
 import { useRouter } from "next/navigation";
-import {
-  Button,
-  TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
-import { useGetInsuranceList } from "@/app/(DashboardLayout)/vehicle-management/apihooks";
-import InsuranceCompanyTable from "../../components/table/InsuranceCompanyTable";
-import { useGetSingleInsuranceFee } from "@/app/(DashboardLayout)/vehicle-management/apihooks";
-
+import { Button, TextField, Typography, Pagination } from "@mui/material";
+import { requestHttp } from "@/utils/requestHttp";
 
 const PolicyManagement = () => {
   const router = useRouter();
+
+  // 狀態：保單資料與搜尋條件
+  const [insuranceList, setInsuranceList] = useState([]);
+  const [filteredInsurance, setFilteredInsurance] = useState([]);
   const [search, setSearch] = useState("");
-  const [query, setQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // 分頁狀態
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(4);
+  const [pageSize] = useState(5); // 每頁顯示筆數
+  const [totalPages, setTotalPages] = useState(0);
+
+  // 車輛牌照號碼
   const [carLicenseNum, setCarLicenseNumber] = useState("");
-  //console.log("licenseNumber:", carLicenseNum);
-  const [openDialog, setOpenDialog] = useState(false);
 
-  const { data: insuranceList, isLoading } = useGetInsuranceList(
-    // currentPage,
-    // pageSize,
-    carLicenseNum
-  );
+  // 呼叫 API 獲取保險資料
+  const fetchInsuranceList = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
 
-  //console.log("insuranceList:", insuranceList);
+      const response = await requestHttp(
+        "insuranceFeeSetting/getInsuranceFeeSetting",
+        {
+          method: "POST",
+          data: {
+            carLicenseNum,
+            size: pageSize,
+            page: currentPage,
+          },
+        }
+      );
 
-  const insurance = insuranceList?.pageList;
-  //console.log(insurance);
+      if (response?.code !== "G_0000") {
+        throw new Error(response?.message || "無法獲取保險列表");
+      }
 
-  // 搜尋過濾
-  const filteredInsurance = query
-    ? insurance?.filter((item) => item.insuranceCardNum?.includes(query))
-    : insurance || [];
-  const handleSearchClick = () => {
-    setQuery(search);
+      const totalItems = response.data?.total || 0;
+      setInsuranceList(response.data?.pageList || []);
+      setFilteredInsurance(response.data?.pageList || []);
+      setTotalPages(Math.ceil(totalItems / pageSize));
+    } catch (err) {
+      console.error("Error fetching insurance list:", err);
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleAddNewClick = () => {
-    router.push(`/vehicle-management/${carLicenseNum}/PolicyManagement/AddNew`);
-  };
-
-  //保險公司彈跳視窗
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
-
-  // 從 LocalStorage 取得車牌號碼
+  // 初始化獲取保險資料
   useEffect(() => {
     const storedLicenseNumber = localStorage.getItem("licenseNumber");
     if (storedLicenseNumber) {
       setCarLicenseNumber(storedLicenseNumber);
-    } else {
-      //console.warn("在 LocalStorage 中未找到車牌號碼");
-      setCarLicenseNumber(""); // 初始化為空字串以避免判斷失效
     }
   }, []);
+
+  useEffect(() => {
+    if (carLicenseNum) fetchInsuranceList();
+  }, [carLicenseNum, currentPage]);
+
+  // 搜尋處理
+  const handleSearchClick = () => {
+    const query = search.trim();
+    const filtered = insuranceList.filter((item) =>
+      item.insuranceCardNum?.includes(query)
+    );
+    setFilteredInsurance(filtered);
+    setTotalPages(Math.ceil(filtered.length / pageSize));
+    setCurrentPage(1); // 搜尋後重置到第一頁
+  };
+
+  // 分頁處理
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  // 新增保單按鈕
+  const handleAddNewClick = () => {
+    router.push(`/vehicle-management/${carLicenseNum}/PolicyManagement/AddNew`);
+  };
 
   return (
     <PageContainer title="保單管理" description="管理車輛保險相關資料">
       <DashboardCard title="">
         <Box sx={{ overflow: "auto", width: { xs: "400px", sm: "auto" } }}>
+          {/* 搜尋框與按鈕 */}
           <Box>
-            <TextField
+            {/* <TextField
               label="搜尋"
               id="outlined-size-small"
               value={search}
@@ -90,7 +113,7 @@ const PolicyManagement = () => {
               onClick={handleSearchClick}
             >
               搜尋
-            </Button>
+            </Button> */}
             <Button
               variant="contained"
               onClick={handleAddNewClick}
@@ -98,32 +121,36 @@ const PolicyManagement = () => {
             >
               新增保單
             </Button>
-            <Button
-              variant="contained"
-              onClick={handleOpenDialog}
-              sx={{ marginRight: "1%", marginTop: "1%" }}
-            >
-              保險公司
-            </Button>
           </Box>
-          <PolicyManagmentTable data={filteredInsurance} carLicenseNum={carLicenseNum}/>
+          {/* 保單列表 */}
+          {isLoading ? (
+            <Box sx={{ textAlign: "center", mt: 4 }}>
+              <Typography>資料加載中...</Typography>
+            </Box>
+          ) : error ? (
+            <Box sx={{ textAlign: "center", mt: 4 }}>
+              <Typography>無法載入資料，請稍後再試</Typography>
+            </Box>
+          ) : (
+            <>
+              <PolicyManagmentTable
+                data={filteredInsurance}
+                carLicenseNum={carLicenseNum}
+              />
+              {/* 分頁元件 */}
+              {totalPages > 0 && (
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+                  <Pagination
+                    count={totalPages}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                  />
+                </Box>
+              )}
+            </>
+          )}
         </Box>
       </DashboardCard>
-      {/* Modal for Insurance Company */}
-      <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-        maxWidth="xl"
-        fullWidth
-      >
-        <DialogTitle>保險公司列表</DialogTitle>
-        <DialogContent>
-          <InsuranceCompanyTable />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>關閉</Button>
-        </DialogActions>
-      </Dialog>
     </PageContainer>
   );
 };

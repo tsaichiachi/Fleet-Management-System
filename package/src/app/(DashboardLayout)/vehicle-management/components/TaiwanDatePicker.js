@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
+// 年选项生成函数
 const generateOptions = (start, end) =>
   Array.from({ length: end - start + 1 }, (_, i) => start + i);
 
@@ -24,29 +25,30 @@ const TaiwanDatePicker = ({
   register,
   fieldName,
   trigger,
-  disabled = false, // New disabled prop
+  disabled = false,
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [value, setValue] = useState(defaultValue || "");
+  const [value, setValue] = useState(""); // 输入框初始化为空
   const [taiwanYear, setTaiwanYear] = useState(1);
   const [month, setMonth] = useState(1);
   const [day, setDay] = useState(1);
 
-  // Register field
+  // 初始化日期（仅设置下拉选项，不设置输入框的值）
   useEffect(() => {
-    register(fieldName, {
-      required: required ? `${label}是必填項目` : false,
-    });
-  }, [register, fieldName, required, label]);
+    const today = new Date();
+    const currentTaiwanYear = today.getFullYear() - 1911; // 转为台湾年
+    const currentMonth = today.getMonth() + 1; // 月份从0开始
+    const currentDay = today.getDate();
 
-  // Update state when defaultValue changes
-  useEffect(() => {
     if (defaultValue) {
       const [year, month, day] = defaultValue.split("-");
       setTaiwanYear(parseInt(year, 10));
       setMonth(parseInt(month, 10));
       setDay(parseInt(day, 10));
-      setValue(defaultValue);
+    } else {
+      setTaiwanYear(currentTaiwanYear);
+      setMonth(currentMonth);
+      setDay(currentDay);
     }
   }, [defaultValue]);
 
@@ -64,9 +66,9 @@ const TaiwanDatePicker = ({
     const formattedDate = `${String(taiwanYear).padStart(3, "0")}-${String(
       month
     ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    setValue(formattedDate);
+    setValue(formattedDate); // 用户确认后才填入输入框的值
     if (onChange) onChange(formattedDate);
-    if (trigger) trigger(fieldName); // Manually trigger validation
+    if (trigger) trigger(fieldName); // 手动触发验证
     handleClose();
   };
 
@@ -83,7 +85,7 @@ const TaiwanDatePicker = ({
             )}
           </Box>
         }
-        value={value}
+        value={value} // 输入框默认值为空
         error={error}
         helperText={helperText}
         onClick={handleOpen}
@@ -98,7 +100,7 @@ const TaiwanDatePicker = ({
           ),
         }}
         fullWidth
-        disabled={disabled} // Disable TextField if disabled is true
+        disabled={disabled}
       />
 
       <Popover
@@ -120,7 +122,7 @@ const TaiwanDatePicker = ({
                 onChange={(e) => setTaiwanYear(Number(e.target.value))}
                 fullWidth
               >
-                {generateOptions(1, 150).map((year) => (
+                {generateOptions(60, 150).map((year) => (
                   <MenuItem key={year} value={year}>
                     {String(year).padStart(3, "0")}
                   </MenuItem>

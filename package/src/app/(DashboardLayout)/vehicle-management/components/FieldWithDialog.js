@@ -45,7 +45,7 @@ const FieldWithDialog = ({
             variant="contained"
             onClick={handleOpenDialog}
             sx={{
-              backgroundColor: "grey.300",
+              backgroundColor: "#81C0C0",
               color: "white",
               height: "30px",
               width: "20%",
