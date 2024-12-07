@@ -35,7 +35,7 @@ function VehicleManagementPage() {
   };
 
   return (
-    <PageContainer title="車籍管理" description="">
+    <PageContainer title="車籍管理" description="管理車籍相關資料">
       <DashboardCard title="車籍資料">
         <Box sx={{ overflow: "auto", width: { xs: "400px", sm: "auto" } }}>
           <Box>

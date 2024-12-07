@@ -76,8 +76,6 @@ const LoanManagementForm = ({ mode }) => {
  }, [LoanFeeData, setValue]);
 
  
-
-
   // 加載中處理
   if (isLoading) {
     return <p>資料加載中...</p>;

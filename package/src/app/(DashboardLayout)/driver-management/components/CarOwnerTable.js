@@ -24,7 +24,7 @@ const CarOwnerTable = ({
 }) => {
   //console.log(data);
   const owner = data;
-  console.log(owner);
+  //console.log(owner);
   const router = useRouter();
 
 
@@ -46,7 +46,7 @@ const CarOwnerTable = ({
   if (!data || data.length === 0) {
     return (
       <Box sx={{ textAlign: "center", mt: 4 }}>
-        <Typography>No data available</Typography>
+        <Typography>資料加載中...</Typography>
       </Box>
     );
   }

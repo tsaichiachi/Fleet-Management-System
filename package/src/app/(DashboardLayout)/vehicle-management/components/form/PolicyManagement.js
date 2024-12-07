@@ -3,56 +3,80 @@ import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import { Button, Grid, TextField, Divider, MenuItem } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import TaiwanDatePicker from "../TaiwanDatePicker";
 import {
   useAddInsurance,
   useGetInsuranceComDropDownList,
+  useGetSingleInsuranceFee,
+  useEditInsurance,
 } from "../../apihooks";
 
 const PolicyManagement = ({ mode }) => {
+  console.log("mode:", mode);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const insuranceCardNum = searchParams.get("insuranceCardNum");
+  console.log("insuranceCardNum:", insuranceCardNum);
   const [carLicenseNum, setCarLicenseNum] = useState("");
   const { mutate: addInsurance, isLoading } = useAddInsurance();
+  const { mutate: editInsurance } = useEditInsurance();
   const { data: InsuranceComs } = useGetInsuranceComDropDownList();
-  //console.log(InsuranceComs);
+  const { data: InsuranceFee } = useGetSingleInsuranceFee(
+    mode === "add" ? null : carLicenseNum,
+    insuranceCardNum,
+    mode
+  );
+  //console.log("InsuranceFeear:", InsuranceFee);
 
   const handleCancelClick = () => {
     router.push(`/vehicle-management/${carLicenseNum}/PolicyManagement`);
   };
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    trigger,
-    formState: { errors },
-    watch,
-  } = useForm();
-
+    const {
+      register,
+      handleSubmit,
+      setValue,
+      trigger,
+      formState: { errors },
+      watch,
+      reset,
+    } = useForm();
 
   const onSubmit = (data) => {
-    
-    const formData = {
+
+    // 定義提交數據
+    const submissionData = {
       ...data,
       carLicenseNum,
     };
 
-    console.log("表單提交數據：", formData);
+    console.log("submissionData:", submissionData);
 
-    addInsurance(formData, {
-      onSuccess: () => {
-        alert("保單新增成功！");
-        router.push(
-          `/vehicle-management/${formData.carLicenseNum}/PolicyManagement`
-        );
-      },
-      onError: (error) => {
-        console.error("新增保單失敗：", error);
-        alert("新增失敗，請檢查表單資料！");
-      },
-    });
+    // if (mode === "add") {
+    //   // 新增模式處理
+    //   submissionData.insuranceCardNum = data.insuranceCardNum; // 保留 insuranceCardNum
+    //   delete submissionData.NewinsuranceCardNum; // 移除 NewinsuranceCardNum
+    // } else if (mode === "edit") {
+    //   // 編輯模式處理
+    //   if (data.NewinsuranceCardNum) {
+    //     submissionData.originalInsuranceCardNum = data.insuranceCardNum; // 將新值設置為 insuranceCardNum
+    //     submissionData.insuranceCardNum = data.NewinsuranceCardNum; // 將新值設置為 insuranceCardNum
+    //   } else {
+    //     submissionData.originalInsuranceCardNum = data.insuranceCardNum; // 將原值設置為 originalInsuranceCardNum
+    //   }
+    //   delete submissionData.NewinsuranceCardNum; // 編輯後清除 NewinsuranceCardNum
+    // }
+
+    // 提交數據
+    if (mode === "add") {
+      addInsurance(submissionData); // 新增模式
+    } else if (mode === "edit") {
+      editInsurance(submissionData); // 編輯模式
+    }
   };
+
+
 
   // 從 localStorage 獲取車牌號碼
   useEffect(() => {
@@ -65,7 +89,22 @@ const PolicyManagement = ({ mode }) => {
     }
   }, []);
 
+  // 預設值綁定到表單
+  useEffect(() => {
+    if (mode === "add") {
+      reset();
+    } else if (mode === "edit" && InsuranceFee) {
+      Object.entries(InsuranceFee).forEach(([key, value]) => {
+        setValue(key, value || "");
+      });
+    }
+  }, [mode, InsuranceFee, reset, setValue]);
 
+  useEffect(() => {
+    if (InsuranceFee) {
+      setValue("insuranceCom", InsuranceFee.insuranceCom || "");
+    }
+  }, [InsuranceFee, setValue]);
 
   return (
     <Box
@@ -85,9 +124,24 @@ const PolicyManagement = ({ mode }) => {
             id="carLicenseNum"
             label="車牌號碼"
             value={carLicenseNum}
+            error={!!errors.carLicenseNum}
+            {...register("carLicenseNum", { required: false })}
+            InputLabelProps={{ shrink: true }}
             InputProps={{
               readOnly: true,
             }}
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <TextField
+            disabled={mode === "edit"}
+            required
+            id="insuranceCardNum"
+            label="保卡資料"
+            type="text"
+            error={!!errors.insuranceCardNum}
+            {...register("insuranceCardNum", { required: true })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
 
@@ -142,7 +196,7 @@ const PolicyManagement = ({ mode }) => {
             label="起日"
             fieldName="startDate"
             required={true}
-            defaultValue=""
+            defaultValue={InsuranceFee?.startDate || ""}
             onChange={(value) => {
               setValue("startDate", value);
               trigger("startDate");
@@ -159,7 +213,7 @@ const PolicyManagement = ({ mode }) => {
             label="止日"
             fieldName="endDate"
             required={true}
-            defaultValue=""
+            defaultValue={InsuranceFee?.endDate || ""}
             onChange={(value) => {
               setValue("endDate", value);
               trigger("endDate");
@@ -176,7 +230,7 @@ const PolicyManagement = ({ mode }) => {
             label="入帳月"
             fieldName="payUsDate"
             required={true}
-            defaultValue=""
+            defaultValue={InsuranceFee?.payUsDate || ""}
             onChange={(value) => {
               setValue("payUsDate", value);
               trigger("payUsDate");
@@ -230,18 +284,20 @@ const PolicyManagement = ({ mode }) => {
         </Grid>
 
         {/* 保卡資料 */}
-        <Grid item xs={12} md={6}>
-          <TextField
-            required
-            id="insuranceCardNum"
-            label="保卡資料"
-            type="text"
-            autoComplete="off"
-            error={!!errors.insuranceCardNum}
-            {...register("insuranceCardNum", { required: true })}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid>
+        {/* {mode === "edit" && (
+          <Grid item xs={12} md={6}>
+            <TextField
+              required
+              id="NewinsuranceCardNum"
+              label="變更保卡資料"
+              type="text"
+              autoComplete="off"
+              error={!!errors.NewinsuranceCardNum}
+              {...register("NewinsuranceCardNum", { required: false })}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+        )} */}
 
         {/* 退日 */}
         <Grid item xs={12} md={6}>
@@ -249,7 +305,7 @@ const PolicyManagement = ({ mode }) => {
             label="退日"
             fieldName="quitDate"
             required={true}
-            defaultValue=""
+            defaultValue={InsuranceFee?.quitDate || ""}
             onChange={(value) => {
               setValue("quitDate", value);
               trigger("quitDate");

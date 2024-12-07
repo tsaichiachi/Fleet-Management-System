@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { requestHttp } from "@/utils/requestHttp";
+import { useRouter } from "next/navigation";
+import { size } from "lodash";
 
 
 // API: 取得所有車輛
@@ -40,16 +42,49 @@ export const useAddCars = () => {
     },
     {
       onSuccess: (response) => {
-        alert("新增車主成功！"); // 可視化成功訊息
+        alert("新增車輛成功！"); // 可視化成功訊息
         queryClient.invalidateQueries("cars"); // 更新車主列表
       },
       onError: (error) => {
         alert(`新增失敗：${error.message}`); // 可視化錯誤訊息
-        console.error("新增車主失敗：", error);
+        console.error("新增車輛失敗：", error);
       },
     }
   );
 };
+
+//修改車輛
+export const useEditCars = () => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation(
+    async (newCar) => {
+      const response = await requestHttp("car/updateCar", {
+        method: "POST",
+        data: newCar,
+      });
+
+      if (response.code === "G_0000") {
+        return response; // 成功返回響應
+      } else {
+        throw new Error(response.message || "修改失敗"); // 如果不是 G_0000，拋出錯誤
+      }
+    },
+    {
+      onSuccess: (response) => {
+        alert("修改車主成功！"); // 可視化成功訊息
+        router.push(`/vehicle-management`);
+        queryClient.invalidateQueries("cars"); // 更新車主列表
+      },
+      onError: (error) => {
+        alert(`新增失敗：${error.message}`); // 可視化錯誤訊息
+        console.error("修改車主失敗：", error);
+      },
+    }
+  );
+};
+
 
 // API: 取得車主下拉列表
 export const useGetCarOwnerDropDownList = () => {
@@ -88,7 +123,7 @@ export const useGetInsuranceList = (carLicenseNum) => {
         "insuranceFeeSetting/getInsuranceFeeSetting",
         {
           method: "POST",
-          data: { carLicenseNum },
+          data: { carLicenseNum,size:1000,page:1  },
         }
       );
 
@@ -119,24 +154,67 @@ export const useAddInsurance = () => {
           data: newInsurance,
         }
       );
-      return response;
+      if (response.code === "G_0000") {
+        return response; // 成功返回響應
+      } else {
+        throw new Error(response.message || "新增失敗"); // 如果不是 G_0000，拋出錯誤
+      }
     },
     {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["insuranceList"]);
+      onSuccess: (response) => {
+        alert("新增保單成功！"); // 可視化成功訊息
+        queryClient.invalidateQueries("cars"); // 更新車主列表
+      },
+      onError: (error) => {
+        alert(`新增保單失敗：${error.message}`); // 可視化錯誤訊息
+        console.error("新增保單失敗：", error);
       },
     }
   );
 };
 
-// API: 刪除保險資料
+// API: 修改保險資料
+export const useEditInsurance = () => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation(
+    async (newInsurance) => {
+      const response = await requestHttp(
+        "insuranceFeeSetting/updateInsuranceFeeSetting",
+        {
+          method: "POST",
+          data: newInsurance,
+        }
+      );
+
+      if (response.code === "G_0000") {
+        return response; // 成功返回響應
+      } else {
+        throw new Error(response.message || "修改失敗"); // 如果不是 G_0000，拋出錯誤
+      }
+    },
+    {
+      onSuccess: (response) => {
+        alert("修改保單成功！"); // 可視化成功訊息
+        queryClient.invalidateQueries("cars"); // 更新車主列表
+      },
+      onError: (error) => {
+        alert(`修改保單失敗：${error.message}`); // 可視化錯誤訊息
+        console.error("修改保單失敗：", error);
+      },
+    }
+  );
+};
+
+// API: 作廢保險資料
 export const useDeleteInsurance = () => {
   const queryClient = useQueryClient();
 
   return useMutation(
     async (deleteInsuranceData) => {
       const response = await requestHttp(
-        "insuranceFeeSetting/deleteInsuranceFeeSetting",
+        "insuranceFeeSetting/updateInsuranceFeeSettingStatus",
         {
           method: "POST",
           data: deleteInsuranceData,
@@ -182,6 +260,34 @@ export const useGetInsuranceComDropDownList = () => {
     }
   );
 };
+
+// API: 取得保險單筆資料
+export const useGetSingleInsuranceFee = (carLicenseNum, insuranceCardNum, mode) => {
+  //console.log("licenseNumber", carLicenseNum);
+  //console.log("insuranceCardNum", insuranceCardNum);
+  //console.log("mode", mode);
+  return useQuery(
+    ["singleInsuranceFee", carLicenseNum, insuranceCardNum],
+    async () => {
+      const response = await requestHttp(
+        "insuranceFeeSetting/getSingleInsuranceFeeSetting",
+        {
+          method: "POST",
+          data: { carLicenseNum, insuranceCardNum },
+        }
+      );
+
+      //console.log("singleInsuranceFee API Response:", response);
+      return response.data;
+    },
+    {
+      enabled: mode !== "add" && !!carLicenseNum, // 僅當 mode !== "add" 且 licenseNumber 存在時查詢
+    }
+  );
+};
+
+
+
 
 
 //管費設定
@@ -324,6 +430,7 @@ export const useGetCarAgencyDropDownList = () => {
     async () => {
       const response = await requestHttp("carAgency/getCarAgency", {
         method: "POST",
+        
       });
 
       if (response.code !== "G_0000") {
@@ -354,7 +461,7 @@ export const useGetCarOwnerInfo = (id) => {
     async () => {
       const response = await requestHttp("car/getCarOwnerById", {
         method: "POST",
-        data: { id },
+        data: { id  },
       });
 
       console.log("Car Owner Info API Response:", response);
@@ -366,5 +473,44 @@ export const useGetCarOwnerInfo = (id) => {
   );
 };
 
+//取得車牌資料
+// API: 取得車牌資料
+export const useGetCar = (licenseNumber, mode) => {
+  return useQuery(
+    ["carInfo", licenseNumber],
+    async () => {
+      const response = await requestHttp("car/getCarByLicenseNum", {
+        method: "POST",
+        data: { licenseNumber },
+      });
+
+      console.log("Car Info API Response:", response);
+      return response.data;
+    },
+    {
+      enabled: mode !== "add" && !!licenseNumber, // 僅當 mode !== "add" 且 licenseNumber 存在時查詢
+    }
+  );
+};
+
+//搜尋車牌By車主
+// API: 取得車牌資料
+export const useGetCarByOwner = (searchName) => {
+  return useQuery(
+    ["CarByOwner", searchName],
+    async () => {
+      const response = await requestHttp("car/searchCarByCarOwner", {
+        method: "POST",
+        data: { searchName },
+      });
+
+      console.log("Car Info API Response:", response);
+      return response.data.pageList;
+    },
+    {
+      enabled: !!searchName,
+    }
+  );
+};
 
 

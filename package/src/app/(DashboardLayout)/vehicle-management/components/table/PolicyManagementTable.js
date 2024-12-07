@@ -13,21 +13,35 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/navigation";
+import { useDeleteInsurance } from "../../apihooks";
 
-
-const PolicyManagmentTable = ({
-  data,
-}) => {
+const PolicyManagmentTable = ({ data, carLicenseNum }) => {
+  console.log("carLicenseNum:", carLicenseNum);
   console.log("data:", data);
   const router = useRouter();
 
-  const handleEditClick = (id) => {
-    router.push(`/vehicle-management/${id}/PolicyManagement/Edit`);
+  const { mutate: deleteInsurance } = useDeleteInsurance();
+
+  const handleEditClick = (carLicenseNum, insuranceCardNum) => {
+    router.push(
+      `/vehicle-management/${carLicenseNum}/PolicyManagement/Edit?insuranceCardNum=${insuranceCardNum}`
+    );
   };
 
-  const handleDeleteClick = (id) => {
-    console.log(`Deleting policy with ID: ${id}`);
-  };
+    const handleDeleteClick = (carLicenseNum, insuranceCardNum) => {
+      deleteInsurance(
+        { carLicenseNum, insuranceCardNum },
+        {
+          onSuccess: () => {
+            alert("作廢成功");
+          },
+          onError: (error) => {
+            alert("作廢失敗");
+            console.error("删除失败：", error);
+          },
+        }
+      );
+    };
 
   return (
     <Box sx={{ overflow: "auto", width: { xs: "auto", sm: "auto" } }}>
@@ -40,11 +54,6 @@ const PolicyManagmentTable = ({
       >
         <TableHead>
           <TableRow>
-            {/* <TableCell sx={{ width: "6%" }}>
-              <Typography variant="subtitle2" fontWeight={600}>
-                Id
-              </Typography>
-            </TableCell> */}
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
                 保險公司
@@ -92,6 +101,11 @@ const PolicyManagmentTable = ({
             </TableCell>
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
+                作廢
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography variant="subtitle2" fontWeight={600}>
                 操作
               </Typography>
             </TableCell>
@@ -100,9 +114,6 @@ const PolicyManagmentTable = ({
         <TableBody>
           {data?.map((product) => (
             <TableRow key={product.id}>
-              {/* <TableCell>
-                <Typography fontWeight={500}>{product.id}</Typography>
-              </TableCell> */}
               <TableCell>
                 <Typography fontWeight={400}>{product.insuranceCom}</Typography>
               </TableCell>
@@ -131,22 +142,47 @@ const PolicyManagmentTable = ({
                   {product.insuranceCardNum}
                 </Typography>
               </TableCell>
+
               <TableCell>
                 <Typography fontWeight={400}>{product.quitDate}</Typography>
               </TableCell>
+
               <TableCell>
-                <IconButton
-                  aria-label="edit"
-                  onClick={() => handleEditClick(product.id)}
-                >
-                  <EditIcon />
-                </IconButton>
-                <IconButton
-                  aria-label="delete"
-                  onClick={() => handleDeleteClick(product.id)}
-                >
-                  <DeleteIcon />
-                </IconButton>
+                <Typography fontWeight={400}>
+                  {product.status === "DISABLE"
+                    ? "是"
+                    : product.status === "ENABLE"
+                    ? "否"
+                    : ""}
+                </Typography>
+              </TableCell>
+
+              <TableCell>
+                {product.status === "ENABLE" ? (
+                  <>
+                    <IconButton
+                      aria-label="edit"
+                      onClick={() =>
+                        handleEditClick(carLicenseNum, product.insuranceCardNum)
+                      }
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      aria-label="delete"
+                      onClick={() =>
+                        handleDeleteClick(
+                          carLicenseNum,
+                          product.insuranceCardNum
+                        )
+                      }
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </>
+                ) : (
+                  "已作廢"
+                )}
               </TableCell>
             </TableRow>
           ))}

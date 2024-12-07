@@ -33,6 +33,7 @@ const InsuranceCompanyTable = () => {
         "insuranceCompany/getInsuranceCompany",
         {
           method: "POST",
+          data: { size: 1000, page: 1 },
         }
       );
 

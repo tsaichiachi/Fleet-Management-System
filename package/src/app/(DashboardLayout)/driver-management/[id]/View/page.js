@@ -4,6 +4,7 @@ import PageContainer from "@/app/(DashboardLayout)/components/container/PageCont
 import DashboardCard from "@/app/(DashboardLayout)/components/shared/DashboardCard";
 import CarOwnerSetting from "../../components/CarOwnerSettingForm";
 import VehicleTable from "../../../vehicle-management/components/VehicleTable"
+import { useGetCarByOwner } from "@/app/(DashboardLayout)/vehicle-management/apihooks";
 
 
 const OwnerEdit = () => {
@@ -11,7 +12,7 @@ const OwnerEdit = () => {
     <PageContainer title="車籍資料建立" description="this is Sample page">
       <DashboardCard title="檢視車主資料">
         <CarOwnerSetting mode="view" />
-        <VehicleTable  />
+        {/* <VehicleTable  /> */}
       </DashboardCard>
     </PageContainer>
   );

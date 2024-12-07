@@ -1,6 +1,6 @@
 "use client";
 import { styled, Container, Box, Tabs, Tab } from "@mui/material";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
 const MainWrapper = styled("div")(() => ({
@@ -23,29 +23,38 @@ export default function RootLayout({ children }) {
   const pathname = usePathname();
   const [value, setValue] = useState(0);
   const [licenseNumber, setLicenseNumber] = useState("");
+  console.log(licenseNumber);
 
   // Tabs 配置
-  const Tabitem = [
-    {
-      label: "管費設定",
-      url: `/vehicle-management/${licenseNumber}/ManagementFeeSetting`,
-    },
-    {
-      label: "保單管理",
-      url: `/vehicle-management/${licenseNumber}/PolicyManagement`,
-    },
-    {
-      label: "貸款管理",
-      url: `/vehicle-management/${licenseNumber}/LoanManagement`,
-    },
-    {
-      label: "車輛總帳",
-      url: `/vehicle-management/${licenseNumber}/Ledger`,
-    },
-  ];
+  const Tabitem = useMemo(
+    () => [
+      {
+        label: "管費設定",
+        url: `/vehicle-management/${licenseNumber}/ManagementFeeSetting`,
+      },
+      {
+        label: "保單管理",
+        url: `/vehicle-management/${licenseNumber}/PolicyManagement`,
+      },
+      {
+        label: "貸款管理",
+        url: `/vehicle-management/${licenseNumber}/LoanManagement`,
+      },
+      {
+        label: "車輛總帳",
+        url: `/vehicle-management/${licenseNumber}/Ledger`,
+      },
+    ],
+    [licenseNumber]
+  );
+
 
   // Tab 切換處理
   const handleTabChange = (event, newValue) => {
+    const storedLicenseNumber = localStorage.getItem("licenseNumber");
+    if (storedLicenseNumber) {
+      setLicenseNumber(storedLicenseNumber);
+    }
     setValue(newValue);
     router.push(Tabitem[newValue].url);
   };
@@ -56,20 +65,15 @@ export default function RootLayout({ children }) {
     if (storedLicenseNumber) {
       setLicenseNumber(storedLicenseNumber);
     } else {
-      //console.warn("在 LocalStorage 中未找到車牌號碼");
-      setLicenseNumber(""); // 初始化為空字串以避免判斷失效
+      setLicenseNumber(""); 
     }
-  }, []);
+  }, [pathname]); 
 
-
-  
   const shouldRenderTabs = !(
-    (
-      pathname === "/vehicle-management" ||
-      pathname === "/vehicle-management/AddNew" ||
-      pathname.match(/\/vehicle-management\/[^/]+\/Edit$/) || // 確保 Edit 頁面不顯示 Tabs
-      !licenseNumber
-    ) 
+    pathname === "/vehicle-management" ||
+    pathname === "/vehicle-management/AddNew" ||
+    pathname.match(/\/vehicle-management\/[^/]+\/Edit$/) || // 確保 Edit 頁面不顯示 Tabs
+    !licenseNumber
   );
 
   // 更新當前選中的 Tab
@@ -78,19 +82,11 @@ export default function RootLayout({ children }) {
       const currentIndex = Tabitem.findIndex((item) =>
         pathname.includes(item.url)
       );
-      if (currentIndex !== -1) {
-        setValue(currentIndex);
-      } else {
-        setValue(0);
-      }
+      setValue(currentIndex !== -1 ? currentIndex : 0);
     }
   }, [pathname, licenseNumber]);
 
-  useEffect(() => {
-    //console.log("Current pathname:", pathname);
-    // console.log("License Number:", licenseNumber);
-    // console.log("Should Render Tabs:", shouldRenderTabs);
-  }, [pathname, licenseNumber]);
+
 
   return (
     <MainWrapper className="mainwrapper">

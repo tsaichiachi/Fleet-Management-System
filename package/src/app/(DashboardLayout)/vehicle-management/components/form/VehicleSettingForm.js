@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { Button, Grid, Divider } from "@mui/material";
@@ -7,15 +7,23 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import TaiwanDatePicker from "../TaiwanDatePicker";
 import { useAddCars, useGetCarOwnerDropDownList } from "../../apihooks";
-import {
-  MenuItem,
-} from "@mui/material";
+import { MenuItem } from "@mui/material";
+import { useGetCar, useEditCars } from "../../apihooks";
+import TaiwanYearMonthPickerSample from "../TaiwanDatePickerSample";
+import { useGetCarAgencyDropDownList } from "../../apihooks";
 
 const VehicleSetting = ({ mode }) => {
   //console.log("VehicleSetting mode:", mode);
   const router = useRouter();
   const { mutate: addCar } = useAddCars();
+  const { mutate: editCar } = useEditCars();
   const { data: carOwners } = useGetCarOwnerDropDownList();
+  const { data: carAgency } = useGetCarAgencyDropDownList();
+  console.log("carAgency:", carAgency);
+  const [carLicenseNum, setCarLicenseNum] = useState("");
+  //console.log("carLicenseNum:", carLicenseNum);
+  const { data: car } = useGetCar(mode === "add" ? null : carLicenseNum, mode);
+  console.log("car:", car)
 
   const {
     register,
@@ -23,31 +31,54 @@ const VehicleSetting = ({ mode }) => {
     setValue,
     trigger,
     formState: { errors },
+    watch,
+    reset,
   } = useForm();
 
   const onSubmit = (data) => {
-    //console.log(data);
+    //console.log("data:", data);
+    const submissionData = {
+      ...data,
+      inspectionType: data.inspectionType
+        ? parseInt(data.inspectionType, 10)
+        : null,
+    };
+
     if (mode === "add") {
-      const submissionData = {
-        ...data,
-        joinAmount: data.joinAmount ? parseInt(data.joinAmount, 10) : null,
-        quitAmount: data.quitAmount ? parseInt(data.quitAmount, 10) : null,
-        westYear: data.westYear ? parseInt(data.westYear, 10) : null,
-        inspectionType: data.inspectionType
-          ? parseInt(data.inspectionType, 10)
-          : null,
-      };
-      addCar(submissionData, {
-        onSuccess: () => {
-          console.log("新增成功！");
-          router.push(`/vehicle-management`); // 新增成功後跳轉列表頁
-        },
-        onError: (error) => {
-          console.error("新增失敗：", error);
-        },
-      });
+      addCar(submissionData, {});
+      
+    } else if (mode === "edit") {
+      editCar({ ...submissionData, carLicenseNum });
     }
   };
+
+  // 從 localStorage 獲取車牌號碼
+  useEffect(() => {
+    const licenseNum = localStorage.getItem("licenseNumber");
+    if (licenseNum) {
+      setCarLicenseNum(licenseNum);
+    } else {
+      console.error("車牌號碼不存在於 localStorage");
+    }
+  }, []);
+
+  // 預設值綁定到表單
+  useEffect(() => {
+    if (mode === "add") {
+      reset();
+    } else if (mode === "edit" && car) {
+      Object.entries(car).forEach(([key, value]) => {
+        setValue(key, value || "");
+      });
+    }
+  }, [mode, car, reset, setValue]);
+ 
+
+  useEffect(() => {
+    if (car) {
+      setValue("ownerName", car.ownerName || "");
+    }
+  }, [car, setValue]);
 
   return (
     <Box
@@ -63,26 +94,34 @@ const VehicleSetting = ({ mode }) => {
         {/* 車牌號碼和車主 */}
         <Grid item xs={12} md={6}>
           <TextField
+            disabled={mode === "edit"}
             required
             id="licenseNumber"
-            label="車牌號碼"
+            label="車牌"
             type="text"
             error={!!errors.licenseNumber}
             {...register("licenseNumber", { required: true })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
             select
             required
+            value={watch("ownerName") || ""}
+            onChange={(e) => setValue("ownerName", e.target.value)}
             label="車主"
             error={!!errors.ownerName}
             {...register("ownerName", { required: true })}
             fullWidth
             disabled={mode === "view"}
+            InputLabelProps={{ shrink: true }}
           >
+            <MenuItem value="" disabled>
+              請選擇
+            </MenuItem>
             {carOwners?.map((owner) => (
-              <MenuItem key={owner.key} value={owner.value}>
+              <MenuItem key={owner.key} value={owner.name}>
                 {`${owner.name}`}
               </MenuItem>
             ))}
@@ -90,13 +129,35 @@ const VehicleSetting = ({ mode }) => {
         </Grid>
         <Grid item xs={12} md={6}>
           <TextField
+            select
+            required
+            value={watch("carAgency") || ""}
+            onChange={(e) => setValue("carAgency", e.target.value)}
+            label="車行"
+            error={!!errors.carAgency}
+            {...register("carAgency", { required: true })}
+            fullWidth
+            disabled={mode === "view"}
+            InputLabelProps={{ shrink: true }}
+          >
+            <MenuItem value="" disabled>
+              請選擇
+            </MenuItem>
+            {carAgency?.map((Agency) => (
+              <MenuItem key={Agency.key} value={Agency.name}>
+                {`${Agency.name}`}
+              </MenuItem>
+            ))}
+          </TextField>
+          {/* <TextField
             required
             id="carAgency"
             label="車行"
             type="text"
             error={!!errors.carAgency}
             {...register("carAgency", { required: true })}
-          />
+            InputLabelProps={{ shrink: true }}
+          /> */}
         </Grid>
         <Grid item xs={12} md={12}>
           <Divider
@@ -113,7 +174,7 @@ const VehicleSetting = ({ mode }) => {
             label="遷入日期"
             fieldName="joinDate"
             required={true}
-            defaultValue=""
+            defaultValue={mode === "edit" ? car?.joinDate || "" : ""}
             onChange={(value) => {
               setValue("joinDate", value);
               trigger("joinDate");
@@ -130,6 +191,7 @@ const VehicleSetting = ({ mode }) => {
             type="number"
             error={!!errors.joinAmount}
             {...register("joinAmount", { required: false })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         {/* 車料來源 */}
@@ -140,6 +202,7 @@ const VehicleSetting = ({ mode }) => {
             type="text"
             error={!!errors.carFrom}
             {...register("carFrom", { required: false })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         {/* 遷出日期和遷出金額 */}
@@ -148,7 +211,7 @@ const VehicleSetting = ({ mode }) => {
             label="遷出日期"
             fieldName="quitDate"
             required={false}
-            defaultValue=""
+            defaultValue={mode === "edit" ? car?.quitDate || "" : ""}
             onChange={(value) => {
               setValue("quitDate", value);
               trigger("quitDate");
@@ -165,6 +228,7 @@ const VehicleSetting = ({ mode }) => {
             type="number"
             error={!!errors.quitAmount}
             {...register("quitAmount", { required: false })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         {/* 遷出地點 */}
@@ -175,6 +239,7 @@ const VehicleSetting = ({ mode }) => {
             type="text"
             error={!!errors.quitPlace}
             {...register("quitPlace", { required: false })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         <Grid item xs={12} md={12}></Grid>
@@ -184,7 +249,7 @@ const VehicleSetting = ({ mode }) => {
             label="發照日期"
             fieldName="licenseIssueDate"
             required={true}
-            defaultValue=""
+            defaultValue={mode === "edit" ? car?.licenseIssueDate || "" : ""}
             onChange={(value) => {
               setValue("licenseIssueDate", value);
               trigger("licenseIssueDate");
@@ -195,16 +260,23 @@ const VehicleSetting = ({ mode }) => {
           />
         </Grid>
         <Grid item xs={12} md={6}>
-          <TextField
-            required
-            id="manufactureDate"
+          <TaiwanYearMonthPickerSample
             label="出廠年月(YYY-MM)"
-            type="text"
-            error={!!errors.manufactureDate}
-            {...register("manufactureDate", { required: true })}
+            fieldName="manufactureYearMonth"
+            required={true}
+            defaultValue={
+              mode === "edit" ? car?.manufactureYearMonth || "" : ""
+            }
+            onChange={(value) => {
+              setValue("manufactureYearMonth", value);
+              trigger("manufactureYearMonth");
+            }}
+            error={!!errors.billDate}
+            register={register}
+            trigger={trigger}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        {/* <Grid item xs={12} md={6}>
           <TextField
             required
             id="westYear"
@@ -212,8 +284,9 @@ const VehicleSetting = ({ mode }) => {
             type="number"
             error={!!errors.westYear}
             {...register("westYear", { required: true })}
+            InputLabelProps={{ shrink: true }}
           />
-        </Grid>
+        </Grid> */}
 
         {/* 廠牌 */}
         <Grid item xs={12} md={6}>
@@ -224,6 +297,7 @@ const VehicleSetting = ({ mode }) => {
             type="text"
             error={!!errors.brand}
             {...register("brand", { required: true })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         {/* 噸位CC數 */}
@@ -235,6 +309,7 @@ const VehicleSetting = ({ mode }) => {
             type="text"
             error={!!errors.ton}
             {...register("ton", { required: true })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         <Grid item xs={12} md={6}>
@@ -245,6 +320,7 @@ const VehicleSetting = ({ mode }) => {
             type="text"
             error={!!errors.cc}
             {...register("cc", { required: true })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         {/* 引擎號碼 */}
@@ -256,6 +332,7 @@ const VehicleSetting = ({ mode }) => {
             type="text"
             error={!!errors.engineNum}
             {...register("engineNum", { required: true })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         {/* 驗車日期 */}
@@ -264,7 +341,7 @@ const VehicleSetting = ({ mode }) => {
             label="驗車日期"
             fieldName="inspectionDate"
             required={true}
-            defaultValue=""
+            defaultValue={mode === "edit" ? car?.inspectionDate || "" : ""}
             onChange={(value) => {
               setValue("inspectionDate", value);
               trigger("inspectionDate");
@@ -280,7 +357,7 @@ const VehicleSetting = ({ mode }) => {
             label="換照日期"
             fieldName="renewLicenseDate"
             required={true}
-            defaultValue=""
+            defaultValue={mode === "edit" ? car?.renewLicenseDate || "" : ""}
             onChange={(value) => {
               setValue("renewLicenseDate", value);
               trigger("renewLicenseDate");
@@ -299,6 +376,7 @@ const VehicleSetting = ({ mode }) => {
             type="text"
             error={!!errors.carTypeOutlooking}
             {...register("carTypeOutlooking", { required: true })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         {/* 通行證 */}
@@ -309,6 +387,7 @@ const VehicleSetting = ({ mode }) => {
             type="text"
             error={!!errors.passLicense}
             {...register("passLicense", { required: false })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         {/* 車重 */}
@@ -320,6 +399,7 @@ const VehicleSetting = ({ mode }) => {
             type="text"
             error={!!errors.carWeight}
             {...register("carWeight", { required: true })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
 
@@ -332,6 +412,7 @@ const VehicleSetting = ({ mode }) => {
             type="text"
             error={!!errors.loadingWeight}
             {...register("loadingWeight", { required: true })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         {/* 車輛種類 */}
@@ -343,6 +424,7 @@ const VehicleSetting = ({ mode }) => {
             type="text"
             error={!!errors.carType}
             {...register("carType", { required: true })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         {/* 驗車方式 */}
@@ -354,6 +436,7 @@ const VehicleSetting = ({ mode }) => {
             type="number"
             error={!!errors.inspectionType}
             {...register("inspectionType", { required: true })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
 
@@ -363,7 +446,7 @@ const VehicleSetting = ({ mode }) => {
             label="超載到期"
             fieldName="violationDate"
             required={false}
-            defaultValue=""
+            defaultValue={mode === "edit" ? car?.violationDate || "" : ""}
             onChange={(value) => {
               setValue("violationDate", value);
               trigger("violationDate");
@@ -380,7 +463,7 @@ const VehicleSetting = ({ mode }) => {
             label="報停日期"
             fieldName="reportStopDate"
             required={false}
-            defaultValue=""
+            defaultValue={mode === "edit" ? car?.reportStopDate || "" : ""}
             onChange={(value) => {
               setValue("reportStopDate", value);
               trigger("reportStopDate");
@@ -397,7 +480,7 @@ const VehicleSetting = ({ mode }) => {
             label="報銷日期"
             fieldName="reportScrapDate"
             required={false}
-            defaultValue=""
+            defaultValue={mode === "edit" ? car?.reportScrapDate || "" : ""}
             onChange={(value) => {
               setValue("reportScrapDate", value);
               trigger("reportScrapDate");
@@ -416,6 +499,7 @@ const VehicleSetting = ({ mode }) => {
             type="text"
             error={!!errors.oldLicenseNumber}
             {...register("oldLicenseNumber", { required: false })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         <Grid item xs={12} md={12}>
@@ -437,6 +521,7 @@ const VehicleSetting = ({ mode }) => {
             rows={4}
             error={!!errors.note1}
             {...register("note1", { required: false })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -448,6 +533,7 @@ const VehicleSetting = ({ mode }) => {
             rows={4}
             error={!!errors.note2}
             {...register("note2", { required: false })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
 

@@ -9,19 +9,25 @@ import { useRouter } from "next/navigation";
 import CarOwnerTable from "./components/CarOwnerTable";
 import { useGetCarOwners } from "./apihooks";
 import { CarOwnerProvider } from "./context/driverProvider";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
+import CarAgencyTable from "../vehicle-management/components/table/CarAgencyTable";
 
 function DriverManagementPage() {
   const router = useRouter();
-  const [search, setSearch] = useState(""); 
-  const [query, setQuery] = useState(""); 
-
+  const [search, setSearch] = useState("");
+  const [query, setQuery] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
   const { data } = useGetCarOwners();
-  //console.log(data);
-  const owners = data?.data?.pageList || []; 
+  const owners = data?.data?.pageList || [];
 
   // 處理搜尋按鈕點擊
   const handleSearchClick = () => {
-    setQuery(search.trim()); 
+    setQuery(search.trim());
   };
 
   // 根據搜尋條件篩選車主列表
@@ -29,12 +35,24 @@ function DriverManagementPage() {
     ? owners.filter(
         (owner) => owner.name?.includes(query) || owner.idNum?.includes(query)
       )
-    : owners; 
+    : owners;
+
+  //console.log(filteredOwners);
 
   // 新增車主按鈕處理邏輯
   const handleAddNewClick = () => {
     router.push(`/driver-management/AddNew`);
   };
+
+  //車行彈跳視窗
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
 
   return (
     <PageContainer title="車主管理" description="管理車主相關資料">
@@ -65,12 +83,32 @@ function DriverManagementPage() {
               >
                 新增車主
               </Button>
+              <Button
+                variant="contained"
+                onClick={handleOpenDialog}
+                sx={{ marginRight: "1%", marginTop: "1%" }}
+              >
+                車行
+              </Button>
             </Box>
             {/* 車主列表 */}
             <CarOwnerTable data={filteredOwners} />
           </Box>
         </CarOwnerProvider>
       </DashboardCard>
+      {/* Modal for Insurance Company */}
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="xl"
+        fullWidth
+      >
+        <DialogTitle>車行列表</DialogTitle>
+        <DialogContent><CarAgencyTable /></DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>關閉</Button>
+        </DialogActions>
+      </Dialog>
     </PageContainer>
   );
 }

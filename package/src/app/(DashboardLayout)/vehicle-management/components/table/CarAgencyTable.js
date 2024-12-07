@@ -20,7 +20,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { requestHttp } from "@/utils/requestHttp";
 
-const LoanCompanyTable = () => {
+const CarAgencyTable = () => {
   const [taxData, setTaxData] = useState([]); // 表格數據
   const [editingRowId, setEditingRowId] = useState(null);
   const [editedRow, setEditedRow] = useState(null);
@@ -28,9 +28,9 @@ const LoanCompanyTable = () => {
   // 抓取數據函數
   const fetchInitialData = async () => {
     try {
-      const response = await requestHttp("loanCompany/getLoanCompany", {
+      const response = await requestHttp("carAgency/getCarAgency", {
         method: "POST",
-        data: { size: 1000, page: 1 },
+        data: { page: 1, size: 1000 },
       });
 
       const processedData = response.data.pageList.map((item) => ({
@@ -75,7 +75,7 @@ const LoanCompanyTable = () => {
       //console.log("dataToSave", dataToSave);
 
       if (editingRowId === "new") {
-        const response = await requestHttp("loanCompany/addLoanCompany", {
+        const response = await requestHttp("carAgency/addCarAgency", {
           method: "POST",
           data: dataToSave,
         });
@@ -87,7 +87,7 @@ const LoanCompanyTable = () => {
           alert(`新增失敗: ${response?.message || "未知錯誤"}`);
         }
       } else {
-        const response = await requestHttp("loanCompany/updateLoanCompany", {
+        const response = await requestHttp("carAgency/updateCarAgency", {
           method: "POST",
           data: dataToSave,
         });
@@ -118,11 +118,11 @@ const LoanCompanyTable = () => {
   const handleAddRow = () => {
     setEditingRowId("new");
     setEditedRow({
-      companyName: "",
-      shortName: "",
-      contactor: "",
-      phone: "",
-      note: "",
+      agencyName: "",
+      address: "",
+      owner: "",
+      taxId: "",
+      phone1: "",
     });
   };
 
@@ -144,7 +144,7 @@ const LoanCompanyTable = () => {
       <Table aria-label="simple table" sx={{ whiteSpace: "nowrap", mt: 2 }}>
         <TableHead>
           <TableRow>
-            {["名稱", "簡稱", "聯絡人", "電話", "備註", "操作"].map(
+            {["名稱", "地址", "負責人", "統一編號", "電話", "操作"].map(
               (header, index) => (
                 <TableCell key={index}>
                   <Typography variant="subtitle2" fontWeight={600}>
@@ -158,37 +158,39 @@ const LoanCompanyTable = () => {
         <TableBody>
           {taxData?.map((row) => (
             <TableRow key={row.id}>
-              {["companyName", "shortName", "contactor", "phone", "note"].map(
-                (field, index) => (
-                  <TableCell key={index}>
-                    {editingRowId === row.id && field === "type" ? (
-                      <Select
-                        value={editedRow?.type || "CASH"}
-                        onChange={(e) =>
-                          handleInputChange("type", e.target.value)
-                        }
-                        fullWidth
-                      >
-                        <MenuItem value="CASH">現金</MenuItem>
-                        <MenuItem value="CHECK">支票</MenuItem>
-                      </Select>
-                    ) : field === "type" ? (
-                      <Typography>
-                        {row[field] === "CASH" ? "現金" : "支票"}
-                      </Typography>
-                    ) : editingRowId === row.id ? (
-                      <TextField
-                        value={editedRow?.[field] || ""}
-                        onChange={(e) =>
-                          handleInputChange(field, e.target.value)
-                        }
-                      />
-                    ) : (
-                      <Typography>{row[field]}</Typography>
-                    )}
-                  </TableCell>
-                )
-              )}
+              {[
+                "agencyName",
+                "address",
+                "owner",
+                "taxId",
+                "phone1",
+              ].map((field, index) => (
+                <TableCell key={index}>
+                  {editingRowId === row.id && field === "type" ? (
+                    <Select
+                      value={editedRow?.type || "CASH"}
+                      onChange={(e) =>
+                        handleInputChange("type", e.target.value)
+                      }
+                      fullWidth
+                    >
+                      <MenuItem value="CASH">現金</MenuItem>
+                      <MenuItem value="CHECK">支票</MenuItem>
+                    </Select>
+                  ) : field === "type" ? (
+                    <Typography>
+                      {row[field] === "CASH" ? "現金" : "支票"}
+                    </Typography>
+                  ) : editingRowId === row.id ? (
+                    <TextField
+                      value={editedRow?.[field] || ""}
+                      onChange={(e) => handleInputChange(field, e.target.value)}
+                    />
+                  ) : (
+                    <Typography>{row[field]}</Typography>
+                  )}
+                </TableCell>
+              ))}
               <TableCell>
                 {editingRowId === row.id ? (
                   <>
@@ -213,31 +215,34 @@ const LoanCompanyTable = () => {
 
           {editingRowId === "new" && (
             <TableRow>
-              {["companyName", "shortName", "contactor", "phone", "note"].map(
-                (field, index) => (
-                  <TableCell key={index}>
-                    {field === "type" ? (
-                      <Select
-                        value={editedRow?.type || "CASH"}
-                        onChange={(e) =>
-                          handleInputChange("type", e.target.value)
-                        }
-                        fullWidth
-                      >
-                        <MenuItem value="CASH">現金</MenuItem>
-                        <MenuItem value="CHECK">支票</MenuItem>
-                      </Select>
-                    ) : (
-                      <TextField
-                        value={editedRow?.[field] || ""}
-                        onChange={(e) =>
-                          handleInputChange(field, e.target.value)
-                        }
-                      />
-                    )}
-                  </TableCell>
-                )
-              )}
+              {[
+                "agencyName",
+                
+                "address",
+                "owner",
+                "taxId",
+                "phone1",
+              ].map((field, index) => (
+                <TableCell key={index}>
+                  {field === "type" ? (
+                    <Select
+                      value={editedRow?.type || "CASH"}
+                      onChange={(e) =>
+                        handleInputChange("type", e.target.value)
+                      }
+                      fullWidth
+                    >
+                      <MenuItem value="CASH">現金</MenuItem>
+                      <MenuItem value="CHECK">支票</MenuItem>
+                    </Select>
+                  ) : (
+                    <TextField
+                      value={editedRow?.[field] || ""}
+                      onChange={(e) => handleInputChange(field, e.target.value)}
+                    />
+                  )}
+                </TableCell>
+              ))}
               <TableCell>
                 <IconButton onClick={handleSaveClick} color="primary">
                   <SaveIcon />
@@ -254,4 +259,4 @@ const LoanCompanyTable = () => {
   );
 };
 
-export default LoanCompanyTable;
+export default CarAgencyTable;

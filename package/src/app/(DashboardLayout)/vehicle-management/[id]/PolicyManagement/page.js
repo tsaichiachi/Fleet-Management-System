@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { useGetInsuranceList } from "@/app/(DashboardLayout)/vehicle-management/apihooks";
 import InsuranceCompanyTable from "../../components/table/InsuranceCompanyTable";
+import { useGetSingleInsuranceFee } from "@/app/(DashboardLayout)/vehicle-management/apihooks";
 
 
 const PolicyManagement = () => {
@@ -47,7 +48,7 @@ const PolicyManagement = () => {
   };
 
   const handleAddNewClick = () => {
-    router.push(`/vehicle-management/${currentPage}/PolicyManagement/AddNew`);
+    router.push(`/vehicle-management/${carLicenseNum}/PolicyManagement/AddNew`);
   };
 
   //保險公司彈跳視窗
@@ -105,7 +106,7 @@ const PolicyManagement = () => {
               保險公司
             </Button>
           </Box>
-          <PolicyManagmentTable data={filteredInsurance} />
+          <PolicyManagmentTable data={filteredInsurance} carLicenseNum={carLicenseNum}/>
         </Box>
       </DashboardCard>
       {/* Modal for Insurance Company */}
@@ -117,7 +118,7 @@ const PolicyManagement = () => {
       >
         <DialogTitle>保險公司列表</DialogTitle>
         <DialogContent>
-          <InsuranceCompanyTable  />
+          <InsuranceCompanyTable />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>關閉</Button>

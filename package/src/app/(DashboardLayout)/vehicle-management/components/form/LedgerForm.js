@@ -72,7 +72,7 @@ const LedgerForm = () => {
   //下載
   const handleDownload = async () => {
     if (!searchParams) {
-      alert("請先搜尋年月份");
+      alert("請先輸入年月份");
       return;
     }
     try {
