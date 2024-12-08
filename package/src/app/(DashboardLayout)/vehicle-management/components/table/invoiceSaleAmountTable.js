@@ -35,7 +35,7 @@ const InvoiceSaleAmountTable = ({
   const [editedRow, setEditedRow] = useState(null);
 
   const { data: carAgencyList } = useGetCarAgencyDropDownList();
-  console.log("carAgencyList", carAgencyList);
+  //console.log("carAgencyList", carAgencyList);
 
   // 抓取數據函數
   const fetchInitialData = async () => {

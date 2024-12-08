@@ -1,6 +1,8 @@
 import React from 'react';
 import { Box, AppBar, Toolbar, styled, Stack, IconButton, Badge, Button } from '@mui/material';
 import PropTypes from 'prop-types';
+import FontSizeSelector from "@/app/(DashboardLayout)/vehicle-management/components/FontSizeSelector";
+
 
 // components
 import Profile from './Profile';
@@ -61,6 +63,7 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
 
         </IconButton>
         <Box flexGrow={1} />
+        <FontSizeSelector></FontSizeSelector>
          {/* 使用者資料 */}
         {/* <Stack spacing={1} direction="row" alignItems="center">
           <Button variant="contained" disableElevation color="primary" >

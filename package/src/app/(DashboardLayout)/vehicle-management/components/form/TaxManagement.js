@@ -66,7 +66,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="lastMonthDebt"
             label="上月欠款"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.lastMonthDebt}
             {...register("lastMonthDebt", { required: true })}
@@ -77,7 +77,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="managementFee"
             label="管理費"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.managementFee}
             {...register("managementFee", { required: true })}
@@ -89,7 +89,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="mutualFund"
             label="互助金"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.mutualFund}
             {...register("mutualFund", { required: true })}
@@ -111,7 +111,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="unionFee"
             label="公會費"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.unionFee}
             {...register("unionFee", { required: true })}
@@ -122,7 +122,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="carLoan"
             label="車貸款"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.carLoan}
             {...register("carLoan", { required: true })}
@@ -133,7 +133,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="interestFreeBase"
             label="無息基準"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.interestFreeBase}
             {...register("interestFreeBase", { required: true })}
@@ -144,7 +144,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="laborInsurance"
             label="勞保費"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.laborInsurance}
             {...register("laborInsurance", { required: true })}
@@ -155,7 +155,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="insuranceFee"
             label="保險費"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.insuranceFee}
             {...register("insuranceFee", { required: true })}
@@ -166,7 +166,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="calculationAmount"
             label="計算金額"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.calculationAmount}
             {...register("calculationAmount", { required: true })}
@@ -177,7 +177,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="healthInsurance"
             label="健保費"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.healthInsurance}
             {...register("healthInsurance", { required: true })}
@@ -188,7 +188,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="licenseTax"
             label="牌照稅"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.licenseTax}
             {...register("licenseTax", { required: true })}
@@ -199,7 +199,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="lastMonthInterest"
             label="上月利息"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.lastMonthInterest}
             {...register("lastMonthInterest", { required: true })}
@@ -210,7 +210,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="reserveFund"
             label="準備金"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.reserveFund}
             {...register("reserveFund", { required: true })}
@@ -221,7 +221,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="fuelCost"
             label="燃料費"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.fuelCost}
             {...register("fuelCost", { required: true })}
@@ -232,7 +232,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="salesInvoiceAmount"
             label="銷發票額"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.salesInvoiceAmount}
             {...register("salesInvoiceAmount", { required: true })}
@@ -243,7 +243,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="offsetInvoiceAmount"
             label="抵發票額"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.offsetInvoiceAmount}
             {...register("offsetInvoiceAmount", { required: true })}
@@ -254,7 +254,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="offsetFuelInvoiceAmount"
             label="抵油單額"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.offsetFuelInvoiceAmount}
             {...register("offsetFuelInvoiceAmount", { required: true })}
@@ -265,7 +265,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="salesInvoiceTax"
             label="銷發票稅"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.salesInvoiceTax}
             {...register("salesInvoiceTax", { required: true })}
@@ -276,7 +276,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="offsetInvoiceTax"
             label="抵發票稅"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.offsetInvoiceTax}
             {...register("offsetInvoiceTax", { required: true })}
@@ -287,7 +287,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="offsetFuelTax"
             label="抵油單稅"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.offsetFuelTax}
             {...register("offsetFuelTax", { required: true })}
@@ -298,7 +298,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="loanAmount"
             label="貸款金額"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.loanAmount}
             {...register("loanAmount", { required: true })}
@@ -309,7 +309,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="depositAmount"
             label="入款金額"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.depositAmount}
             {...register("depositAmount", { required: true })}
@@ -320,7 +320,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="otherReceivables"
             label="其他應收"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.otherReceivables}
             {...register("otherReceivables", { required: true })}
@@ -331,7 +331,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="borrowedInterest"
             label="借款利息"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.borrowedInterest}
             {...register("borrowedInterest", { required: true })}
@@ -342,7 +342,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="depositInterest"
             label="入票利息"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.depositInterest}
             {...register("depositInterest", { required: true })}
@@ -353,7 +353,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="otherOffset"
             label="其他抵收"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.otherOffset}
             {...register("otherOffset", { required: true })}
@@ -364,7 +364,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="advanceInterest"
             label="代支利息"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.advanceInterest}
             {...register("advanceInterest", { required: true })}
@@ -375,7 +375,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="receiptOffset"
             label="收據抵收"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.receiptOffset}
             {...register("receiptOffset", { required: true })}
@@ -386,7 +386,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="depositReturn"
             label="入款退回"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.depositReturn}
             {...register("depositReturn", { required: true })}
@@ -397,7 +397,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="fines"
             label="罰單"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.fines}
             {...register("fines", { required: true })}
@@ -408,7 +408,7 @@ const TaxManagement= ({ mode }) => {
           <TextField
             id="currentMonthDebt"
             label="本月欠款"
-            type="number"
+            type="text"
             autoComplete="off"
             error={!!errors.currentMonthDebt}
             {...register("currentMonthDebt", { required: true })}

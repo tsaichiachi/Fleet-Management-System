@@ -173,7 +173,7 @@ const LoanManagementForm = ({ mode }) => {
             required
             id="totalAmount"
             label="貸款總額"
-            type="number"
+            type="text"
             error={!!errors.totalAmount}
             {...register("totalAmount", { required: true })}
             InputLabelProps={{ shrink: true }}
@@ -186,7 +186,7 @@ const LoanManagementForm = ({ mode }) => {
             required
             id="monthPayAmount"
             label="每月還款"
-            type="number"
+            type="text"
             error={!!errors.monthPayAmount}
             {...register("monthPayAmount", { required: true })}
             InputLabelProps={{ shrink: true }}

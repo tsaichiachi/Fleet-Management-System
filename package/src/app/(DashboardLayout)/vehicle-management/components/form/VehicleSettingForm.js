@@ -190,7 +190,7 @@ const VehicleSetting = ({ mode }) => {
           <TextField
             id="joinAmount"
             label="遷入金額"
-            type="number"
+            type="text"
             error={!!errors.joinAmount}
             {...register("joinAmount", { required: false })}
             InputLabelProps={{ shrink: true }}
@@ -227,7 +227,7 @@ const VehicleSetting = ({ mode }) => {
           <TextField
             id="quitAmount"
             label="遷出金額"
-            type="number"
+            type="text"
             error={!!errors.quitAmount}
             {...register("quitAmount", { required: false })}
             InputLabelProps={{ shrink: true }}
@@ -283,7 +283,7 @@ const VehicleSetting = ({ mode }) => {
             required
             id="westYear"
             label="年份(YYYY)"
-            type="number"
+            type="text"
             error={!!errors.westYear}
             {...register("westYear", { required: true })}
             InputLabelProps={{ shrink: true }}
@@ -397,7 +397,7 @@ const VehicleSetting = ({ mode }) => {
           <TextField
             required
             id="carWeight"
-            label="車重"
+            label="車重(噸)"
             type="text"
             error={!!errors.carWeight}
             {...register("carWeight", { required: true })}
@@ -454,7 +454,7 @@ const VehicleSetting = ({ mode }) => {
             required
             id="inspectionType"
             label="驗車方式(:1:半/5 2:1/1 3:無)"
-            type="number"
+            type="text"
             error={!!errors.inspectionType}
             {...register("inspectionType", { required: true })}
             InputLabelProps={{ shrink: true }}

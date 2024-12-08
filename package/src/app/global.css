@@ -1,0 +1,32 @@
+/* 定義全域字體大小變數 */
+:root {
+  --font-size-small: 14px; /* 小字體 */
+  --font-size-medium: 16px; /* 預設字體 */
+  --font-size-large: 18px; /* 大字體 */
+  --font-size: var(--font-size-medium); /* 當前使用的字體大小 */
+}
+
+/* 全域樣式覆蓋 */
+body {
+  font-size: var(--font-size); /* 全域字體大小 */
+  line-height: 1.5;
+  color: #333; /* 預設文字顏色 */
+  font-family: "Arial", sans-serif; /* 預設字體 */
+}
+
+body, p, span, a, h1, h2, h3, h4, h5, h6, button, input, textarea, select, table, th, td {
+  font-size: var(--font-size); /* 套用全域字體大小 */
+}
+
+/* MUI 元件覆蓋 */
+.MuiTypography-root {
+  font-size: var(--font-size) !important; /* 強制覆蓋 MUI 的 Typography 字體大小 */
+}
+
+.MuiButton-root {
+  font-size: var(--font-size) !important; /* 強制覆蓋 MUI 的按鈕字體大小 */
+}
+
+.MuiInputBase-root {
+  font-size: var(--font-size) !important; /* 強制覆蓋 MUI 的輸入框字體大小 */
+}

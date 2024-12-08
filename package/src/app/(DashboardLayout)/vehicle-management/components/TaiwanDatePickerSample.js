@@ -1,4 +1,3 @@
-"use client";
 import React, { useState, useEffect } from "react";
 import {
   TextField,
@@ -17,22 +16,22 @@ const generateOptions = (start, end) =>
   Array.from({ length: end - start + 1 }, (_, i) => start + i);
 
 const TaiwanYearMonthPickerSample = ({
-  label, // 標籤
-  defaultValue = null, // 預設值
-  onChange, // 當日期改變時的回呼
-  error = false, // 是否顯示錯誤樣式
-  helperText = "", // 錯誤提示訊息
-  required = false, // 是否必填
-  register, // React Hook Form 的 `register` 方法
-  fieldName, // 對應表單的欄位名稱
-  trigger, // React Hook Form 的 `trigger` 方法，用於手動觸發驗證
+  label,
+  defaultValue = null,
+  onChange,
+  error = false,
+  helperText = "",
+  required = false,
+  register,
+  fieldName,
+  trigger,
 }) => {
   const [anchorEl, setAnchorEl] = useState(null); // 控制彈跳視窗的狀態
   const [value, setValue] = useState(""); // 輸入框的值預設為空白
-  const [taiwanYear, setTaiwanYear] = useState(1); // 下拉選單年份
-  const [month, setMonth] = useState(1); // 下拉選單月份
+  const [taiwanYear, setTaiwanYear] = useState(null); // 下拉選單年份
+  const [month, setMonth] = useState(null); // 下拉選單月份
 
-  // 初始化預設值（僅設定下拉選單）
+  // 初始化日期（同步 defaultValue 到下拉選單，保持输入框为空）
   useEffect(() => {
     const today = new Date();
     const currentTaiwanYear = today.getFullYear() - 1911; // 轉為民國年
@@ -42,11 +41,24 @@ const TaiwanYearMonthPickerSample = ({
       const [year, month] = defaultValue.split("-");
       setTaiwanYear(parseInt(year, 10));
       setMonth(parseInt(month, 10));
+      setValue(defaultValue); // 同步到輸入框的值
     } else {
       setTaiwanYear(currentTaiwanYear);
       setMonth(currentMonth);
+      setValue(""); // 输入框保持为空
     }
   }, [defaultValue]);
+
+  // 确认选择时更新输入框值
+  const handleConfirm = () => {
+    const formattedDate = `${String(taiwanYear).padStart(3, "0")}-${String(
+      month
+    ).padStart(2, "0")}`;
+    setValue(formattedDate); // 用户确认后更新输入框值
+    if (onChange) onChange(formattedDate); // 傳遞改變的值
+    if (trigger) trigger(fieldName); // 手動觸發驗證
+    handleClose();
+  };
 
   // 當元件初始化時，註冊欄位到 React Hook Form
   useEffect(() => {
@@ -67,17 +79,6 @@ const TaiwanYearMonthPickerSample = ({
     setAnchorEl(null);
   };
 
-  // 確認選擇的日期
-  const handleConfirm = () => {
-    const formattedDate = `${String(taiwanYear).padStart(3, "0")}-${String(
-      month
-    ).padStart(2, "0")}`;
-    setValue(formattedDate); // 使用者確認後才填入輸入框
-    if (onChange) onChange(formattedDate); // 傳遞改變的值
-    if (trigger) trigger(fieldName); // 手動觸發驗證
-    handleClose();
-  };
-
   const open = Boolean(anchorEl); // 判斷彈跳視窗是否開啟
 
   return (
@@ -92,7 +93,7 @@ const TaiwanYearMonthPickerSample = ({
             )}
           </Box>
         }
-        value={value} // 輸入框預設為空
+        value={value} // 綁定到 value
         error={error} // 顯示錯誤樣式
         helperText={helperText} // 錯誤提示訊息
         onClick={handleOpen}
@@ -124,7 +125,7 @@ const TaiwanYearMonthPickerSample = ({
               <Typography align="center">年</Typography>
               <TextField
                 select
-                value={taiwanYear}
+                value={taiwanYear || ""}
                 onChange={(e) => setTaiwanYear(Number(e.target.value))}
                 fullWidth
               >
@@ -140,7 +141,7 @@ const TaiwanYearMonthPickerSample = ({
               <Typography align="center">月</Typography>
               <TextField
                 select
-                value={month}
+                value={month || ""}
                 onChange={(e) => setMonth(Number(e.target.value))}
                 fullWidth
               >

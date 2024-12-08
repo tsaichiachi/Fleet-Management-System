@@ -140,6 +140,7 @@ const LedgerForm = () => {
             InputLabelProps={{ shrink: true }}
             InputProps={{
               readOnly: true,
+              
             }}
           />
         </Grid>
@@ -208,7 +209,7 @@ const LedgerForm = () => {
             disabled
             id="lastMonthOweAmount"
             label="上月欠款"
-            type="number"
+            type="text"
             error={!!errors.lastMonthOweAmount}
             {...register("lastMonthOweAmount", { required: false })}
             InputLabelProps={{ shrink: true }}
@@ -220,7 +221,7 @@ const LedgerForm = () => {
             disabled
             id="manageFee"
             label="管理費"
-            type="number"
+            type="text"
             error={!!errors.manageFee}
             {...register("manageFee", { required: false })}
             InputLabelProps={{ shrink: true }}
@@ -233,7 +234,7 @@ const LedgerForm = () => {
             disabled
             id="laborFee"
             label="互助金"
-            type="number"
+            type="text"
             error={!!errors.laborFee}
             {...register("laborFee", { required: true })}
             InputLabelProps={{ shrink: true }}
@@ -246,7 +247,7 @@ const LedgerForm = () => {
             disabled
             id="healthyFee"
             label="計息方式"
-            type="number"
+            type="text"
             error={!!errors.healthyFee}
             {...register("healthyFee", { required: true })}
             InputLabelProps={{ shrink: true }}
@@ -258,7 +259,7 @@ const LedgerForm = () => {
             disabled
             id="unionFee"
             label="公會費"
-            type="number"
+            type="text"
             error={!!errors.unionFee}
             {...register("unionFee", { required: false })}
             InputLabelProps={{ shrink: true }}
@@ -270,7 +271,7 @@ const LedgerForm = () => {
             disabled
             id="loanFee"
             label="車貸款"
-            type="number"
+            type="text"
             error={!!errors.loanFee}
             {...register("loanFee", { required: false })}
             InputLabelProps={{ shrink: true }}
@@ -282,7 +283,7 @@ const LedgerForm = () => {
             disabled
             id="peopleHelpFee"
             label="無習基準"
-            type="number"
+            type="text"
             error={!!errors.peopleHelpFee}
             {...register("peopleHelpFee", { required: true })}
             InputLabelProps={{ shrink: true }}
@@ -294,7 +295,7 @@ const LedgerForm = () => {
             disabled
             id="laborInsuranceFee"
             label="勞保費"
-            type="number"
+            type="text"
             error={!!errors.laborInsuranceFee}
             {...register("laborInsuranceFee", { required: false })}
             InputLabelProps={{ shrink: true }}
@@ -306,7 +307,7 @@ const LedgerForm = () => {
             disabled
             id="insuranceFee"
             label="保險費"
-            type="number"
+            type="text"
             error={!!errors.insuranceFee}
             {...register("insuranceFee", { required: false })}
             InputLabelProps={{ shrink: true }}
@@ -318,7 +319,7 @@ const LedgerForm = () => {
             disabled
             id="peopleHelpFee"
             label="計息金額"
-            type="number"
+            type="text"
             error={!!errors.peopleHelpFee}
             {...register("peopleHelpFee", { required: true })}
             InputLabelProps={{ shrink: true }}
@@ -330,7 +331,7 @@ const LedgerForm = () => {
             disabled
             id="healthFee"
             label="健保費"
-            type="number"
+            type="text"
             error={!!errors.healthFee}
             {...register("healthFee", { required: false })}
             InputLabelProps={{ shrink: true }}
@@ -342,7 +343,7 @@ const LedgerForm = () => {
             disabled
             id="licenseTaxFee"
             label="牌照稅"
-            type="number"
+            type="text"
             error={!!errors.licenseTaxFee}
             {...register("licenseTaxFee", { required: false })}
             InputLabelProps={{ shrink: true }}
@@ -354,7 +355,7 @@ const LedgerForm = () => {
             disabled
             id="peopleHelpFee"
             label="上月利息"
-            type="number"
+            type="text"
             error={!!errors.peopleHelpFee}
             {...register("peopleHelpFee", { required: true })}
             InputLabelProps={{ shrink: true }}
@@ -366,7 +367,7 @@ const LedgerForm = () => {
             disabled
             id="peopleHelpFee"
             label="準備金"
-            type="number"
+            type="text"
             error={!!errors.peopleHelpFee}
             {...register("peopleHelpFee", { required: true })}
             InputLabelProps={{ shrink: true }}
@@ -378,7 +379,7 @@ const LedgerForm = () => {
             disabled
             id="fuelTaxFee"
             label="燃料稅"
-            type="number"
+            type="text"
             error={!!errors.fuelTaxFee}
             {...register("fuelTaxFee", { required: false })}
             InputLabelProps={{ shrink: true }}
@@ -419,7 +420,7 @@ const LedgerForm = () => {
             disabled
             id="invoiceSaleAmountTax"
             label="銷發票稅"
-            type="number"
+            type="text"
             error={!!errors.invoiceSaleAmountTax}
             {...register("invoiceSaleAmountTax", { required: false })}
             InputLabelProps={{ shrink: true }}
@@ -451,7 +452,7 @@ const LedgerForm = () => {
             disabled
             id="receipTax"
             label="抵發稅額"
-            type="number"
+            type="text"
             error={!!errors.invoiceOffsetAmountTax}
             {...register("invoiceOffsetAmountTax", { required: false })}
             InputLabelProps={{ shrink: true }}
@@ -484,7 +485,7 @@ const LedgerForm = () => {
             disabled
             id="invoiceGasAmountTax"
             label="抵發稅額"
-            type="number"
+            type="text"
             error={!!errors.invoiceGasAmountTax}
             {...register("invoiceGasAmountTax", { required: false })}
             InputLabelProps={{ shrink: true }}
@@ -525,7 +526,7 @@ const LedgerForm = () => {
             disabled
             id="lendMoneyInterest"
             label="借款利息"
-            type="number"
+            type="text"
             error={!!errors.lendMoneyInterest}
             {...register("lendMoneyInterest", { required: false })}
             InputLabelProps={{ shrink: true }}
@@ -557,7 +558,7 @@ const LedgerForm = () => {
             disabled
             id="giveBackInterest"
             label="入款利息"
-            type="number"
+            type="text"
             error={!!errors.giveBackInterest}
             {...register("giveBackInterest", { required: false })}
             InputLabelProps={{ shrink: true }}
@@ -702,7 +703,7 @@ const LedgerForm = () => {
             disabled
             id="totalSum"
             label="本月欠款"
-            type="number"
+            type="text"
             error={!!errors.totalSum}
             {...register("totalSum", { required: false })}
             InputLabelProps={{ shrink: true }}

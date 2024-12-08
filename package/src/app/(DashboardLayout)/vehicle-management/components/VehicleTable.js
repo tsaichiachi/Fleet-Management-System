@@ -14,6 +14,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import React from "react";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/navigation";
 
@@ -100,20 +101,20 @@ const VehicleTable = (data) => {
               <TableCell>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <IconButton
-                    aria-label="view"
-                    onClick={() =>
-                      handleViewClick(car.licenseNumber, car.ownerName)
-                    }
-                  >
-                    <VisibilityRoundedIcon />
-                  </IconButton>
-                  <IconButton
                     aria-label="edit"
                     onClick={() =>
                       handleEditClick(car.licenseNumber, car.ownerName)
                     }
                   >
                     <EditIcon />
+                  </IconButton>
+                  <IconButton
+                    aria-label="view"
+                    onClick={() =>
+                      handleViewClick(car.licenseNumber, car.ownerName)
+                    }
+                  >
+                    <LibraryBooksIcon />
                   </IconButton>
                   {/* <IconButton
                     aria-label="delete"

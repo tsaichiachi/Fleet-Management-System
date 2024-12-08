@@ -83,46 +83,56 @@ const CarOwnerTable = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map((owner) => (
-            <TableRow key={owner.id}>
-              <TableCell>
+          {data?.length > 0 ? (
+            data.map((owner) => (
+              <TableRow key={owner.id}>
+                <TableCell>
+                  <Typography variant="subtitle2" fontWeight={400}>
+                    {owner.name}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle2"
+                    fontWeight={400}
+                  >
+                    {owner.mobile}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <IconButton
+                      aria-label="view"
+                      onClick={() => handleViewClick(owner.id)}
+                    >
+                      <VisibilityRoundedIcon />
+                    </IconButton>
+                    <IconButton
+                      aria-label="edit"
+                      onClick={() => handleEditClick(owner.id)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    {/* <IconButton
+              aria-label="delete"
+              onClick={() => handleDeleteClick(owner.id)}
+            >
+              <DeleteIcon />
+            </IconButton> */}
+                  </Box>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={3} align="center">
                 <Typography variant="subtitle2" fontWeight={400}>
-                  {owner.name}
+                  尚無資料
                 </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography
-                  color="textSecondary"
-                  variant="subtitle2"
-                  fontWeight={400}
-                >
-                  {owner.mobile}
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <IconButton
-                    aria-label="view"
-                    onClick={() => handleViewClick(owner.id)}
-                  >
-                    <VisibilityRoundedIcon />
-                  </IconButton>
-                  <IconButton
-                    aria-label="edit"
-                    onClick={() => handleEditClick(owner.id)}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  {/* <IconButton
-                    aria-label="delete"
-                    onClick={() => handleDeleteClick(owner.id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton> */}
-                </Box>
               </TableCell>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
       {/* <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>

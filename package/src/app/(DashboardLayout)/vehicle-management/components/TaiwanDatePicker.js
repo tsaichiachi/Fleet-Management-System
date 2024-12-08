@@ -28,12 +28,12 @@ const TaiwanDatePicker = ({
   disabled = false,
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [value, setValue] = useState(""); // 输入框初始化为空
+  const [value, setValue] = useState(""); // 输入框值，默认为空字符串
   const [taiwanYear, setTaiwanYear] = useState(1);
   const [month, setMonth] = useState(1);
   const [day, setDay] = useState(1);
 
-  // 初始化日期（仅设置下拉选项，不设置输入框的值）
+  // 初始化日期（同步 defaultValue 到下拉选单和输入框值）
   useEffect(() => {
     const today = new Date();
     const currentTaiwanYear = today.getFullYear() - 1911; // 转为台湾年
@@ -41,16 +41,32 @@ const TaiwanDatePicker = ({
     const currentDay = today.getDate();
 
     if (defaultValue) {
+      // 有 defaultValue 的情况
       const [year, month, day] = defaultValue.split("-");
       setTaiwanYear(parseInt(year, 10));
       setMonth(parseInt(month, 10));
       setDay(parseInt(day, 10));
+      setValue(defaultValue); // 显示 defaultValue 到输入框
     } else {
+      // 没有 defaultValue 的情况，仅设置下拉选单为当前日期
       setTaiwanYear(currentTaiwanYear);
       setMonth(currentMonth);
       setDay(currentDay);
+      setValue(""); // 输入框保持为空
     }
   }, [defaultValue]);
+
+  // 实时同步选定的年份、月份和日期到下拉菜单，但不更新输入框
+  useEffect(() => {
+    if (!value) {
+      // 如果输入框没有值，则不更新输入框
+      return;
+    }
+    const formattedDate = `${String(taiwanYear).padStart(3, "0")}-${String(
+      month
+    ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    setValue(formattedDate); // 更新输入框值
+  }, [taiwanYear, month, day]);
 
   const handleOpen = (event) => {
     if (!disabled) {
@@ -66,8 +82,8 @@ const TaiwanDatePicker = ({
     const formattedDate = `${String(taiwanYear).padStart(3, "0")}-${String(
       month
     ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    setValue(formattedDate); // 用户确认后才填入输入框的值
-    if (onChange) onChange(formattedDate);
+    setValue(formattedDate); // 用户确认后更新输入框值
+    if (onChange) onChange(formattedDate); // 触发回调
     if (trigger) trigger(fieldName); // 手动触发验证
     handleClose();
   };
@@ -76,6 +92,7 @@ const TaiwanDatePicker = ({
 
   return (
     <Box>
+      {/* 显示日期输入框 */}
       <TextField
         label={
           <Box component="span" style={{ color: error ? "red" : "inherit" }}>
@@ -85,9 +102,9 @@ const TaiwanDatePicker = ({
             )}
           </Box>
         }
-        value={value} // 输入框默认值为空
-        error={error}
-        helperText={helperText}
+        value={value} // 绑定输入框值
+        error={error} // 错误状态
+        helperText={helperText} // 错误提示
         onClick={handleOpen}
         InputProps={{
           readOnly: true,
@@ -103,6 +120,7 @@ const TaiwanDatePicker = ({
         disabled={disabled}
       />
 
+      {/* 弹出框 */}
       <Popover
         open={open}
         anchorEl={anchorEl}
@@ -114,6 +132,7 @@ const TaiwanDatePicker = ({
       >
         <Box sx={{ padding: 2, width: 300 }}>
           <Grid container spacing={2} justifyContent="center">
+            {/* 年份选择 */}
             <Grid item xs={4}>
               <Typography align="center">年</Typography>
               <TextField
@@ -129,6 +148,7 @@ const TaiwanDatePicker = ({
                 ))}
               </TextField>
             </Grid>
+            {/* 月份选择 */}
             <Grid item xs={4}>
               <Typography align="center">月</Typography>
               <TextField
@@ -144,6 +164,7 @@ const TaiwanDatePicker = ({
                 ))}
               </TextField>
             </Grid>
+            {/* 日期选择 */}
             <Grid item xs={4}>
               <Typography align="center">日</Typography>
               <TextField
@@ -161,6 +182,7 @@ const TaiwanDatePicker = ({
             </Grid>
           </Grid>
 
+          {/* 按钮 */}
           <Grid container justifyContent="space-between" sx={{ marginTop: 2 }}>
             <Button onClick={handleClose}>取消</Button>
             <Button variant="contained" onClick={handleConfirm}>

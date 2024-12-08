@@ -121,7 +121,7 @@ const CarOwnerSetting = () => {
         <TextField
           id="outlined-password-input"
           label="簽入金額"
-          type="number"
+          type="text"
           autoComplete="current-password"
         />
         <TextField
@@ -136,7 +136,7 @@ const CarOwnerSetting = () => {
         <TextField
           id="outlined-password-input"
           label="遷出金額"
-          type="number"
+          type="text"
           autoComplete="current-password"
         />
         <TextField
@@ -157,7 +157,7 @@ const CarOwnerSetting = () => {
         <TextField
           id="outlined-password-input"
           label="年份"
-          type="number"
+          type="text"
           autoComplete="current-password"
         />
         <TextField
@@ -170,7 +170,7 @@ const CarOwnerSetting = () => {
         <TextField
           id="outlined-password-input"
           label="噸位CC數"
-          type="number"
+          type="text"
           autoComplete="current-password"
         />
         <TextField

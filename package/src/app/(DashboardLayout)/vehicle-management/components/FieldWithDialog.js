@@ -31,7 +31,7 @@ const FieldWithDialog = ({
           <TextField
             disabled
             label={label}
-            type="number"
+            type="text"
             id={fieldName}
             error={!!error}
             {...register(fieldName)}

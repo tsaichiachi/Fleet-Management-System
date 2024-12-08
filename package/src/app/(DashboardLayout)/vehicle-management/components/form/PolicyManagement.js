@@ -27,7 +27,7 @@ const PolicyManagement = ({ mode }) => {
     insuranceCardNum,
     mode
   );
-  //console.log("InsuranceFeear:", InsuranceFee);
+  console.log("InsuranceFeear:", InsuranceFee);
 
   const handleCancelClick = () => {
     router.push(`/vehicle-management/${carLicenseNum}/PolicyManagement`);
@@ -51,7 +51,7 @@ const PolicyManagement = ({ mode }) => {
       carLicenseNum,
     };
 
-    console.log("submissionData:", submissionData);
+    //console.log("submissionData:", submissionData);
 
     // if (mode === "add") {
     //   // 新增模式處理
@@ -105,6 +105,8 @@ const PolicyManagement = ({ mode }) => {
       setValue("insuranceCom", InsuranceFee.insuranceCom || "");
     }
   }, [InsuranceFee, setValue]);
+
+  
 
   return (
     <Box
@@ -202,7 +204,7 @@ const PolicyManagement = ({ mode }) => {
             label="入帳月"
             fieldName="payUsDate"
             required={true}
-            defaultValue={InsuranceFee?.payUsDate || ""}
+            defaultValue={InsuranceFee?.payUsDate }
             onChange={(value) => {
               setValue("payUsDate", value);
               trigger("payUsDate");
@@ -253,7 +255,7 @@ const PolicyManagement = ({ mode }) => {
             required
             id="outlined-amount"
             label="保費"
-            type="number"
+            type=""
             autoComplete="off"
             error={!!errors.amount}
             {...register("amount", { required: true })}

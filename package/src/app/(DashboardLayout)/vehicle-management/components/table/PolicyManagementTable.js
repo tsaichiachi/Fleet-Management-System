@@ -16,9 +16,8 @@ import { useRouter } from "next/navigation";
 import { useDeleteInsurance } from "../../apihooks";
 
 const PolicyManagmentTable = ({ data, carLicenseNum, refreshData }) => {
-  console.log(refreshData);
-  //console.log("carLicenseNum:", carLicenseNum);
-  //console.log("data:", data);
+
+  console.log("data:", data);
   const router = useRouter();
 
   const { mutate: deleteInsurance } = useDeleteInsurance();
@@ -114,80 +113,92 @@ const PolicyManagmentTable = ({ data, carLicenseNum, refreshData }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data?.map((product) => (
-            <TableRow key={product.id}>
-              <TableCell>
-                <Typography fontWeight={400}>{product.insuranceCom}</Typography>
-              </TableCell>
-              <TableCell>
-                <Typography fontWeight={400}>{product.startDate}</Typography>
-              </TableCell>
-              <TableCell>
-                <Typography fontWeight={400}>{product.endDate}</Typography>
-              </TableCell>
-              <TableCell>
-                <Typography fontWeight={400}>{product.payUsDate}</Typography>
-              </TableCell>
-              <TableCell>
-                <Typography fontWeight={400}>{product.amount}</Typography>
-              </TableCell>
-              <TableCell>
-                <Typography fontWeight={400}>
-                  {product.insuranceType}
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography fontWeight={400}>{product.insuranceNum}</Typography>
-              </TableCell>
-              <TableCell>
-                <Typography fontWeight={400}>
-                  {product.insuranceCardNum}
-                </Typography>
-              </TableCell>
-
-              <TableCell>
-                <Typography fontWeight={400}>{product.quitDate}</Typography>
-              </TableCell>
-
-              <TableCell>
-                <Typography fontWeight={400}>
-                  {product.status === "DISABLE"
-                    ? "是"
-                    : product.status === "ENABLE"
-                    ? "否"
-                    : ""}
-                </Typography>
-              </TableCell>
-
-              <TableCell>
-                {product.status === "ENABLE" ? (
-                  <>
-                    <IconButton
-                      aria-label="edit"
-                      onClick={() =>
-                        handleEditClick(carLicenseNum, product.insuranceCardNum)
-                      }
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      aria-label="delete"
-                      onClick={() =>
-                        handleDeleteClick(
-                          carLicenseNum,
-                          product.insuranceCardNum
-                        )
-                      }
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </>
-                ) : (
-                  "已作廢"
-                )}
+          {data?.length > 0 ? (
+            data.map((product) => (
+              <TableRow key={product.id}>
+                <TableCell>
+                  <Typography fontWeight={400}>
+                    {product.insuranceCom}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography fontWeight={400}>{product.startDate}</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography fontWeight={400}>{product.endDate}</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography fontWeight={400}>{product.payUsDate}</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography fontWeight={400}>{product.amount}</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography fontWeight={400}>
+                    {product.insuranceType}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography fontWeight={400}>
+                    {product.insuranceNum}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography fontWeight={400}>
+                    {product.insuranceCardNum}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography fontWeight={400}>{product.quitDate}</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography fontWeight={400}>
+                    {product.status === "DISABLE"
+                      ? "是"
+                      : product.status === "ENABLE"
+                      ? "否"
+                      : ""}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  {product.status === "ENABLE" ? (
+                    <>
+                      <IconButton
+                        aria-label="edit"
+                        onClick={() =>
+                          handleEditClick(
+                            carLicenseNum,
+                            product.insuranceCardNum
+                          )
+                        }
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        aria-label="delete"
+                        onClick={() =>
+                          handleDeleteClick(
+                            carLicenseNum,
+                            product.insuranceCardNum
+                          )
+                        }
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </>
+                  ) : (
+                    "已作廢"
+                  )}
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={11} align="center">
+                <Typography fontWeight={400}>尚無資料</Typography>
               </TableCell>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
       {/* <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>

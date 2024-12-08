@@ -134,7 +134,7 @@ const LoanCompanyTable = () => {
       <Box
         sx={{
           display: "flex",
-          justifyContent: "flex-end",
+          //justifyContent: "flex-end",
           alignItems: "center",
           mb: 2,
         }}
