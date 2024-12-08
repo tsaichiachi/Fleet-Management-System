@@ -117,7 +117,6 @@ const PolicyManagement = ({ mode }) => {
       onSubmit={handleSubmit(onSubmit)}
     >
       {mode === "edit" && (
-     
         <Box sx={{ color: "red", fontWeight: "bold", marginBottom: "30px" }}>
           若修改保費的金額, 會由下期開始生效 <br />
           ex: 每月一號產出帳單,若在二號修改金額, 則下個月帳單才是修改過後的金額
@@ -197,6 +196,22 @@ const PolicyManagement = ({ mode }) => {
             {...register("insuranceCom", { required: true })}
           />
         </Grid> */}
+        {/* 入帳月 */}
+        <Grid item xs={12} md={6}>
+          <TaiwanDatePicker
+            label="入帳月"
+            fieldName="payUsDate"
+            required={true}
+            defaultValue={InsuranceFee?.payUsDate || ""}
+            onChange={(value) => {
+              setValue("payUsDate", value);
+              trigger("payUsDate");
+            }}
+            error={!!errors.payUsDate}
+            register={register}
+            trigger={trigger}
+          />
+        </Grid>
 
         {/* 起日 */}
         <Grid item xs={12} md={6}>
@@ -227,23 +242,6 @@ const PolicyManagement = ({ mode }) => {
               trigger("endDate");
             }}
             error={!!errors.endDate}
-            register={register}
-            trigger={trigger}
-          />
-        </Grid>
-
-        {/* 入帳月 */}
-        <Grid item xs={12} md={6}>
-          <TaiwanDatePicker
-            label="入帳月"
-            fieldName="payUsDate"
-            required={true}
-            defaultValue={InsuranceFee?.payUsDate || ""}
-            onChange={(value) => {
-              setValue("payUsDate", value);
-              trigger("payUsDate");
-            }}
-            error={!!errors.payUsDate}
             register={register}
             trigger={trigger}
           />

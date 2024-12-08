@@ -110,6 +110,8 @@ const DepositAmountTable = ({
           alert("新增成功！");
           refetch();
           await fetchInitialData(); // 刷新數據
+            setEditingRowId(null);
+            setEditedRow(null);
         } else {
           alert(`新增失敗: ${response?.message || "未知錯誤"}`);
         }
@@ -126,12 +128,13 @@ const DepositAmountTable = ({
           alert("修改成功！");
           refetch();
           await fetchInitialData(); // 刷新數據
+            setEditingRowId(null);
+            setEditedRow(null);
         } else {
           alert(`修改失敗: ${response?.message || "未知錯誤"}`);
         }
       }
-      setEditingRowId(null);
-      setEditedRow(null);
+     
     } catch (error) {
       console.error("保存失敗:", error);
       alert("保存失敗，請稍後再試！");
@@ -213,12 +216,15 @@ const DepositAmountTable = ({
                 <TableCell key={index}>
                   {field === "type" ? (
                     <Select
-                      value={editedRow?.type || "CASH"}
+                      value={editedRow?.type}
                       onChange={(e) =>
                         handleInputChange("type", e.target.value)
                       }
                       fullWidth
                     >
+                      <MenuItem value="" disabled>
+                        請選擇
+                      </MenuItem>
                       <MenuItem value="CASH">現金</MenuItem>
                       <MenuItem value="CHECK">支票</MenuItem>
                     </Select>
@@ -253,12 +259,15 @@ const DepositAmountTable = ({
                 <TableCell key={index}>
                   {editingRowId === row.id && field === "type" ? (
                     <Select
-                      value={editedRow?.type || "CASH"}
+                      value={editedRow?.type }
                       onChange={(e) =>
                         handleInputChange("type", e.target.value)
                       }
                       fullWidth
                     >
+                      <MenuItem value="" disabled>
+                        請選擇
+                      </MenuItem>
                       <MenuItem value="CASH">現金</MenuItem>
                       <MenuItem value="CHECK">支票</MenuItem>
                     </Select>

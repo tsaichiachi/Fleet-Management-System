@@ -97,31 +97,44 @@ const PolicyManagement = () => {
     <PageContainer title="保單管理" description="管理車輛保險相關資料">
       <DashboardCard title="">
         <Box sx={{ overflow: "auto", width: { xs: "400px", sm: "auto" } }}>
-          {/* 搜尋框與按鈕 */}
-          <Box>
-            {/* <TextField
-              label="搜尋"
-              id="outlined-size-small"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              size="small"
-              sx={{ marginRight: "1%", marginTop: "1%" }}
-            />
-            <Button
-              variant="contained"
-              sx={{ marginRight: "1%", marginTop: "1%" }}
-              onClick={handleSearchClick}
-            >
-              搜尋
-            </Button> */}
-            <Button
-              variant="contained"
-              onClick={handleAddNewClick}
-              sx={{ marginRight: "1%", marginTop: "1%" }}
-            >
-              新增保單
-            </Button>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              // justifyContent: "space-between",
+              marginBottom: "20px",
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              {/* 搜尋框和搜尋按鈕 */}
+              {/* <TextField
+      label="搜尋"
+      id="outlined-size-small"
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      size="small"
+      sx={{ marginRight: "8px" }}
+    />
+    <Button
+      variant="contained"
+      onClick={handleSearchClick}
+      sx={{ marginRight: "8px" }}
+    >
+      搜尋
+    </Button> */}
+              <Button
+                variant="contained"
+                onClick={handleAddNewClick}
+                sx={{ marginRight: "8px" }}
+              >
+                新增保單
+              </Button>
+            </Box>
+            <Box sx={{ color: "red", fontWeight: "bold" }}>
+              若保卡號碼輸入錯誤，請點選垃圾桶進行整筆作廢並重新新增保單
+            </Box>
           </Box>
+
           {/* 保單列表 */}
           {isLoading ? (
             <Box sx={{ textAlign: "center", mt: 4 }}>
@@ -136,6 +149,7 @@ const PolicyManagement = () => {
               <PolicyManagmentTable
                 data={filteredInsurance}
                 carLicenseNum={carLicenseNum}
+                refreshData={fetchInsuranceList}
               />
               {/* 分頁元件 */}
               {totalPages > 0 && (

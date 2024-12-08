@@ -38,6 +38,7 @@ const LoanManagementForm = ({ mode }) => {
     saveLoanFee(submissionData, {
       onSuccess: () => {
         alert("執行成功！");
+        router.push(`/vehicle-management/${carLicenseNum}/Ledger`);
       },
       onError: (error) => {
         alert("執行失敗！");

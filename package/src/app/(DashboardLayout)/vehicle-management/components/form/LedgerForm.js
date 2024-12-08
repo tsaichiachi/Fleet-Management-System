@@ -71,42 +71,51 @@ const LedgerForm = () => {
    //console.log("searchParams", searchParams);
   //下載
   const handleDownload = async () => {
-    //console.log("searchParams", searchParams);
-
     if (!searchParams) {
       alert("請先輸入年月份");
       return;
     }
     try {
+      const requestData = {
+        carLicenseNum,
+        billDateList: [searchParams?.billDate],
+        print: "Y",
+      };
+
+      console.log("Request data:", requestData);
+
       const response = await axios.post(
         "http://218.35.172.213:8082/bill/monthBillDetail",
-        {
-          carLicenseNum,
-          billDateList: [searchParams?.billDate],
-          print: "Y",
-        },
-        {
-          responseType: "blob",
-        }
+        requestData,
+        { responseType: "blob" }
       );
 
-      // 创建下载链接
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
       link.setAttribute(
         "download",
         `車輛總帳明細_${carLicenseNum}_${searchParams?.billDate}.pdf`
-      ); 
+      );
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+
       alert("下載成功");
     } catch (error) {
       console.error("下載失敗:", error);
+
+      // 尝试解析错误详细信息
+      if (error.response?.data) {
+        const errorBlob = error.response.data;
+        const errorText = await errorBlob.text();
+        console.error("Error details:", JSON.parse(errorText));
+      }
+
       alert("下載失敗，請稍後重試");
     }
   };
+
 
   return (
     <Box
@@ -404,6 +413,18 @@ const LedgerForm = () => {
             }
           />
         </Grid>
+        {/* 銷發票稅 */}
+        <Grid item xs={12} md={6}>
+          <TextField
+            disabled
+            id="invoiceSaleAmountTax"
+            label="銷發票稅"
+            type="number"
+            error={!!errors.invoiceSaleAmountTax}
+            {...register("invoiceSaleAmountTax", { required: false })}
+            InputLabelProps={{ shrink: true }}
+          />
+        </Grid>
 
         {/* 抵發票額 */}
         <Grid item xs={12} md={6}>
@@ -424,6 +445,18 @@ const LedgerForm = () => {
             }
           />
         </Grid>
+        {/* 抵發稅額 */}
+        <Grid item xs={12} md={6}>
+          <TextField
+            disabled
+            id="receipTax"
+            label="抵發稅額"
+            type="number"
+            error={!!errors.invoiceOffsetAmountTax}
+            {...register("invoiceOffsetAmountTax", { required: false })}
+            InputLabelProps={{ shrink: true }}
+          />
+        </Grid>
 
         {/* 抵油單額 */}
         <Grid item xs={12} md={6}>
@@ -442,32 +475,6 @@ const LedgerForm = () => {
                 />
               </Box>
             }
-          />
-        </Grid>
-
-        {/* 銷發票稅 */}
-        <Grid item xs={12} md={6}>
-          <TextField
-            disabled
-            id="invoiceSaleAmountTax"
-            label="銷發票稅"
-            type="number"
-            error={!!errors.invoiceSaleAmountTax}
-            {...register("invoiceSaleAmountTax", { required: false })}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid>
-
-        {/* 抵發稅額 */}
-        <Grid item xs={12} md={6}>
-          <TextField
-            disabled
-            id="receipTax"
-            label="抵發稅額"
-            type="number"
-            error={!!errors.invoiceOffsetAmountTax}
-            {...register("invoiceOffsetAmountTax", { required: false })}
-            InputLabelProps={{ shrink: true }}
           />
         </Grid>
 
@@ -504,12 +511,24 @@ const LedgerForm = () => {
               <Box>
                 <BorrowingAmountTable
                   carLicenseNum={carLicenseNum}
-                  type={"CASH"}
+                  // type={"CASH"}
                   expenseYearMonth={searchParams?.billDate}
                   refetch={refetch}
                 />
               </Box>
             }
+          />
+        </Grid>
+        {/* 借款利息 */}
+        <Grid item xs={12} md={6}>
+          <TextField
+            disabled
+            id="lendMoneyInterest"
+            label="借款利息"
+            type="number"
+            error={!!errors.lendMoneyInterest}
+            {...register("lendMoneyInterest", { required: false })}
+            InputLabelProps={{ shrink: true }}
           />
         </Grid>
 
@@ -532,6 +551,18 @@ const LedgerForm = () => {
             }
           />
         </Grid>
+        {/* 入款利息 */}
+        <Grid item xs={12} md={6}>
+          <TextField
+            disabled
+            id="giveBackInterest"
+            label="入款利息"
+            type="number"
+            error={!!errors.giveBackInterest}
+            {...register("giveBackInterest", { required: false })}
+            InputLabelProps={{ shrink: true }}
+          />
+        </Grid>
         {/* 其他應收 */}
         <Grid item xs={12} md={6}>
           <FieldWithDialog
@@ -551,30 +582,7 @@ const LedgerForm = () => {
             }
           />
         </Grid>
-        {/* 借款利息 */}
-        <Grid item xs={12} md={6}>
-          <TextField
-            disabled
-            id="lendMoneyInterest"
-            label="借款利息"
-            type="number"
-            error={!!errors.lendMoneyInterest}
-            {...register("lendMoneyInterest", { required: false })}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid>
-        {/* 入票利息 */}
-        <Grid item xs={12} md={6}>
-          <TextField
-            disabled
-            id="giveBackInterest"
-            label="入票利息"
-            type="number"
-            error={!!errors.giveBackInterest}
-            {...register("giveBackInterest", { required: false })}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid>
+
         {/* 其他抵收 */}
         <Grid item xs={12} md={6}>
           <FieldWithDialog

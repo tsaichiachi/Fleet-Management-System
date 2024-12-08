@@ -56,7 +56,7 @@ const ManagementFeeSettingForm = () => {
    saveCarFee(submissionData, {
      onSuccess: () => {
        alert("執行成功！");
-       //router.push(`/vehicle-management`);
+        router.push(`/vehicle-management/${carLicenseNum}/PolicyManagement`);
      },
      onError: (error) => {
       alert("執行失敗！");

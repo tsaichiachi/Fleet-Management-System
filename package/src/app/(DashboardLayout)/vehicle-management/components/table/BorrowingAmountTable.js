@@ -73,10 +73,12 @@ const BorrowingAmountTable = ({
   };
 
   const handleSaveClick = async () => {
+    //console.log("editedRow", editedRow);
+
     try {
       const { lendDate, expireDate } = editedRow;
 
-      // 驗證處理日期和發票日期的格式
+      // 验证日期格式
       if (!validateDate(lendDate, "YYY-MM-DD")) {
         alert("借款日期格式錯誤，應為 YYY-MM-DD");
         return;
@@ -98,7 +100,7 @@ const BorrowingAmountTable = ({
         carLicenseNum,
       };
 
-      //console.log("dataToSave", dataToSave);
+      console.log("dataToSave", dataToSave);
 
       if (editingRowId === "new") {
         const response = await requestHttp("lendMoney/addLendMoney", {
@@ -109,7 +111,11 @@ const BorrowingAmountTable = ({
         if (response?.code === "G_0000") {
           alert("新增成功！");
           refetch();
-          await fetchInitialData(); // 刷新數據
+          await fetchInitialData(); // 刷新数据
+
+          // 只在新增成功時清空數據
+          setEditingRowId(null);
+          setEditedRow(null);
         } else {
           alert(`新增失敗: ${response?.message || "未知錯誤"}`);
         }
@@ -122,18 +128,21 @@ const BorrowingAmountTable = ({
         if (response?.code === "G_0000") {
           alert("修改成功！");
           refetch();
-          await fetchInitialData(); // 刷新數據
+          await fetchInitialData(); // 刷新数据
+
+          // 只在修改成功清空數據
+          setEditingRowId(null);
+          setEditedRow(null);
         } else {
           alert(`修改失敗: ${response?.message || "未知錯誤"}`);
         }
       }
-      setEditingRowId(null);
-      setEditedRow(null);
     } catch (error) {
       console.error("保存失敗:", error);
       alert("保存失敗，請稍後再試！");
     }
   };
+
 
   const handleInputChange = (field, value) => {
     setEditedRow((prev) => ({
@@ -197,6 +206,49 @@ const BorrowingAmountTable = ({
           </TableRow>
         </TableHead>
         <TableBody>
+          {editingRowId === "new" && (
+            <TableRow>
+              {[
+                "lendDate",
+                "amount",
+                "expireDate",
+                "interestAmount",
+                "type",
+                "note",
+              ].map((field, index) => (
+                <TableCell key={index}>
+                  {field === "type" ? (
+                    <Select
+                      value={editedRow?.type || ""}
+                      onChange={(e) =>
+                        handleInputChange("type", e.target.value)
+                      }
+                      fullWidth
+                    >
+                      <MenuItem value="" disabled>
+                        請選擇
+                      </MenuItem>
+                      <MenuItem value="CASH">現金</MenuItem>
+                      <MenuItem value="CHECK">支票</MenuItem>
+                    </Select>
+                  ) : (
+                    <TextField
+                      value={editedRow?.[field] || ""}
+                      onChange={(e) => handleInputChange(field, e.target.value)}
+                    />
+                  )}
+                </TableCell>
+              ))}
+              <TableCell>
+                <IconButton onClick={handleSaveClick} color="primary">
+                  <SaveIcon />
+                </IconButton>
+                <IconButton onClick={handleCancelClick} color="secondary">
+                  <CancelIcon />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+          )}
           {taxData?.map((row) => (
             <TableRow key={row.id}>
               {[
@@ -210,12 +262,15 @@ const BorrowingAmountTable = ({
                 <TableCell key={index}>
                   {editingRowId === row.id && field === "type" ? (
                     <Select
-                      value={editedRow?.type || "CASH"}
+                      value={editedRow?.type}
                       onChange={(e) =>
                         handleInputChange("type", e.target.value)
                       }
                       fullWidth
                     >
+                      <MenuItem value="" disabled>
+                        請選擇
+                      </MenuItem>
                       <MenuItem value="CASH">現金</MenuItem>
                       <MenuItem value="CHECK">支票</MenuItem>
                     </Select>
@@ -254,47 +309,6 @@ const BorrowingAmountTable = ({
               </TableCell>
             </TableRow>
           ))}
-
-          {editingRowId === "new" && (
-            <TableRow>
-              {[
-                "lendDate",
-                "amount",
-                "expireDate",
-                "interestAmount",
-                "type",
-                "note",
-              ].map((field, index) => (
-                <TableCell key={index}>
-                  {field === "type" ? (
-                    <Select
-                      value={editedRow?.type || "CASH"}
-                      onChange={(e) =>
-                        handleInputChange("type", e.target.value)
-                      }
-                      fullWidth
-                    >
-                      <MenuItem value="CASH">現金</MenuItem>
-                      <MenuItem value="CHECK">支票</MenuItem>
-                    </Select>
-                  ) : (
-                    <TextField
-                      value={editedRow?.[field] || ""}
-                      onChange={(e) => handleInputChange(field, e.target.value)}
-                    />
-                  )}
-                </TableCell>
-              ))}
-              <TableCell>
-                <IconButton onClick={handleSaveClick} color="primary">
-                  <SaveIcon />
-                </IconButton>
-                <IconButton onClick={handleCancelClick} color="secondary">
-                  <CancelIcon />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          )}
         </TableBody>
       </Table>
     </Box>

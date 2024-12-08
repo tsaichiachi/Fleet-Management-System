@@ -120,6 +120,8 @@ const TrafficTicketTable = ({
           alert("新增成功！");
           refetch();
           await fetchInitialData(); // 刷新數據
+            setEditingRowId(null);
+            setEditedRow(null);
         } else {
           alert(`新增失敗: ${response?.message || "未知錯誤"}`);
         }
@@ -136,12 +138,13 @@ const TrafficTicketTable = ({
           alert("修改成功！");
           refetch();
           await fetchInitialData(); // 刷新數據
+            setEditingRowId(null);
+            setEditedRow(null);
         } else {
           alert(`修改失敗: ${response?.message || "未知錯誤"}`);
         }
       }
-      setEditingRowId(null);
-      setEditedRow(null);
+    
     } catch (error) {
       console.error("保存失敗:", error);
       alert("保存失敗，請稍後再試！");

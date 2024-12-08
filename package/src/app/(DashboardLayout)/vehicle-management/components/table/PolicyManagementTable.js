@@ -15,9 +15,10 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/navigation";
 import { useDeleteInsurance } from "../../apihooks";
 
-const PolicyManagmentTable = ({ data, carLicenseNum }) => {
-  console.log("carLicenseNum:", carLicenseNum);
-  console.log("data:", data);
+const PolicyManagmentTable = ({ data, carLicenseNum, refreshData }) => {
+  console.log(refreshData);
+  //console.log("carLicenseNum:", carLicenseNum);
+  //console.log("data:", data);
   const router = useRouter();
 
   const { mutate: deleteInsurance } = useDeleteInsurance();
@@ -28,20 +29,21 @@ const PolicyManagmentTable = ({ data, carLicenseNum }) => {
     );
   };
 
-    const handleDeleteClick = (carLicenseNum, insuranceCardNum) => {
-      deleteInsurance(
-        { carLicenseNum, insuranceCardNum },
-        {
-          onSuccess: () => {
-            alert("作廢成功");
-          },
-          onError: (error) => {
-            alert("作廢失敗");
-            console.error("删除失败：", error);
-          },
-        }
-      );
-    };
+  const handleDeleteClick = (carLicenseNum, insuranceCardNum) => {
+    deleteInsurance(
+      { carLicenseNum, insuranceCardNum },
+      {
+        onSuccess: () => {
+          alert("作廢成功");
+          refreshData();
+        },
+        onError: (error) => {
+          alert("作廢失敗");
+          console.error("删除失败：", error);
+        },
+      }
+    );
+  };
 
   return (
     <Box sx={{ overflow: "auto", width: { xs: "auto", sm: "auto" } }}>
