@@ -12,8 +12,8 @@ const ManagementFeeSettingForm = () => {
   const router = useRouter();
   const [carLicenseNum, setCarLicenseNum] = useState("");
   const { data: carFeeData } = useGetCarFee(carLicenseNum);
-  console.log(carFeeData);  
-  const { mutate: saveCarFee } = useAddOrUpdateCarFee();
+  //console.log(carFeeData);  
+  const { mutate: saveCarFee } = useAddOrUpdateCarFee(carLicenseNum);
 
   const {
     register,
@@ -49,20 +49,12 @@ const ManagementFeeSettingForm = () => {
      fuelTaxSummer: Number(data.fuelTaxSummer),
      fuelTaxAutumn: Number(data.fuelTaxAutumn),
      fuelTaxWinter: Number(data.fuelTaxWinter),
+     giveBackTax: Number(data.giveBackTax),
    };
 
    //console.log("提交的資料：", submissionData);
 
-   saveCarFee(submissionData, {
-     onSuccess: () => {
-       alert("執行成功！");
-        router.push(`/vehicle-management/${carLicenseNum}/PolicyManagement`);
-     },
-     onError: (error) => {
-      alert("執行失敗！");
-       console.error("操作失敗：", error);
-     },
-   });
+   saveCarFee(submissionData);
  };
 
 
@@ -233,7 +225,7 @@ const ManagementFeeSettingForm = () => {
             required
             id="saleTax"
             label="銷項稅率 (請輸入 0.001~1)"
-            type="text" 
+            type="text"
             error={!!errors.saleTax}
             helperText={errors.saleTax?.message}
             {...register("saleTax", {
@@ -332,6 +324,28 @@ const ManagementFeeSettingForm = () => {
               required: "此欄位為必填",
               validate: (value) =>
                 (value >= 0.01 && value <= 1) || "稅率必須介於 0.01 到 1 之間",
+            })}
+            InputLabelProps={{ shrink: true }}
+            inputProps={{
+              step: 0.01,
+              min: 0.01,
+              max: 1,
+            }}
+          />
+        </Grid>
+        {/* 入款利率 */}
+        <Grid item xs={12} md={6}>
+          <TextField
+            required
+            id="giveBackTax"
+            label="入款利率 (請輸入 0.001~1)"
+            type="text"
+            error={!!errors.giveBackTax}
+            helperText={errors.giveBackTax?.message}
+            {...register("giveBackTax", {
+              required: "此欄位為必填",
+              validate: (value) =>
+                (value >= 0.01 && value <= 1) || "利率必須介於 0.01 到 1 之間",
             })}
             InputLabelProps={{ shrink: true }}
             inputProps={{

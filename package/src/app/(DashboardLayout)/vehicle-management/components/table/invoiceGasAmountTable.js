@@ -1,4 +1,4 @@
-//銷發票額
+//抵油單額
 "use client";
 import React, { useEffect, useState } from "react";
 import {
@@ -24,7 +24,7 @@ import { requestHttp } from "@/utils/requestHttp";
 import { validateDate, areDatesInExpenseMonth } from "@/utils/tool";
 import { useGetCarAgencyDropDownList } from "../../apihooks";
 
-const InvoiceSaleAmountTable = ({
+const InvoiceGasAmountTable = ({
   carLicenseNum,
   type,
   expenseYearMonth,
@@ -153,11 +153,11 @@ const InvoiceSaleAmountTable = ({
   };
 
   const handleAddRow = () => {
-     if (!expenseYearMonth) {
-       setEditingRowId(null);
-       alert("請先提供有效的年月份搜尋資料再進行新增");
-       return;
-     }
+    if (!expenseYearMonth) {
+      setEditingRowId(null);
+      alert("請先提供有效的年月份搜尋資料再進行新增");
+      return;
+    }
     setEditingRowId("new");
     setEditedRow({
       id: "new",
@@ -199,7 +199,7 @@ const InvoiceSaleAmountTable = ({
               <br />
               2. 發票作廢後, 不可復原, 需重新輸入一張
               <br />
-              3. [稅]計算公式: 銷貨金額 * 銷項稅率
+              3. [稅]計算公式: 抵油單額 * 油單稅率
             </>
           ) : (
             "請提供有效的年月份進行資料搜尋"
@@ -217,7 +217,7 @@ const InvoiceSaleAmountTable = ({
               "處理日期(YYY-MM-DD)",
               "發票日期(YYY-MM-DD)",
               "發票號碼",
-              "銷貨金額",
+              "抵油單額",
               "稅",
               "摘要",
               "稅捐月份(YYY-MM)",
@@ -388,4 +388,4 @@ const InvoiceSaleAmountTable = ({
   );
 };
 
-export default InvoiceSaleAmountTable;
+export default InvoiceGasAmountTable;

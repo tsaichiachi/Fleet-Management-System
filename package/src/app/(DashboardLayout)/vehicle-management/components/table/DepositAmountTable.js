@@ -110,8 +110,8 @@ const DepositAmountTable = ({
           alert("新增成功！");
           refetch();
           await fetchInitialData(); // 刷新數據
-            setEditingRowId(null);
-            setEditedRow(null);
+          setEditingRowId(null);
+          setEditedRow(null);
         } else {
           alert(`新增失敗: ${response?.message || "未知錯誤"}`);
         }
@@ -128,13 +128,12 @@ const DepositAmountTable = ({
           alert("修改成功！");
           refetch();
           await fetchInitialData(); // 刷新數據
-            setEditingRowId(null);
-            setEditedRow(null);
+          setEditingRowId(null);
+          setEditedRow(null);
         } else {
           alert(`修改失敗: ${response?.message || "未知錯誤"}`);
         }
       }
-     
     } catch (error) {
       console.error("保存失敗:", error);
       alert("保存失敗，請稍後再試！");
@@ -149,6 +148,11 @@ const DepositAmountTable = ({
   };
 
   const handleAddRow = () => {
+     if (!expenseYearMonth) {
+       setEditingRowId(null);
+       alert("請先提供有效的年月份搜尋資料再進行新增");
+       return;
+     }
     setEditingRowId("new");
     setEditedRow({
       giveBackDate: "",
@@ -171,11 +175,25 @@ const DepositAmountTable = ({
           mb: 2,
         }}
       >
-        <Box sx={{ color: "red", fontWeight: "bold", textAlign: "center" }}>
-          車牌{carLicenseNum}，
-          {expenseYearMonth
-            ? `[入款日期]僅能新增和修改 ${expenseYearMonth} 當月資料`
-            : "請提供有效的年月份進行資料搜尋"}
+        <Box
+          sx={{
+            color: "red",
+            fontWeight: "bold",
+            //textAlign: "center",
+          }}
+        >
+          車牌:{carLicenseNum}，查詢年月:{expenseYearMonth}
+          <br />
+          {expenseYearMonth ? (
+            <>
+              1. 根據[入款日期]來判斷當月帳單。ex: 處理日期為12月5號,
+              則算於12月的帳單
+              <br />
+              2. [入款利息]計算公式: 入款金額 * 入款利率
+            </>
+          ) : (
+            "請提供有效的年月份進行資料搜尋"
+          )}
         </Box>
         <Button variant="contained" color="primary" onClick={handleAddRow}>
           新增
@@ -189,7 +207,7 @@ const DepositAmountTable = ({
               "入款日期(YYY-MM-DD)",
               "入款金額",
               "到期日(YYY-MM-DD)",
-              "借款利息",
+              "入款利息",
               "入款方式",
               "備註",
               "操作",
@@ -232,6 +250,13 @@ const DepositAmountTable = ({
                     <TextField
                       value={editedRow?.[field] || ""}
                       onChange={(e) => handleInputChange(field, e.target.value)}
+                      disabled={field === "interestAmount"} // 禁用入款利息
+                      sx={{
+                        "& .MuiInputBase-input.Mui-disabled": {
+                          backgroundColor: "#f0f0f0", // 禁用時的背景色
+                          color: "#999999", // 禁用時的文字顏色
+                        },
+                      }}
                     />
                   )}
                 </TableCell>
@@ -259,7 +284,7 @@ const DepositAmountTable = ({
                 <TableCell key={index}>
                   {editingRowId === row.id && field === "type" ? (
                     <Select
-                      value={editedRow?.type }
+                      value={editedRow?.type}
                       onChange={(e) =>
                         handleInputChange("type", e.target.value)
                       }
@@ -279,6 +304,13 @@ const DepositAmountTable = ({
                     <TextField
                       value={editedRow?.[field] || ""}
                       onChange={(e) => handleInputChange(field, e.target.value)}
+                      disabled={field === "interestAmount"} // 禁用入款利息
+                      sx={{
+                        "& .MuiInputBase-input.Mui-disabled": {
+                          backgroundColor: "#f0f0f0", // 禁用時的背景色
+                          color: "#999999", // 禁用時的文字顏色
+                        },
+                      }}
                     />
                   ) : (
                     <Typography>{row[field]}</Typography>

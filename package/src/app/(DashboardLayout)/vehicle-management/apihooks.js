@@ -315,21 +315,34 @@ export const useGetCarFee = (carLicenseNum) => {
 };
 
 // 新增或修改管費
-export const useAddOrUpdateCarFee = () => {
+export const useAddOrUpdateCarFee = (carLicenseNum) => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
-  return useMutation(async (carFeeData) => {
-    const response = await requestHttp("car/addCarFee", {
-      method: "POST",
-      data: carFeeData,
-    });
-    return response;
-  },
-  {
-    onSuccess: () => {
-      queryClient.invalidateQueries(["carFee"]);
+  return useMutation(
+    async (carFeeData) => {
+      const response = await requestHttp("car/addCarFee", {
+        method: "POST",
+        data: carFeeData,
+      });
+      if (response.code === "G_0000") {
+        return response; // 成功返回響應
+      } else {
+        throw new Error(response.message || "新增失敗"); // 如果不是 G_0000，拋出錯誤
+      }
     },
-  });
+    {
+      onSuccess: (response) => {
+        alert("新增管費成功！"); // 可視化成功訊息
+        router.push(`/vehicle-management/${carLicenseNum}/PolicyManagement`);
+        queryClient.invalidateQueries("cars"); // 更新車主列表
+      },
+      onError: (error) => {
+        alert(`新增失敗：${error.message}`); // 可視化錯誤訊息
+        console.error("新增管費失敗：", error);
+      },
+    }
+  );
 };
 
 

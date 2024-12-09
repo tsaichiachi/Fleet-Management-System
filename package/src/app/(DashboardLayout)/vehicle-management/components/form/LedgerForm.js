@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { useGetMonthBill } from "../../apihooks";
 import TaiwanYearMonthPickerSample from "../TaiwanDatePickerSample";
 import FieldWithDialog from "../FieldWithDialog";
-import LoanManagementTable from "../table/LoanManagementTable";
 import InvoiceSaleAmountTable from "../table/invoiceSaleAmountTable";
 import axios from "axios";
 import BorrowingAmountTable from "../table/BorrowingAmountTable";
@@ -19,6 +18,8 @@ import InterestPaymentTable from "../table/InterestPaymentTable";
 import ReceiptOffsetTable from "../table/ReceiptOffsetTable";
 import DepositRefundTable from "../table/DepositRefundTable";
 import TrafficTicketTable from "../table/TrafficTicketTable";
+import InvoiceGasAmountTable from "../table/invoiceGasAmountTable";
+import InvoiceOffectAmountTable from "../table/invoiceOffectAmountTable";
 
 
 const LedgerForm = () => {
@@ -140,7 +141,6 @@ const LedgerForm = () => {
             InputLabelProps={{ shrink: true }}
             InputProps={{
               readOnly: true,
-              
             }}
           />
         </Grid>
@@ -436,7 +436,7 @@ const LedgerForm = () => {
             error={errors.invoiceOffsetAmount}
             dialogContent={
               <Box>
-                <InvoiceSaleAmountTable
+                <InvoiceOffectAmountTable
                   carLicenseNum={carLicenseNum}
                   type={"OFFSET"}
                   expenseYearMonth={searchParams?.billDate}
@@ -468,7 +468,7 @@ const LedgerForm = () => {
             error={errors.invoiceGasAmount}
             dialogContent={
               <Box>
-                <InvoiceSaleAmountTable
+                <InvoiceGasAmountTable
                   carLicenseNum={carLicenseNum}
                   type={"GAS"}
                   expenseYearMonth={searchParams?.billDate}

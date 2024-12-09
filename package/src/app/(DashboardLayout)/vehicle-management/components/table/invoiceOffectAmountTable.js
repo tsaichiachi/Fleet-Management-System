@@ -199,7 +199,7 @@ const InvoiceSaleAmountTable = ({
               <br />
               2. 發票作廢後, 不可復原, 需重新輸入一張
               <br />
-              3. [稅]計算公式: 銷貨金額 * 銷項稅率
+              3. [稅]計算公式: 抵發票額 * 進項稅率
             </>
           ) : (
             "請提供有效的年月份進行資料搜尋"
@@ -217,8 +217,8 @@ const InvoiceSaleAmountTable = ({
               "處理日期(YYY-MM-DD)",
               "發票日期(YYY-MM-DD)",
               "發票號碼",
-              "銷貨金額",
-              "稅",
+              "報銷金額",
+              "抵稅",
               "摘要",
               "稅捐月份(YYY-MM)",
               "車行名稱",
@@ -243,7 +243,7 @@ const InvoiceSaleAmountTable = ({
                 "invoiceDate",
                 "invoiceNum",
                 "amount",
-                "amountTax", // 銷貨稅
+                "amountTax", 
                 "note",
                 "taxMonth",
               ].map((field, index) => (
@@ -251,7 +251,7 @@ const InvoiceSaleAmountTable = ({
                   <TextField
                     value={editedRow?.[field] || ""}
                     onChange={(e) => handleInputChange(field, e.target.value)}
-                    disabled={field === "amountTax"} // 禁用銷貨稅輸入框
+                    disabled={field === "amountTax"} 
                     sx={{
                       "& .MuiInputBase-input.Mui-disabled": {
                         backgroundColor: "#f0f0f0", // 禁用時的背景色
@@ -310,7 +310,7 @@ const InvoiceSaleAmountTable = ({
                     <TextField
                       value={editedRow?.[field] || ""}
                       onChange={(e) => handleInputChange(field, e.target.value)}
-                      disabled={field === "amountTax"} // Disable editing for 銷貨稅
+                      disabled={field === "amountTax"} // Disable editing 
                       sx={{
                         "& .MuiInputBase-input.Mui-disabled": {
                           backgroundColor: "#f0f0f0", // 禁用時的背景色

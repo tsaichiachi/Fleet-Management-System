@@ -143,7 +143,6 @@ const BorrowingAmountTable = ({
     }
   };
 
-
   const handleInputChange = (field, value) => {
     setEditedRow((prev) => ({
       ...prev,
@@ -152,6 +151,11 @@ const BorrowingAmountTable = ({
   };
 
   const handleAddRow = () => {
+     if (!expenseYearMonth) {
+       setEditingRowId(null);
+       alert("請先提供有效的年月份搜尋資料再進行新增");
+       return;
+     }
     setEditingRowId("new");
     setEditedRow({
       lendDate: "",
@@ -174,12 +178,27 @@ const BorrowingAmountTable = ({
           mb: 2,
         }}
       >
-        <Box sx={{ color: "red", fontWeight: "bold", textAlign: "center" }}>
-          車牌{carLicenseNum}，
-          {expenseYearMonth
-            ? `[借款日期]僅能新增和修改 ${expenseYearMonth} 當月資料`
-            : "請提供有效的年月份進行資料搜尋"}
+        <Box
+          sx={{
+            color: "red",
+            fontWeight: "bold",
+            //textAlign: "center",
+          }}
+        >
+          車牌:{carLicenseNum}，查詢年月:{expenseYearMonth}
+          <br />
+          {expenseYearMonth ? (
+            <>
+              1. 根據[借款日期]來判斷當月帳單。ex: 處理日期為12月5號,
+              則算於12月的帳單
+              <br />
+              2. [借款利息]計算公式: 借款金額 * 欠款利率
+            </>
+          ) : (
+            "請提供有效的年月份進行資料搜尋"
+          )}
         </Box>
+
         <Button variant="contained" color="primary" onClick={handleAddRow}>
           新增
         </Button>
@@ -206,13 +225,14 @@ const BorrowingAmountTable = ({
           </TableRow>
         </TableHead>
         <TableBody>
+          {/* 新增行 */}
           {editingRowId === "new" && (
             <TableRow>
               {[
                 "lendDate",
                 "amount",
                 "expireDate",
-                "interestAmount",
+                "interestAmount", // 借款利息
                 "type",
                 "note",
               ].map((field, index) => (
@@ -235,6 +255,13 @@ const BorrowingAmountTable = ({
                     <TextField
                       value={editedRow?.[field] || ""}
                       onChange={(e) => handleInputChange(field, e.target.value)}
+                      disabled={field === "interestAmount"} // 禁用借款利息
+                      sx={{
+                        "& .MuiInputBase-input.Mui-disabled": {
+                          backgroundColor: "#f0f0f0", // 禁用時的背景色
+                          color: "#999999", // 禁用時的文字顏色
+                        },
+                      }}
                     />
                   )}
                 </TableCell>
@@ -249,20 +276,21 @@ const BorrowingAmountTable = ({
               </TableCell>
             </TableRow>
           )}
+          {/* 現有數據行 */}
           {taxData?.map((row) => (
             <TableRow key={row.id}>
               {[
                 "lendDate",
                 "amount",
                 "expireDate",
-                "interestAmount",
+                "interestAmount", // 借款利息
                 "type",
                 "note",
               ].map((field, index) => (
                 <TableCell key={index}>
                   {editingRowId === row.id && field === "type" ? (
                     <Select
-                      value={editedRow?.type}
+                      value={editedRow?.type || ""}
                       onChange={(e) =>
                         handleInputChange("type", e.target.value)
                       }
@@ -282,6 +310,13 @@ const BorrowingAmountTable = ({
                     <TextField
                       value={editedRow?.[field] || ""}
                       onChange={(e) => handleInputChange(field, e.target.value)}
+                      disabled={field === "interestAmount"} // 禁用借款利息
+                      sx={{
+                        "& .MuiInputBase-input.Mui-disabled": {
+                          backgroundColor: "#f0f0f0", // 禁用時的背景色
+                          color: "#999999", // 禁用時的文字顏色
+                        },
+                      }}
                     />
                   ) : (
                     <Typography>{row[field]}</Typography>

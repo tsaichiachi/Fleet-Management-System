@@ -119,6 +119,11 @@ const LoanCompanyTable = () => {
   };
 
   const handleAddRow = () => {
+     if (!expenseYearMonth) {
+       setEditingRowId(null);
+       alert("請先提供有效的年月份搜尋資料再進行新增");
+       return;
+     }
     setEditingRowId("new");
     setEditedRow({
       companyName: "",

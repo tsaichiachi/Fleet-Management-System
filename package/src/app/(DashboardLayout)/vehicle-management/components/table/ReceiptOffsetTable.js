@@ -106,8 +106,8 @@ const ReceiptOffsetTable = ({
           alert("新增成功！");
           refetch();
           await fetchInitialData(); // 刷新數據
-            setEditingRowId(null);
-            setEditedRow(null);
+          setEditingRowId(null);
+          setEditedRow(null);
         } else {
           alert(`新增失敗: ${response?.message || "未知錯誤"}`);
         }
@@ -124,13 +124,12 @@ const ReceiptOffsetTable = ({
           alert("修改成功！");
           refetch();
           await fetchInitialData(); // 刷新數據
-            setEditingRowId(null);
-            setEditedRow(null);
+          setEditingRowId(null);
+          setEditedRow(null);
         } else {
           alert(`修改失敗: ${response?.message || "未知錯誤"}`);
         }
       }
-    
     } catch (error) {
       console.error("保存失敗:", error);
       alert("保存失敗，請稍後再試！");
@@ -145,6 +144,11 @@ const ReceiptOffsetTable = ({
   };
 
   const handleAddRow = () => {
+     if (!expenseYearMonth) {
+       setEditingRowId(null);
+       alert("請先提供有效的年月份搜尋資料再進行新增");
+       return;
+     }
     setEditingRowId("new");
     setEditedRow({
       payDate: "",
@@ -165,11 +169,25 @@ const ReceiptOffsetTable = ({
           mb: 2,
         }}
       >
-        <Box sx={{ color: "red", fontWeight: "bold", textAlign: "center" }}>
-          車牌{carLicenseNum}，
-          {expenseYearMonth
-            ? `[日期]僅能新增和修改 ${expenseYearMonth} 當月資料`
-            : "請提供有效的年月份進行資料搜尋"}
+        <Box
+          sx={{
+            color: "red",
+            fontWeight: "bold",
+            //textAlign: "center",
+          }}
+        >
+          車牌:{carLicenseNum}，查詢年月:{expenseYearMonth}
+          <br />
+          {expenseYearMonth ? (
+            <>
+              1. 根據[日期]來判斷當月帳單。ex: 處理日期為12月5號,
+              則算於12月的帳單
+              <br />
+              2. [抵收金額]計算公式: 收據金額 * 收據稅率
+            </>
+          ) : (
+            "請提供有效的年月份進行資料搜尋"
+          )}
         </Box>
         <Button variant="contained" color="primary" onClick={handleAddRow}>
           新增
@@ -216,6 +234,13 @@ const ReceiptOffsetTable = ({
                         onChange={(e) =>
                           handleInputChange(field, e.target.value)
                         }
+                        disabled={field === "amount"} // 禁用
+                        sx={{
+                          "& .MuiInputBase-input.Mui-disabled": {
+                            backgroundColor: "#f0f0f0", // 禁用時的背景色
+                            color: "#999999", // 禁用時的文字顏色
+                          },
+                        }}
                       />
                     )}
                   </TableCell>
@@ -238,7 +263,7 @@ const ReceiptOffsetTable = ({
                   <TableCell key={index}>
                     {editingRowId === row.id && field === "type" ? (
                       <Select
-                        value={editedRow?.type }
+                        value={editedRow?.type}
                         onChange={(e) =>
                           handleInputChange("type", e.target.value)
                         }
@@ -260,6 +285,13 @@ const ReceiptOffsetTable = ({
                         onChange={(e) =>
                           handleInputChange(field, e.target.value)
                         }
+                        disabled={field === "amount"} // 禁用
+                        sx={{
+                          "& .MuiInputBase-input.Mui-disabled": {
+                            backgroundColor: "#f0f0f0", // 禁用時的背景色
+                            color: "#999999", // 禁用時的文字顏色
+                          },
+                        }}
                       />
                     ) : (
                       <Typography>{row[field]}</Typography>

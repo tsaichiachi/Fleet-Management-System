@@ -142,6 +142,11 @@ const InterestPaymentTable = ({
   };
 
   const handleAddRow = () => {
+     if (!expenseYearMonth) {
+       setEditingRowId(null);
+       alert("請先提供有效的年月份搜尋資料再進行新增");
+       return;
+     }
     setEditingRowId("new");
     setEditedRow({
       payDate: "",
@@ -161,11 +166,14 @@ const InterestPaymentTable = ({
           mb: 2,
         }}
       >
-        <Box sx={{ color: "red", fontWeight: "bold", textAlign: "center" }}>
-          車牌{carLicenseNum}，
-          {expenseYearMonth
-            ? `[日期]僅能新增和修改 ${expenseYearMonth} 當月資料`
-            : "請提供有效的年月份進行資料搜尋"}
+        <Box sx={{ color: "red", fontWeight: "bold" }}>
+          車牌:{carLicenseNum}，查詢年月:{expenseYearMonth}
+          <br />
+          {expenseYearMonth ? (
+            <>[日期]僅能新增和修改{expenseYearMonth} 當月資料</>
+          ) : (
+            "請提供有效的年月份進行資料搜尋"
+          )}
         </Box>
         <Button variant="contained" color="primary" onClick={handleAddRow}>
           新增
