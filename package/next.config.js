@@ -12,7 +12,7 @@ module.exports = {
     return [
       {
         source: "/",
-        destination: "/driver-management", // 替換為你希望的默認頁面路徑
+        destination: "/authentication/login", // 替換為你希望的默認頁面路徑
         permanent: false,
       },
     ];

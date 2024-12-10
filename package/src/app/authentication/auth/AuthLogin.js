@@ -23,7 +23,7 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
       // 登入成功
       setMessage("登入成功");
       setMessageType("success");
-       localStorage.setItem("authToken", "fake-token-123");
+       localStorage.setItem("authToken", "token-123");
 
       // 5 秒後轉跳到主頁
       setTimeout(() => {
