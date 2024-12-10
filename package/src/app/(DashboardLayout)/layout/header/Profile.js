@@ -6,21 +6,27 @@ import {
   Menu,
   Button,
   IconButton,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
+ 
 } from "@mui/material";
 
 import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
 
 const Profile = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
-  const handleClick2 = (event: any) => {
+  const handleClick2 = (event) => {
     setAnchorEl2(event.currentTarget);
   };
   const handleClose2 = () => {
     setAnchorEl2(null);
   };
+
+    const handleLogout = () => {
+      // 清除所有 localStorage 資料
+      localStorage.clear();
+
+      // 導向登入頁
+      window.location.href = "/authentication/login";
+    };
 
   return (
     <Box>
@@ -63,7 +69,7 @@ const Profile = () => {
           },
         }}
       >
-        <MenuItem>
+        {/* <MenuItem>
           <ListItemIcon>
             <IconUser width={20} />
           </ListItemIcon>
@@ -80,7 +86,7 @@ const Profile = () => {
             <IconListCheck width={20} />
           </ListItemIcon>
           <ListItemText>My Tasks</ListItemText>
-        </MenuItem>
+        </MenuItem> */}
         <Box mt={1} py={1} px={2}>
           <Button
             href="/authentication/login"
@@ -88,8 +94,9 @@ const Profile = () => {
             color="primary"
             component={Link}
             fullWidth
+            onClick={handleLogout}
           >
-            Logout
+            登出
           </Button>
         </Box>
       </Menu>

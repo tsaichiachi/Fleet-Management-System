@@ -90,7 +90,7 @@ export default function RootLayout({ children }) {
       
         <Container
           sx={{
-            maxWidth: "1200px",
+            maxWidth: "100%",
           }}
         >
           {shouldRenderTabs && (

@@ -3,18 +3,27 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { baselightTheme } from "@/utils/theme/DefaultColors";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import "./global.css";
-
-// const queryClient = new QueryClient();
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [queryClient] = useState(() => new QueryClient());
+  const router = useRouter();
 
-  const [queryClient] = useState(() => new QueryClient()); 
+  useEffect(() => {
+    // 檢查 localStorage 中是否存在 authToken
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+      // 如果沒有 token，跳轉到登入頁
+      router.push("/authentication/login");
+    }
+  }, [router]);
 
   return (
     <html lang="en">

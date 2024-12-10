@@ -65,12 +65,12 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
         <Box flexGrow={1} />
         <FontSizeSelector></FontSizeSelector>
          {/* 使用者資料 */}
-        {/* <Stack spacing={1} direction="row" alignItems="center">
-          <Button variant="contained" disableElevation color="primary" >
+        <Stack spacing={1} direction="row" alignItems="center">
+          {/* <Button variant="contained" disableElevation color="primary" >
             Download
-          </Button>
+          </Button> */}
           <Profile />
-        </Stack> */}
+        </Stack>
       </ToolbarStyled>
     </AppBarStyled>
   );

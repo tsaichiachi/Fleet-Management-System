@@ -28,6 +28,9 @@ const LedgerForm = () => {
   const [ownerName, setOwnerName] = useState("");
   const [searchParams, setSearchParams] = useState(null);
   //console.log("searchParams", searchParams);
+  const [selectedBillDate, setSelectedBillDate] = useState(""); // 用於追蹤選擇的年月份
+  const [isSearched, setIsSearched] = useState(false); // 用於追蹤是否已點擊搜尋
+  console.log("isSearched", isSearched);
 
   const {
     register,
@@ -67,9 +70,10 @@ const LedgerForm = () => {
       billDate: data.billDate,
     };
     setSearchParams(params);
+    setIsSearched(true); // 設置為已搜尋
     refetch();
   };
-   //console.log("searchParams", searchParams);
+  //console.log("searchParams", searchParams);
   //下載
   const handleDownload = async () => {
     if (!searchParams) {
@@ -116,7 +120,6 @@ const LedgerForm = () => {
       alert("下載失敗，請稍後重試");
     }
   };
-
 
   return (
     <Box
@@ -169,6 +172,8 @@ const LedgerForm = () => {
             onChange={(value) => {
               setValue("billDate", value);
               trigger("billDate");
+              setSelectedBillDate(value); // 更新選擇的年月份
+              setIsSearched(false); // 重置為未搜尋狀態
             }}
             error={!!errors.billDate}
             register={register}
@@ -176,21 +181,57 @@ const LedgerForm = () => {
           />
         </Grid>
         {/* 搜尋和下載按鈕 */}
-        <Grid item xs={12} md={6}>
-          <Button
-            variant="contained"
-            type="submit"
-            sx={{ margin: "10px", marginTop: "15px" }}
+        <Grid
+          item
+          xs={12}
+          md={6}
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {/* 搜尋按鈕與下載區塊 */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "10px", // 按鈕與說明文字之間的間距
+              
+            }}
           >
-            搜尋
-          </Button>
-          <Button
-            variant="contained"
-            sx={{ margin: "10px", marginTop: "15px" }}
-            onClick={handleDownload}
-          >
-            下載帳單
-          </Button>
+            {/* 搜尋按鈕 */}
+            <Button variant="contained" type="submit">
+              搜尋
+            </Button>
+
+            {/* 說明文字與下載按鈕 */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "10px",
+                border: "1px solid #f0f0f0",
+                padding: "5px",
+                
+              }}
+            >
+              <span>欲下載帳單請先進行年月份搜尋</span>
+              <Button
+                variant="contained"
+                onClick={handleDownload}
+                disabled={
+                  !searchParams || selectedBillDate !== searchParams?.billDate
+                }
+              >
+                {isSearched && searchParams
+                  ? `下載${searchParams.billDate}帳單`
+                  : "下載帳單"}
+              </Button>
+            </Box>
+          </Box>
         </Grid>
 
         <Grid item xs={12} md={12}>

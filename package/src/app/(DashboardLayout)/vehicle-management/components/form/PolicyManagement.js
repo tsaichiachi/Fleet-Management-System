@@ -13,7 +13,7 @@ import {
 } from "../../apihooks";
 
 const PolicyManagement = ({ mode }) => {
-  console.log("mode:", mode);
+  //console.log("mode:", mode);
   const router = useRouter();
   const searchParams = useSearchParams();
   const insuranceCardNum = searchParams.get("insuranceCardNum");
@@ -27,7 +27,7 @@ const PolicyManagement = ({ mode }) => {
     insuranceCardNum,
     mode
   );
-  console.log("InsuranceFeear:", InsuranceFee);
+  //console.log("InsuranceFeear:", InsuranceFee);
 
   const handleCancelClick = () => {
     router.push(`/vehicle-management/${carLicenseNum}/PolicyManagement`);
@@ -44,29 +44,19 @@ const PolicyManagement = ({ mode }) => {
     } = useForm();
 
   const onSubmit = (data) => {
+     const transformedData = {
+       ...data,
+       payUsDate: data.payUsDate === "" ? null : data.payUsDate,
+       quitDate: data.quitDate === "" ? null : data.quitDate,
+     };
+
 
     // 定義提交數據
     const submissionData = {
-      ...data,
+      ...transformedData,
       carLicenseNum,
     };
 
-    //console.log("submissionData:", submissionData);
-
-    // if (mode === "add") {
-    //   // 新增模式處理
-    //   submissionData.insuranceCardNum = data.insuranceCardNum; // 保留 insuranceCardNum
-    //   delete submissionData.NewinsuranceCardNum; // 移除 NewinsuranceCardNum
-    // } else if (mode === "edit") {
-    //   // 編輯模式處理
-    //   if (data.NewinsuranceCardNum) {
-    //     submissionData.originalInsuranceCardNum = data.insuranceCardNum; // 將新值設置為 insuranceCardNum
-    //     submissionData.insuranceCardNum = data.NewinsuranceCardNum; // 將新值設置為 insuranceCardNum
-    //   } else {
-    //     submissionData.originalInsuranceCardNum = data.insuranceCardNum; // 將原值設置為 originalInsuranceCardNum
-    //   }
-    //   delete submissionData.NewinsuranceCardNum; // 編輯後清除 NewinsuranceCardNum
-    // }
 
     // 提交數據
     if (mode === "add") {
@@ -203,8 +193,8 @@ const PolicyManagement = ({ mode }) => {
           <TaiwanDatePicker
             label="入帳月"
             fieldName="payUsDate"
-            required={true}
-            defaultValue={InsuranceFee?.payUsDate }
+            required={false}
+            defaultValue={InsuranceFee?.payUsDate}
             onChange={(value) => {
               setValue("payUsDate", value);
               trigger("payUsDate");
@@ -312,7 +302,7 @@ const PolicyManagement = ({ mode }) => {
           <TaiwanDatePicker
             label="退日"
             fieldName="quitDate"
-            required={true}
+            required={false}
             defaultValue={InsuranceFee?.quitDate || ""}
             onChange={(value) => {
               setValue("quitDate", value);

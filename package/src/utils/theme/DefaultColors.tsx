@@ -121,7 +121,6 @@ const baselightTheme = createTheme({
     subtitle2: {
       fontSize: "0.875rem",
       fontWeight: 400,
-
     },
   },
   components: {
@@ -137,6 +136,15 @@ const baselightTheme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: "7px",
+        },
+      },
+    },
+    MuiContainer: {
+      styleOverrides: {
+        maxWidthLg: {
+          "@media (min-width: 1280px)": {
+            maxWidth: "100%",
+          },
         },
       },
     },

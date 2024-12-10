@@ -27,7 +27,7 @@ function SamplePage() {
     <PageContainer title="車籍資料建立" description="this is Sample page">
       <DashboardCard title="車主資料">
         {/* xs: 0, sm: 600, md: 960, lg: 1280, xl: 1920 */}
-        <Box sx={{ overflow: "auto", width: { xs: "400px", sm: "auto" } }}>
+        <Box sx={{ overflow: "auto", width: { xs: "400px", sm: "auto", xl:"auto"} }}>
           <Box>
             <Select
               labelId="searchItems"

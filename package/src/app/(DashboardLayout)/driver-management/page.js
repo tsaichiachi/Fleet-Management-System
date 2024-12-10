@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import CarOwnerTable from "./components/CarOwnerTable";
 import { requestHttp } from "@/utils/requestHttp";
 
-
 function DriverManagementPage() {
   const router = useRouter();
 
@@ -84,9 +83,11 @@ function DriverManagementPage() {
 
   return (
     <PageContainer title="車主管理" description="管理車主相關資料">
-      <DashboardCard title="車主資料">
-        <Box sx={{ overflow: "auto", width: { xs: "400px", sm: "auto" } }}>
-          
+      <DashboardCard
+        title="車主資料"
+        sx={{ width: "100%", maxWidth: "100%", margin: "0 auto" }}
+      >
+        <Box sx={{ overflow: "auto", width: "100%" }}>
           {/* 搜尋框與按鈕 */}
           <Box>
             <TextField
