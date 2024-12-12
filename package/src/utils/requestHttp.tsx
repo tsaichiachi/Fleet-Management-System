@@ -44,7 +44,7 @@ export const requestHttp = (
     }
   }
 
-     console.log(process.env.NEXT_PUBLIC_API_BASE_URL);
+     //console.log(process.env.NEXT_PUBLIC_API_BASE_URL);
      const url = initConfig.isDefault
        ? process.env.NEXT_PUBLIC_API_BASE_URL || ""
        : "http://218.35.172.213:8082";

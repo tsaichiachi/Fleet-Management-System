@@ -252,7 +252,7 @@ export const useGetInsuranceComDropDownList = () => {
           response.message || "Failed to fetch car owner dropdown list"
         );
       }
-      console.log("Car Owner API Response:", response.data);
+      //console.log("Car Owner API Response:", response.data);
       return response.data;
     },
     {
@@ -482,7 +482,7 @@ export const useGetCarOwnerInfo = (id) => {
         data: { id  },
       });
 
-      console.log("Car Owner Info API Response:", response);
+      //console.log("Car Owner Info API Response:", response);
       return response.data;
     },
     {
@@ -502,7 +502,7 @@ export const useGetCar = (licenseNumber, mode) => {
         data: { licenseNumber },
       });
 
-      console.log("Car Info API Response:", response);
+      //console.log("Car Info API Response:", response);
       return response.data;
     },
     {
@@ -522,7 +522,7 @@ export const useGetCarByOwner = (searchName) => {
         data: { searchName },
       });
 
-      console.log("Car Info API Response:", response);
+      //console.log("Car Info API Response:", response);
       return response.data.pageList;
     },
     {

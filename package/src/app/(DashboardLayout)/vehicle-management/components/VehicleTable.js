@@ -35,7 +35,7 @@ const VehicleTable = (data) => {
   };
 
   const handleDeleteClick = (licenseNumber) => {
-    console.log(`刪除車主 ID: ${licenseNumber}`);
+    //console.log(`刪除車主 ID: ${licenseNumber}`);
   };
 
   return (

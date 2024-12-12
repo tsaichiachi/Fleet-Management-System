@@ -21,6 +21,15 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import { requestHttp } from "@/utils/requestHttp";
 import { validateDate, areDatesInExpenseMonth } from "@/utils/tool";
 
+const currentTaiwanDate = (() => {
+  const now = new Date();
+  const taiwanYear = now.getFullYear() - 1911; // Convert to Taiwan year
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  return `${taiwanYear}-${month}`;
+})();
+
+//console.log("currentTaiwanDate", currentTaiwanDate);
+
 const DepositAmountTable = ({
   carLicenseNum,
   type,
@@ -148,11 +157,11 @@ const DepositAmountTable = ({
   };
 
   const handleAddRow = () => {
-     if (!expenseYearMonth) {
-       setEditingRowId(null);
-       alert("請先提供有效的年月份搜尋資料再進行新增");
-       return;
-     }
+    if (!expenseYearMonth) {
+      setEditingRowId(null);
+      alert("請先提供有效的年月份搜尋資料再進行新增");
+      return;
+    }
     setEditingRowId("new");
     setEditedRow({
       giveBackDate: "",
@@ -186,6 +195,8 @@ const DepositAmountTable = ({
           <br />
           {expenseYearMonth ? (
             <>
+              1. 僅能新增、編輯[{currentTaiwanDate}]的資料
+              <br />
               1. 根據[入款日期]來判斷當月帳單。ex: 處理日期為12月5號,
               則算於12月的帳單
               <br />
@@ -195,9 +206,15 @@ const DepositAmountTable = ({
             "請提供有效的年月份進行資料搜尋"
           )}
         </Box>
-        <Button variant="contained" color="primary" onClick={handleAddRow}>
+        
+        {expenseYearMonth >= currentTaiwanDate && (
+          <Button variant="contained" color="primary" onClick={handleAddRow}>
+            新增
+          </Button>
+        )}
+        {/* <Button variant="contained" color="primary" onClick={handleAddRow}>
           新增
-        </Button>
+        </Button> */}
       </Box>
 
       <Table aria-label="simple table" sx={{ whiteSpace: "nowrap", mt: 2 }}>
@@ -327,13 +344,17 @@ const DepositAmountTable = ({
                       <CancelIcon />
                     </IconButton>
                   </>
-                ) : (
+                ) : expenseYearMonth >= currentTaiwanDate ? (
                   <IconButton
                     aria-label="edit"
                     onClick={() => handleEditClick(row.id)}
                   >
                     <EditIcon />
                   </IconButton>
+                ) : (
+                  <Typography color="error" fontWeight="bold">
+                    僅供檢視
+                  </Typography>
                 )}
               </TableCell>
             </TableRow>

@@ -80,7 +80,7 @@ const VehicleSetting = ({ mode }) => {
     }
   }, [car, setValue]);
 
-  console.log("errors:", errors.joinDate);
+  //console.log("errors:", errors.joinDate);
 
   return (
     <Box

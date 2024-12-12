@@ -17,7 +17,7 @@ import { useDeleteInsurance } from "../../apihooks";
 
 const PolicyManagmentTable = ({ data, carLicenseNum, refreshData }) => {
 
-  console.log("data:", data);
+  //console.log("data:", data);
   const router = useRouter();
 
   const { mutate: deleteInsurance } = useDeleteInsurance();

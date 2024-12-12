@@ -1,4 +1,4 @@
-//銷發票額
+//抵發票額
 "use client";
 import React, { useEffect, useState } from "react";
 import {
@@ -23,6 +23,16 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import { requestHttp } from "@/utils/requestHttp";
 import { validateDate, areDatesInExpenseMonth } from "@/utils/tool";
 import { useGetCarAgencyDropDownList } from "../../apihooks";
+
+const currentTaiwanDate = (() => {
+  const now = new Date();
+  const taiwanYear = now.getFullYear() - 1911; // Convert to Taiwan year
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  return `${taiwanYear}-${month}`;
+})();
+
+//console.log("currentTaiwanDate", currentTaiwanDate);
+
 
 const InvoiceSaleAmountTable = ({
   carLicenseNum,
@@ -194,21 +204,29 @@ const InvoiceSaleAmountTable = ({
           <br />
           {expenseYearMonth ? (
             <>
-              1. 根據[處理日期]來判斷當月帳單。ex: 處理日期為12月5號,
+              1. 僅能新增、編輯[{currentTaiwanDate}]的資料
+              <br />
+              2. 根據[處理日期]來判斷當月帳單。ex: 處理日期為12月5號,
               則算於12月的帳單
               <br />
-              2. 發票作廢後, 不可復原, 需重新輸入一張
+              3. 發票作廢後, 不可復原, 需重新輸入一張
               <br />
-              3. [稅]計算公式: 抵發票額 * 進項稅率
+              4. [稅]計算公式: 抵發票額 * 進項稅率
             </>
           ) : (
             "請提供有效的年月份進行資料搜尋"
           )}
         </Box>
 
-        <Button variant="contained" color="primary" onClick={handleAddRow}>
+        {expenseYearMonth >= currentTaiwanDate && (
+          <Button variant="contained" color="primary" onClick={handleAddRow}>
+            新增
+          </Button>
+        )}
+        
+        {/* <Button variant="contained" color="primary" onClick={handleAddRow}>
           新增
-        </Button>
+        </Button> */}
       </Box>
       <Table aria-label="simple table" sx={{ whiteSpace: "nowrap", mt: 2 }}>
         <TableHead>
@@ -222,8 +240,6 @@ const InvoiceSaleAmountTable = ({
               "摘要",
               "稅捐月份(YYY-MM)",
               "車行名稱",
-              "作廢",
-              "操作",
             ].map((header, index) => (
               <TableCell key={index}>
                 <Typography variant="subtitle2" fontWeight={600}>
@@ -231,6 +247,17 @@ const InvoiceSaleAmountTable = ({
                 </Typography>
               </TableCell>
             ))}
+
+            <TableCell>
+              <Typography variant="subtitle2" fontWeight={600}>
+                作廢
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography variant="subtitle2" fontWeight={600}>
+                操作
+              </Typography>
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -243,7 +270,7 @@ const InvoiceSaleAmountTable = ({
                 "invoiceDate",
                 "invoiceNum",
                 "amount",
-                "amountTax", 
+                "amountTax",
                 "note",
                 "taxMonth",
               ].map((field, index) => (
@@ -251,7 +278,7 @@ const InvoiceSaleAmountTable = ({
                   <TextField
                     value={editedRow?.[field] || ""}
                     onChange={(e) => handleInputChange(field, e.target.value)}
-                    disabled={field === "amountTax"} 
+                    disabled={field === "amountTax"}
                     sx={{
                       "& .MuiInputBase-input.Mui-disabled": {
                         backgroundColor: "#f0f0f0", // 禁用時的背景色
@@ -310,7 +337,7 @@ const InvoiceSaleAmountTable = ({
                     <TextField
                       value={editedRow?.[field] || ""}
                       onChange={(e) => handleInputChange(field, e.target.value)}
-                      disabled={field === "amountTax"} // Disable editing 
+                      disabled={field === "amountTax"} // Disable editing
                       sx={{
                         "& .MuiInputBase-input.Mui-disabled": {
                           backgroundColor: "#f0f0f0", // 禁用時的背景色
@@ -323,7 +350,7 @@ const InvoiceSaleAmountTable = ({
                   )}
                 </TableCell>
               ))}
-              {/* Dropdown for car agency */}
+
               <TableCell>
                 {editingRowId === row.id ? (
                   <Select
@@ -344,6 +371,7 @@ const InvoiceSaleAmountTable = ({
                 )}
               </TableCell>
               {/* Disable editing 作廢 */}
+
               <TableCell>
                 {editingRowId === row.id ? (
                   <Switch
@@ -371,13 +399,17 @@ const InvoiceSaleAmountTable = ({
                       <CancelIcon />
                     </IconButton>
                   </>
-                ) : (
+                ) : expenseYearMonth >= currentTaiwanDate ? (
                   <IconButton
                     aria-label="edit"
                     onClick={() => handleEditClick(row.id)}
                   >
                     <EditIcon />
                   </IconButton>
+                ) : (
+                  <Typography color="error" fontWeight="bold">
+                    僅供檢視
+                  </Typography>
                 )}
               </TableCell>
             </TableRow>

@@ -30,7 +30,7 @@ const LedgerForm = () => {
   //console.log("searchParams", searchParams);
   const [selectedBillDate, setSelectedBillDate] = useState(""); // 用於追蹤選擇的年月份
   const [isSearched, setIsSearched] = useState(false); // 用於追蹤是否已點擊搜尋
-  console.log("isSearched", isSearched);
+  //console.log("isSearched", isSearched);
 
   const {
     register,
@@ -87,7 +87,7 @@ const LedgerForm = () => {
         print: "Y",
       };
 
-      console.log("Request data:", requestData);
+      //console.log("Request data:", requestData);
 
       const response = await axios.post(
         "http://218.35.172.213:8082/bill/monthBillDetail",

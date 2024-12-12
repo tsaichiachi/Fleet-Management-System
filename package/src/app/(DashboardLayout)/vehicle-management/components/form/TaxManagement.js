@@ -10,7 +10,7 @@ import TaiwanDatePicker from "../TaiwanDatePicker";
 
 
 const TaxManagement= ({ mode }) => {
-  console.log(mode);
+  //console.log(mode);
   const router = useRouter();
   const handleCancelClick = (id) => {
     router.push(`/vehicle-management/${id}/TaxManagement`);
@@ -25,7 +25,7 @@ const TaxManagement= ({ mode }) => {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log(data);
+    //console.log(data);
   };
 
   return (

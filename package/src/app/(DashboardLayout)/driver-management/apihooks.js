@@ -16,7 +16,7 @@ export const useGetCarOwners = (fetchParams) => {
         searchName: name || "",
       },
     });
-    console.log("Car Owners API Response:", response);
+    //console.log("Car Owners API Response:", response);
     return response;
   });
 };

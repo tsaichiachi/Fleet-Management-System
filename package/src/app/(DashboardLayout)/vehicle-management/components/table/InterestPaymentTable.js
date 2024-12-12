@@ -21,6 +21,15 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import { requestHttp } from "@/utils/requestHttp";
 import { validateDate, areDatesInExpenseMonth } from "@/utils/tool";
 
+const currentTaiwanDate = (() => {
+  const now = new Date();
+  const taiwanYear = now.getFullYear() - 1911; // Convert to Taiwan year
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  return `${taiwanYear}-${month}`;
+})();
+
+//console.log("currentTaiwanDate", currentTaiwanDate);
+
 const InterestPaymentTable = ({
   carLicenseNum,
   type,
@@ -106,8 +115,8 @@ const InterestPaymentTable = ({
           alert("新增成功！");
           refetch();
           await fetchInitialData(); // 刷新數據
-            setEditingRowId(null);
-            setEditedRow(null);
+          setEditingRowId(null);
+          setEditedRow(null);
         } else {
           alert(`新增失敗: ${response?.message || "未知錯誤"}`);
         }
@@ -121,13 +130,12 @@ const InterestPaymentTable = ({
           alert("修改成功！");
           refetch();
           await fetchInitialData(); // 刷新數據
-            setEditingRowId(null);
-            setEditedRow(null);
+          setEditingRowId(null);
+          setEditedRow(null);
         } else {
           alert(`修改失敗: ${response?.message || "未知錯誤"}`);
         }
       }
-     
     } catch (error) {
       console.error("保存失敗:", error);
       alert("保存失敗，請稍後再試！");
@@ -142,11 +150,11 @@ const InterestPaymentTable = ({
   };
 
   const handleAddRow = () => {
-     if (!expenseYearMonth) {
-       setEditingRowId(null);
-       alert("請先提供有效的年月份搜尋資料再進行新增");
-       return;
-     }
+    if (!expenseYearMonth) {
+      setEditingRowId(null);
+      alert("請先提供有效的年月份搜尋資料再進行新增");
+      return;
+    }
     setEditingRowId("new");
     setEditedRow({
       payDate: "",
@@ -170,14 +178,19 @@ const InterestPaymentTable = ({
           車牌:{carLicenseNum}，查詢年月:{expenseYearMonth}
           <br />
           {expenseYearMonth ? (
-            <>[日期]僅能新增和修改{expenseYearMonth} 當月資料</>
+            <>僅能新增、編輯[{currentTaiwanDate}]的資料</>
           ) : (
             "請提供有效的年月份進行資料搜尋"
           )}
         </Box>
-        <Button variant="contained" color="primary" onClick={handleAddRow}>
+        {expenseYearMonth >= currentTaiwanDate && (
+          <Button variant="contained" color="primary" onClick={handleAddRow}>
+            新增
+          </Button>
+        )}
+        {/* <Button variant="contained" color="primary" onClick={handleAddRow}>
           新增
-        </Button>
+        </Button> */}
       </Box>
 
       <Table aria-label="simple table" sx={{ whiteSpace: "nowrap", mt: 2 }}>
@@ -273,13 +286,17 @@ const InterestPaymentTable = ({
                       <CancelIcon />
                     </IconButton>
                   </>
-                ) : (
+                ) : expenseYearMonth >= currentTaiwanDate ? (
                   <IconButton
                     aria-label="edit"
                     onClick={() => handleEditClick(row.id)}
                   >
                     <EditIcon />
                   </IconButton>
+                ) : (
+                  <Typography color="error" fontWeight="bold">
+                    僅供檢視
+                  </Typography>
                 )}
               </TableCell>
             </TableRow>
