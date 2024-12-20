@@ -47,7 +47,7 @@ export const requestHttp = (
      //console.log(process.env.NEXT_PUBLIC_API_BASE_URL);
      const url = initConfig.isDefault
        ? process.env.NEXT_PUBLIC_API_BASE_URL || ""
-       : "http://218.35.172.213:8082";
+       : "http://127.0.0.1:8082";
 
   // 調試信息，檢查 URL 和配置
   //console.log("Request URL:", url + `/${endStr}`);

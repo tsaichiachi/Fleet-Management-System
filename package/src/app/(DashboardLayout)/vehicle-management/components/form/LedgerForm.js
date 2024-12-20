@@ -90,7 +90,7 @@ const LedgerForm = () => {
       //console.log("Request data:", requestData);
 
       const response = await axios.post(
-        "http://218.35.172.213:8082/bill/monthBillDetail",
+        "http://127.0.0.1:8082/bill/monthBillDetail",
         requestData,
         { responseType: "blob" }
       );
