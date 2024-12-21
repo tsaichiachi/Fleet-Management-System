@@ -87,10 +87,9 @@ const LedgerForm = () => {
         print: "Y",
       };
 
-      //console.log("Request data:", requestData);
-
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL; // 動態獲取基礎 URL
       const response = await axios.post(
-        "http://127.0.0.1:8082/bill/monthBillDetail",
+        `${apiUrl}/bill/monthBillDetail`, // 拼接完整的 URL
         requestData,
         { responseType: "blob" }
       );
@@ -110,16 +109,21 @@ const LedgerForm = () => {
     } catch (error) {
       console.error("下載失敗:", error);
 
-      // 尝试解析错误详细信息
+      // 嘗試解析錯誤詳細信息
       if (error.response?.data) {
-        const errorBlob = error.response.data;
-        const errorText = await errorBlob.text();
-        console.error("Error details:", JSON.parse(errorText));
+        try {
+          const errorBlob = error.response.data;
+          const errorText = await errorBlob.text();
+          console.error("Error details:", JSON.parse(errorText));
+        } catch (parseError) {
+          console.error("無法解析錯誤詳細信息");
+        }
       }
 
       alert("下載失敗，請稍後重試");
     }
   };
+
 
   return (
     <Box

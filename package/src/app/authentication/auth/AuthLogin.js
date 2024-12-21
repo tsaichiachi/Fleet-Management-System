@@ -9,7 +9,7 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
 
   // 定義預設帳號和密碼
   const DEFAULT_USERNAME = "admin";
-  const DEFAULT_PASSWORD = "123";
+  const DEFAULT_PASSWORD = "!QAz123";
 
   // 使用狀態管理使用者輸入
   const [username, setUsername] = useState("");

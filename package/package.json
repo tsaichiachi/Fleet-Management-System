@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev:beta": "dotenv -e .env.beta next dev",
+    "dev:prod": "dotenv -e .env.prod next dev",
+    "dev:local": "dotenv -e .env.local next dev",
     "dev": "next dev",
     "build": "next build ",
     "start": "next start -p 8083",
@@ -47,6 +50,8 @@
   },
   "devDependencies": {
     "@types/lodash": "4.14.196",
-    "@types/qs": "^6.9.17"
+    "@types/qs": "^6.9.17",
+    "cross-env": "^7.0.3",
+    "dotenv-cli": "^8.0.0"
   }
 }
