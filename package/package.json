@@ -8,8 +8,10 @@
     "dev:local": "dotenv -e .env.local next dev",
     "dev": "next dev",
     "build": "next build ",
-    "start": "next start -p 8083",
-    "lint": "next lint"
+    "lint": "next lint",
+    "start:beta": "dotenv -e .env.beta next start -p 8083",
+    "start:prod": "dotenv -e .env.prod next start -p 8083",
+    "start:local": "dotenv -e .env.local next start -p 8083"
   },
   "dependencies": {
     "@date-io/date-fns": "^2.17.0",

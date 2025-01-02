@@ -131,7 +131,7 @@ const PolicyManagement = () => {
               </Button>
             </Box>
             <Box sx={{ color: "red", fontWeight: "bold" }}>
-              若保卡號碼輸入錯誤，請點選垃圾桶進行整筆作廢並重新新增保單
+              若保卡號碼輸入錯誤，請點選垃圾桶將整筆作廢並重新新增保單
             </Box>
           </Box>
 
@@ -144,7 +144,11 @@ const PolicyManagement = () => {
             <Box sx={{ textAlign: "center", mt: 4 }}>
               <Typography>無法載入資料，請稍後再試</Typography>
             </Box>
-          ) : (
+          ) :  filteredInsurance.length === 0 ? (
+            <Box sx={{ textAlign: "center", mt: 4 }}>
+              <Typography>尚無資料</Typography>
+            </Box>
+          ): (
             <>
               <PolicyManagmentTable
                 data={filteredInsurance}

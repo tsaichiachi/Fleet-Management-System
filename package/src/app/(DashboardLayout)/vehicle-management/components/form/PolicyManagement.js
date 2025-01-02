@@ -136,7 +136,7 @@ const PolicyManagement = ({ mode }) => {
             disabled={mode === "edit"}
             required
             id="insuranceCardNum"
-            label="保卡資料"
+            label="保卡號碼"
             type="text"
             error={!!errors.insuranceCardNum}
             {...register("insuranceCardNum", { required: true })}

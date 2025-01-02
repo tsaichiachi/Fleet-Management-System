@@ -128,10 +128,13 @@ function VehicleManagementPage() {
             <Box sx={{ textAlign: "center", mt: 4 }}>
               <Typography>無法載入資料，請稍後再試</Typography>
             </Box>
+          ) : filteredCars.length === 0 ? (
+            <Box sx={{ textAlign: "center", mt: 4 }}>
+              <Typography>尚無資料</Typography>
+            </Box>
           ) : (
             <>
               <VehicleTable data={filteredCars} />
-              {/* 分頁元件 */}
               {totalPages > 0 && (
                 <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
                   <Pagination

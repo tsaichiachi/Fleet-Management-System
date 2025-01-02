@@ -122,18 +122,12 @@ function DriverManagementPage() {
             <Box sx={{ textAlign: "center", mt: 4 }}>
               <Typography>請重新搜尋</Typography>
             </Box>
+          ) : owners.length === 0 ? (
+            <Box sx={{ textAlign: "center", mt: 4 }}>
+              <Typography>尚無資料</Typography>
+            </Box>
           ) : (
             <CarOwnerTable data={owners} />
-          )}
-          {/* 分頁元件 */}
-          {totalPages > 0 && (
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-              <Pagination
-                count={totalPages}
-                page={currentPage}
-                onChange={handlePageChange}
-              />
-            </Box>
           )}
         </Box>
       </DashboardCard>
