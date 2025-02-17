@@ -316,25 +316,25 @@ const ManagementFeeSettingForm = () => {
           <TextField
             required
             id="receipTax"
-            label="收據稅率 (請輸入 0.001~1)"
+            label="收據稅率 (請輸入 0~1)"
             type="text"
             error={!!errors.receipTax}
             helperText={errors.receipTax?.message}
             {...register("receipTax", {
               required: "此欄位為必填",
               validate: (value) =>
-                (value >= 0.01 && value <= 1) || "稅率必須介於 0.01 到 1 之間",
+                (value >= 0 && value <= 1) || "稅率必須介於 0 到 1 之間",
             })}
             InputLabelProps={{ shrink: true }}
             inputProps={{
               step: 0.01,
-              min: 0.01,
+              min: 0,
               max: 1,
             }}
           />
         </Grid>
         {/* 入款利率 */}
-        <Grid item xs={12} md={6}>
+        {/* <Grid item xs={12} md={6}>
           <TextField
             required
             id="giveBackTax"
@@ -354,7 +354,7 @@ const ManagementFeeSettingForm = () => {
               max: 1,
             }}
           />
-        </Grid>
+        </Grid> */}
 
         <Grid item xs={12} md={12}>
           <Divider

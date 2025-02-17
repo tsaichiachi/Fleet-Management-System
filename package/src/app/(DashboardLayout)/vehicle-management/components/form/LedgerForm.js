@@ -20,6 +20,8 @@ import DepositRefundTable from "../table/DepositRefundTable";
 import TrafficTicketTable from "../table/TrafficTicketTable";
 import InvoiceGasAmountTable from "../table/invoiceGasAmountTable";
 import InvoiceOffectAmountTable from "../table/invoiceOffectAmountTable";
+import { CalendarMonth, Description, FlashOn } from "@mui/icons-material";
+import dayjs from "dayjs";
 
 
 const LedgerForm = () => {
@@ -31,6 +33,10 @@ const LedgerForm = () => {
   const [selectedBillDate, setSelectedBillDate] = useState(""); // 用於追蹤選擇的年月份
   const [isSearched, setIsSearched] = useState(false); // 用於追蹤是否已點擊搜尋
   //console.log("isSearched", isSearched);
+
+  // 取得當前年月 (格式: 民國年-MM)
+  const currentYearMonth = `${dayjs().year() - 1911}-${dayjs().format("MM")}`;
+  //console.log("currentYearMonth", currentYearMonth);
 
   const {
     register,
@@ -80,6 +86,7 @@ const LedgerForm = () => {
       alert("請先輸入年月份");
       return;
     }
+
     try {
       const requestData = {
         carLicenseNum,
@@ -88,12 +95,21 @@ const LedgerForm = () => {
       };
 
       const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL; // 動態獲取基礎 URL
+      const authToken = localStorage.getItem("authToken"); // 取得 Token
+
       const response = await axios.post(
         `${apiUrl}/bill/monthBillDetail`, // 拼接完整的 URL
         requestData,
-        { responseType: "blob" }
+        {
+          responseType: "blob", // 確保回應是檔案
+          headers: {
+            Authorization: authToken ? `Bearer ${authToken}` : "", // 加入 Bearer Token
+            "Content-Type": "application/json", // 確保請求是 JSON
+          },
+        }
       );
 
+      // 創建 Blob 並下載
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
@@ -123,6 +139,78 @@ const LedgerForm = () => {
       alert("下載失敗，請稍後重試");
     }
   };
+
+const handleCurrentMonthGenerate = async () => {
+  if (!searchParams) {
+    alert("請先輸入年月份");
+    return;
+  }
+
+  try {
+    const requestData = {
+      carLicenseNum,
+      billDate: searchParams?.billDate,
+    };
+
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL; // 動態獲取 API URL
+    const authToken = localStorage.getItem("authToken"); // 取得 Token
+
+    const response = await axios.post(
+      `${apiUrl}/bill/generateCurrentMonthBill`,
+      requestData,
+      {
+        headers: {
+          Authorization: authToken ? `Bearer ${authToken}` : "",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    // 🔍 **檢查 API 回應是否包含錯誤代碼**
+    if (response.data?.code) {
+      const { code, message } = response.data;
+
+      if (code === "G_0002") {
+        alert(message || "不可重複產出當月帳單");
+        return;
+      }
+
+      if (code === "G_9999") {
+        alert(message || "請洽管理員");
+        return;
+      }
+
+      if (code === "G_0000") {
+        alert("當月帳單產生成功，請點擊 [下載] 按鈕下載!");
+        return;
+      }
+
+      alert(message || "操作失敗，請稍後重試");
+      return;
+    }
+
+    alert("回應格式錯誤，請稍後重試");
+  } catch (error) {
+    console.error("請求失敗:", error);
+
+    if (error.response?.data) {
+      try {
+        const errorJson = error.response.data;
+
+        if (errorJson?.code) {
+          alert(errorJson.message || "發生錯誤，請稍後重試");
+          return;
+        }
+      } catch (parseError) {
+        console.error("無法解析錯誤詳細信息");
+      }
+    }
+
+    alert("系統錯誤，請稍後重試");
+  }
+};
+
+
 
 
   return (
@@ -202,12 +290,25 @@ const LedgerForm = () => {
               justifyContent: "center",
               alignItems: "center",
               gap: "10px", // 按鈕與說明文字之間的間距
-              
             }}
           >
             {/* 搜尋按鈕 */}
             <Button variant="contained" type="submit">
               搜尋
+            </Button>
+            {/* 立即產生當月帳單 */}
+            <Button
+              variant="contained"
+              color="warning"
+              onClick={handleCurrentMonthGenerate}
+              startIcon={<FlashOn />}
+              disabled={
+                !searchParams ||
+                !selectedBillDate ||
+                selectedBillDate !== currentYearMonth
+              } // 按鈕禁用條件
+            >
+              立即產生當月帳單(新車適用)
             </Button>
 
             {/* 說明文字與下載按鈕 */}
@@ -219,7 +320,6 @@ const LedgerForm = () => {
                 gap: "10px",
                 border: "1px solid #f0f0f0",
                 padding: "5px",
-                
               }}
             >
               <span>欲下載帳單請先進行年月份搜尋</span>

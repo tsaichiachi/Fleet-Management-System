@@ -532,3 +532,25 @@ export const useGetCarByOwner = (searchName) => {
 };
 
 
+//登入
+export const useLogin = () => {
+  return useMutation(async (loginData) => {
+    console.log("loginData", loginData);
+    const response = await requestHttp("user/login", {
+      method: "POST",
+      data: loginData,
+    });
+    return response;
+  });
+};
+
+//取得登入公鑰
+export const useGetPublicKey = () => {
+  return useQuery("publicKey", async () => {
+    const response = await requestHttp("key/getKey", {
+      method: "POST",
+    });
+    return response.data.rsaPublicKey;
+  });
+};
+

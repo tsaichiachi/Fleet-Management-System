@@ -395,12 +395,11 @@ const VehicleSetting = ({ mode }) => {
         {/* 車重 */}
         <Grid item xs={12} md={6}>
           <TextField
-            required
             id="carWeight"
             label="車重(噸)"
             type="text"
             error={!!errors.carWeight}
-            {...register("carWeight", { required: true })}
+            {...register("carWeight", { required: false })}
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
@@ -408,12 +407,11 @@ const VehicleSetting = ({ mode }) => {
         {/* 載重 */}
         <Grid item xs={12} md={6}>
           <TextField
-            required
             id="loadingWeight"
             label="載重 (噸)"
             type="text"
             error={!!errors.loadingWeight}
-            {...register("loadingWeight", { required: true })}
+            {...register("loadingWeight", { required: false })}
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
