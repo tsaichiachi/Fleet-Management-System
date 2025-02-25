@@ -11,7 +11,7 @@ const LinkStyled = styled(Link)(() => ({
 
 const Logo = () => {
   return (
-    <LinkStyled href="/">
+    <LinkStyled href="/driver-management">
       <Image
         src="/images/logos/I-TRUCK-LOGO.svg"
         alt="logo"
