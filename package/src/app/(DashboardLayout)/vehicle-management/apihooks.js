@@ -444,31 +444,32 @@ export const useGetLoanCompanyDropDownList = () => {
 // API: 取得車主下拉列表
 export const useGetCarAgencyDropDownList = () => {
   return useQuery(
-    "CarAgencyDropDownList",
+    ["CarAgencyDropDownList"], // 確保 key 是唯一的
     async () => {
       const response = await requestHttp("carAgency/getCarAgency", {
         method: "POST",
-        
+        body: JSON.stringify({}),
       });
 
-      if (response.code !== "G_0000") {
+      if (response?.code !== "G_0000") {
         throw new Error(
-          response.message || "Failed to fetch car owner dropdown list"
+          response?.message || "Failed to fetch car owner dropdown list"
         );
       }
-      //console.log("Car Owner API Response:", response.data);
-      return response.data.pageList;
+
+      return response?.data?.pageList || []; // 確保不會返回 undefined
     },
     {
       select: (data) =>
-        data.map((item) => ({
-          key: item.id,
-          value: item.agencyName,
+        data?.map((item) => ({
+          key: item.id, 
+          value: item.id, 
           name: item.agencyName,
-        })),
+        })) || [],
     }
   );
 };
+
 
 
 //取得車主個人資料
