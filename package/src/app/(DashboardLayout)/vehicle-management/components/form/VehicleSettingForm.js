@@ -10,7 +10,11 @@ import { useAddCars, useGetCarOwnerDropDownList } from "../../apihooks";
 import { MenuItem } from "@mui/material";
 import { useGetCar, useEditCars } from "../../apihooks";
 import TaiwanYearMonthPickerSample from "../TaiwanDatePickerSample";
-import { useGetCarAgencyDropDownList } from "../../apihooks";
+import {
+  useGetCarAgencyDropDownList,
+  useGetCarAgencyDropDownListNew,
+} from "../../apihooks";
+
 
 const VehicleSetting = ({ mode }) => {
   //console.log("VehicleSetting mode:", mode);
@@ -20,6 +24,8 @@ const VehicleSetting = ({ mode }) => {
   const { data: carOwners } = useGetCarOwnerDropDownList();
   const { data: carAgency } = useGetCarAgencyDropDownList();
   //console.log("carAgency:", carAgency);
+  const { data: carAgencyList } = useGetCarAgencyDropDownListNew();
+  //console.log("carAgencyList:", carAgencyList);
   const [carLicenseNum, setCarLicenseNum] = useState("");
   //console.log("carLicenseNum:", carLicenseNum);
   const { data: car } = useGetCar(mode === "add" ? null : carLicenseNum, mode);
@@ -35,22 +41,31 @@ const VehicleSetting = ({ mode }) => {
     trigger,
   } = useForm();
 
-  const onSubmit = (data) => {
-    //console.log("data:", data);
-    const submissionData = {
-      ...data,
-      inspectionType: data.inspectionType
-        ? parseInt(data.inspectionType, 10)
-        : null,
-    };
+ const onSubmit = (data) => {
+   console.log("提交的資料:", data);
 
-    if (mode === "add") {
-      addCar(submissionData, {});
-      
-    } else if (mode === "edit") {
-      editCar({ ...submissionData, carLicenseNum });
-    }
-  };
+   // 根據 carAgencyId 找到對應的車行名稱
+   const selectedAgency = carAgencyList?.find(
+     (agency) => agency.value.toString() === data.carAgencyId?.toString()
+   );
+
+   const submissionData = {
+     ...data,
+     inspectionType: data.inspectionType
+       ? parseInt(data.inspectionType, 10)
+       : null,
+     carAgencyId: data.carAgencyId ? parseInt(data.carAgencyId, 10) : null, // 確保為數字
+     carAgency: selectedAgency ? selectedAgency.name : "", // 綁定對應的名稱
+   };
+
+   if (mode === "add") {
+     addCar(submissionData, {});
+   } else if (mode === "edit") {
+     editCar({ ...submissionData, carLicenseNum });
+   }
+ };
+
+
 
   // 從 localStorage 獲取車牌號碼
   useEffect(() => {
@@ -63,15 +78,30 @@ const VehicleSetting = ({ mode }) => {
   }, []);
 
   // 預設值綁定到表單
-  useEffect(() => {
-    if (mode === "add") {
-      reset();
-    } else if (mode === "edit" && car) {
-      Object.entries(car).forEach(([key, value]) => {
-        setValue(key, value || "");
-      });
-    }
-  }, [mode, car, reset, setValue]);
+ useEffect(() => {
+   if (mode === "add") {
+     reset();
+   } else if (mode === "edit" && car) {
+     Object.entries(car).forEach(([key, value]) => {
+       setValue(key, value || "");
+     });
+
+     // 綁定車行名稱與 ID
+     if (car.carAgencyId) {
+       const matchedAgency = carAgencyList?.find(
+         (agency) => agency.value === car.carAgencyId
+       );
+       if (matchedAgency) {
+         setValue("carAgencyId", matchedAgency.value); // 確保 carAgencyId 綁定正確的 ID
+         setValue("carAgency", matchedAgency.name); // 同步名稱
+       } else {
+         setValue("carAgencyId", ""); // 若找不到則清空
+         setValue("carAgency", "");
+       }
+     }
+   }
+ }, [mode, car, carAgencyList, reset, setValue]);
+
  
 
   useEffect(() => {
@@ -81,6 +111,10 @@ const VehicleSetting = ({ mode }) => {
   }, [car, setValue]);
 
   //console.log("errors:", errors.joinDate);
+
+ 
+
+
 
   return (
     <Box
@@ -133,11 +167,19 @@ const VehicleSetting = ({ mode }) => {
           <TextField
             select
             required
-            value={watch("carAgency") || ""}
-            onChange={(e) => setValue("carAgency", e.target.value)}
+            value={watch("carAgencyId") || ""}
+            onChange={(e) => {
+              const selectedValue = e.target.value;
+              const selectedAgency = carAgencyList?.find(
+                (agency) => agency.value.toString() === selectedValue.toString()
+              );
+
+              setValue("carAgencyId", selectedValue);
+              setValue("carAgency", selectedAgency ? selectedAgency.name : ""); // 同步名稱
+            }}
             label="車行"
-            error={!!errors.carAgency}
-            {...register("carAgency", { required: true })}
+            error={!!errors.carAgencyId}
+            {...register("carAgencyId", { required: true })}
             fullWidth
             disabled={mode === "view"}
             InputLabelProps={{ shrink: true }}
@@ -145,12 +187,13 @@ const VehicleSetting = ({ mode }) => {
             <MenuItem value="" disabled>
               請選擇
             </MenuItem>
-            {carAgency?.map((Agency) => (
-              <MenuItem key={Agency.key} value={Agency.name}>
-                {`${Agency.name}`}
+            {carAgencyList?.map((agency) => (
+              <MenuItem key={agency.key} value={agency.value}>
+                {agency.name}
               </MenuItem>
             ))}
           </TextField>
+
           {/* <TextField
             required
             id="carAgency"

@@ -555,3 +555,30 @@ export const useGetPublicKey = () => {
   });
 };
 
+//取得車行下拉列表New
+export const useGetCarAgencyDropDownListNew = () => {
+  return useQuery(
+    "dropDownGetCarAgency",
+    async () => {
+      const response = await requestHttp("carAgency/dropDownGetCarAgency", {
+        method: "POST",
+      });
+
+      if (response.code !== "G_0000") {
+        throw new Error(
+          response.message || "Failed to fetch car owner dropdown list"
+        );
+      }
+      //console.log("Car Owner API Response:", response.data);
+      return response.data;
+    },
+    {
+      select: (data) =>
+        data.map((item) => ({
+          key: item.carAgencyId,
+          value: item.carAgencyId,
+          name: item.agencyName,
+        })),
+    }
+  );
+};

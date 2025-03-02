@@ -12,7 +12,7 @@ function DriverManagementPage() {
 
   // 狀態：分頁參數與搜尋條件
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(10);
   const [searchName, setSearchName] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [totalPages, setTotalPages] = useState(0);
@@ -72,9 +72,13 @@ function DriverManagementPage() {
   };
 
   // 分頁變更
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
-  };
+ const handlePageChange = (event, value) => {
+   setCurrentPage(value);
+   const startIndex = (value - 1) * pageSize;
+   const endIndex = startIndex + pageSize;
+   const currentPageData = owners.slice(startIndex, endIndex);
+   setOwners(currentPageData);
+ };
 
   // 新增車主按鈕點擊
   const handleAddNewClick = () => {
@@ -127,7 +131,18 @@ function DriverManagementPage() {
               <Typography>尚無資料</Typography>
             </Box>
           ) : (
-            <CarOwnerTable data={owners} />
+            <>
+              <CarOwnerTable data={owners} />
+              {totalPages > 0 && (
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+                  <Pagination
+                    count={totalPages}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                  />
+                </Box>
+              )}
+            </>
           )}
         </Box>
       </DashboardCard>

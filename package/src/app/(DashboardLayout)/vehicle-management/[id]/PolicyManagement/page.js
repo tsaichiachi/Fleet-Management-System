@@ -20,7 +20,7 @@ const PolicyManagement = () => {
 
   // 分頁狀態
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(5); // 每頁顯示筆數
+  const [pageSize] = useState(10); // 每頁顯示筆數
   const [totalPages, setTotalPages] = useState(0);
 
   // 車輛牌照號碼

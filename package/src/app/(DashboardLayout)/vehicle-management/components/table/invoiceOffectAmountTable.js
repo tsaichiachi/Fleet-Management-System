@@ -22,7 +22,10 @@ import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { requestHttp } from "@/utils/requestHttp";
 import { validateDate, areDatesInExpenseMonth } from "@/utils/tool";
-import { useGetCarAgencyDropDownList } from "../../apihooks";
+import {
+  useGetCarAgencyDropDownList,
+  useGetCarAgencyDropDownListNew,
+} from "../../apihooks";
 
 const currentTaiwanDate = (() => {
   const now = new Date();
@@ -32,7 +35,6 @@ const currentTaiwanDate = (() => {
 })();
 
 //console.log("currentTaiwanDate", currentTaiwanDate);
-
 
 const InvoiceSaleAmountTable = ({
   carLicenseNum,
@@ -44,7 +46,7 @@ const InvoiceSaleAmountTable = ({
   const [editingRowId, setEditingRowId] = useState(null);
   const [editedRow, setEditedRow] = useState(null);
 
-  const { data: carAgencyList } = useGetCarAgencyDropDownList();
+  const { data: carAgencyList } = useGetCarAgencyDropDownListNew();
   //console.log("carAgencyList", carAgencyList);
 
   // 抓取數據函數
@@ -88,7 +90,8 @@ const InvoiceSaleAmountTable = ({
 
   const handleSaveClick = async () => {
     try {
-      const { handleDate, invoiceDate, taxMonth } = editedRow;
+      const { handleDate, invoiceDate, taxMonth, carAgency, carAgencyId } =
+        editedRow;
 
       // 驗證處理日期和發票日期的格式
       if (!validateDate(handleDate, "YYY-MM-DD")) {
@@ -114,6 +117,7 @@ const InvoiceSaleAmountTable = ({
         handleDate,
         invoiceDate,
         taxMonth,
+        carAgencyId, // 送出 ID
         type,
         carLicenseNum,
       };
@@ -156,18 +160,30 @@ const InvoiceSaleAmountTable = ({
   };
 
   const handleInputChange = (field, value) => {
-    setEditedRow((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    if (field === "carAgency") {
+      const selectedAgency = carAgencyList?.find(
+        (agency) => agency.name === value
+      );
+
+      setEditedRow((prev) => ({
+        ...prev,
+        carAgency: value,
+        carAgencyId: selectedAgency ? selectedAgency.value : "", // 綁定 ID
+      }));
+    } else {
+      setEditedRow((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+    }
   };
 
   const handleAddRow = () => {
-     if (!expenseYearMonth) {
-       setEditingRowId(null);
-       alert("請先提供有效的年月份搜尋資料再進行新增");
-       return;
-     }
+    if (!expenseYearMonth) {
+      setEditingRowId(null);
+      alert("請先提供有效的年月份搜尋資料再進行新增");
+      return;
+    }
     setEditingRowId("new");
     setEditedRow({
       id: "new",
@@ -182,6 +198,19 @@ const InvoiceSaleAmountTable = ({
       disable: "0", // 預設為 "否"
     });
   };
+
+  useEffect(() => {
+    if (editingRowId && editedRow) {
+      const matchedAgency = carAgencyList?.find(
+        (agency) => agency.name === editedRow.carAgency
+      );
+
+      setEditedRow((prev) => ({
+        ...prev,
+        carAgencyId: matchedAgency ? matchedAgency.value : "", // 預設對應 ID
+      }));
+    }
+  }, [editingRowId, carAgencyList, editedRow?.carAgency]);
 
   return (
     <Box sx={{ overflow: "auto", width: "100%" }}>
@@ -223,7 +252,7 @@ const InvoiceSaleAmountTable = ({
             新增
           </Button>
         )}
-        
+
         {/* <Button variant="contained" color="primary" onClick={handleAddRow}>
           新增
         </Button> */}
@@ -301,7 +330,7 @@ const InvoiceSaleAmountTable = ({
                     請選擇
                   </MenuItem>
                   {carAgencyList?.map((agency) => (
-                    <MenuItem key={agency.id} value={agency.name}>
+                    <MenuItem key={agency.value} value={agency.name}>
                       {agency.name}
                     </MenuItem>
                   ))}

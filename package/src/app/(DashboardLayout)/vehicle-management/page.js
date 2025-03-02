@@ -19,7 +19,7 @@ function VehicleManagementPage() {
 
   // 分頁狀態
   const [currentPage, setCurrentPage] = useState(1); // 當前頁碼
-  const [pageSize] = useState(5); // 每頁筆數
+  const [pageSize] = useState(10); // 每頁筆數
   const [totalPages, setTotalPages] = useState(0); // 總頁數
 
   // 呼叫 API 獲取車輛資料
