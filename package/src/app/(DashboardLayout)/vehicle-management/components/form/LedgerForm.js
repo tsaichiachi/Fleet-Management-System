@@ -166,7 +166,7 @@ const handleCurrentMonthGenerate = async () => {
       }
     );
 
-    // 🔍 **檢查 API 回應是否包含錯誤代碼**
+    //  **檢查 API 回應是否包含錯誤代碼**
     if (response.data?.code) {
       const { code, message } = response.data;
 
@@ -181,7 +181,7 @@ const handleCurrentMonthGenerate = async () => {
       }
 
       if (code === "G_0000") {
-        alert("當月帳單產生成功，請點擊 [下載] 按鈕下載!");
+        alert("當月帳單產生成功!");
         return;
       }
 
