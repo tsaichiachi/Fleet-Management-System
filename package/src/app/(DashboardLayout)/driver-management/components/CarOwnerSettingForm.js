@@ -53,6 +53,7 @@ const CarOwnerSetting = ({ mode }) => {
   }, [mode, setValue]);
 
   const onSubmit = (formData) => {
+    //console.log("表單資料：", formData);
     if (mode === "add") {
       const submissionData = {
         ...formData,
@@ -60,7 +61,6 @@ const CarOwnerSetting = ({ mode }) => {
       };
       addCarOwner(submissionData, {
         onSuccess: () => {
-          alert("新增成功！");
           router.push(`/driver-management`); // Navigate to list page
         },
         onError: (error) => {
@@ -149,11 +149,14 @@ const CarOwnerSetting = ({ mode }) => {
             required={true}
             defaultValue={mode === "add" ? "" : carOwnerInfo?.birthday || ""}
             onChange={(value) => {
-              setValue("birthday", value);
+              setValue("birthday", value || undefined, {
+                shouldValidate: true,
+              }); // 空字串轉換成 undefined
               trigger("birthday");
             }}
             error={!!errors.birthday}
-            register={register}
+            // helperText={errors.birthday ? "此欄位為必填" : ""}
+            register={register("birthday", { required: "生日為必填欄位" })}
             trigger={trigger}
             disabled={mode === "view"}
           />
@@ -162,10 +165,12 @@ const CarOwnerSetting = ({ mode }) => {
           <TextField
             id="phone1"
             label="電話1"
-            {...register("phone1")}
+            required
+            {...register("phone1", { required: true })}
             fullWidth
             disabled={mode === "view"}
             InputLabelProps={{ shrink: true }}
+            error={!!errors.phone1}
           />
         </Grid>
         <Grid item xs={12} sm={6}>

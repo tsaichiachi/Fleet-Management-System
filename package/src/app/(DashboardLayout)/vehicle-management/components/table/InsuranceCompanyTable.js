@@ -14,6 +14,7 @@ import {
   Button,
   Select,
   MenuItem,
+  Pagination,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -23,39 +24,37 @@ import { validateDate, areDatesInExpenseMonth } from "@/utils/tool";
 
 const InsuranceCompanyTable = () => {
   const [taxData, setTaxData] = useState([]); // 表格數據
+  const [currentPage, setCurrentPage] = useState(1); // 當前頁數
+  const [totalPages, setTotalPages] = useState(1); // 總頁數
   const [editingRowId, setEditingRowId] = useState(null);
   const [editedRow, setEditedRow] = useState(null);
+  const rowsPerPage = 10; // 每頁顯示的行數
 
   // 抓取數據函數
-  const fetchInitialData = async () => {
+  const fetchInitialData = async (page = 1) => {
     try {
       const response = await requestHttp(
         "insuranceCompany/getInsuranceCompany",
         {
           method: "POST",
-          data: { size: 1000, page: 1 },
+          data: { page, size: rowsPerPage },
         }
       );
 
       const processedData = response.data.pageList.map((item) => ({
         ...item,
-        //disable: String(item.disable), // 將 disable 轉換為字串
       }));
 
-      //console.log("processedData", processedData);
-
       setTaxData(processedData);
-      //console.log("刷新數據成功:", response.data.pageList);
+      setTotalPages(response.data.totalPages || 1); // 設置總頁數
     } catch (error) {
-      //console.error("刷新數據失敗:", error);
-      //alert("刷新數據失敗，請稍後再試！");
+      console.error("刷新數據失敗:", error);
     }
   };
 
-  // 組件加載時調用
   useEffect(() => {
-    fetchInitialData();
-  }, []); // 空依賴陣列，確保只執行一次
+    fetchInitialData(currentPage);
+  }, [currentPage]); // 當前頁數改變時重新請求數據
 
   // 進入編輯模式
   const handleEditClick = (rowId) => {
@@ -72,12 +71,9 @@ const InsuranceCompanyTable = () => {
 
   const handleSaveClick = async () => {
     try {
-    
       const dataToSave = {
         ...editedRow,
       };
-
-      //console.log("dataToSave", dataToSave);
 
       if (editingRowId === "new") {
         const response = await requestHttp(
@@ -90,9 +86,9 @@ const InsuranceCompanyTable = () => {
 
         if (response?.code === "G_0000") {
           alert("新增成功！");
-          await fetchInitialData(); // 刷新數據
-            setEditingRowId(null);
-            setEditedRow(null);
+          fetchInitialData(currentPage);
+          setEditingRowId(null);
+          setEditedRow(null);
         } else {
           alert(`新增失敗: ${response?.message || "未知錯誤"}`);
         }
@@ -107,15 +103,13 @@ const InsuranceCompanyTable = () => {
 
         if (response?.code === "G_0000") {
           alert("修改成功！");
-       
-          await fetchInitialData(); 
-            setEditingRowId(null);
-            setEditedRow(null);
+          fetchInitialData(currentPage);
+          setEditingRowId(null);
+          setEditedRow(null);
         } else {
           alert(`修改失敗: ${response?.message || "未知錯誤"}`);
         }
       }
-   
     } catch (error) {
       console.error("保存失敗:", error);
       alert("保存失敗，請稍後再試！");
@@ -269,6 +263,13 @@ const InsuranceCompanyTable = () => {
           ))}
         </TableBody>
       </Table>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        <Pagination
+          count={totalPages} // 總頁數
+          page={currentPage} // 當前頁數
+          onChange={(event, value) => setCurrentPage(value)} // 切換頁數
+        />
+      </Box>
     </Box>
   );
 };

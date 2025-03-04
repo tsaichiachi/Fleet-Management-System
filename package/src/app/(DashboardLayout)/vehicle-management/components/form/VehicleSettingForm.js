@@ -221,11 +221,13 @@ const VehicleSetting = ({ mode }) => {
             required={true}
             defaultValue={mode === "edit" ? car?.joinDate || "" : ""}
             onChange={(value) => {
-              setValue("joinDate", value);
+              setValue("joinDate", value || undefined, {
+                shouldValidate: true,
+              });
               trigger("joinDate");
             }}
             error={!!errors.joinDate}
-            register={register}
+            register={register("joinDate", { required: true })}
             trigger={trigger}
           />
         </Grid>
@@ -296,11 +298,13 @@ const VehicleSetting = ({ mode }) => {
             required={true}
             defaultValue={mode === "edit" ? car?.licenseIssueDate || "" : ""}
             onChange={(value) => {
-              setValue("licenseIssueDate", value);
+              setValue("licenseIssueDate", value || undefined, {
+                shouldValidate: true,
+              });
               trigger("licenseIssueDate");
             }}
             error={!!errors.licenseIssueDate}
-            register={register}
+            register={register("licenseIssueDate", { required: true })}
             trigger={trigger}
           />
         </Grid>
@@ -313,25 +317,17 @@ const VehicleSetting = ({ mode }) => {
               mode === "edit" ? car?.manufactureYearMonth || "" : ""
             }
             onChange={(value) => {
-              setValue("manufactureYearMonth", value);
+              setValue("manufactureYearMonth", value || undefined, {
+                shouldValidate: true,
+              });
               trigger("manufactureYearMonth");
             }}
-            error={!!errors.billDate}
+            error={!!errors.manufactureYearMonth}
             register={register}
             trigger={trigger}
           />
         </Grid>
-        {/* <Grid item xs={12} md={6}>
-          <TextField
-            required
-            id="westYear"
-            label="年份(YYYY)"
-            type="text"
-            error={!!errors.westYear}
-            {...register("westYear", { required: true })}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid> */}
+       
 
         {/* 廠牌 */}
         <Grid item xs={12} md={6}>
@@ -388,11 +384,13 @@ const VehicleSetting = ({ mode }) => {
             required={true}
             defaultValue={mode === "edit" ? car?.inspectionDate || "" : ""}
             onChange={(value) => {
-              setValue("inspectionDate", value);
+              setValue("inspectionDate", value || undefined, {
+                shouldValidate: true,
+              });
               trigger("inspectionDate");
             }}
             error={!!errors.inspectionDate}
-            register={register}
+            register={register("inspectionDate", { required: true })}
             trigger={trigger}
           />
         </Grid>
@@ -404,11 +402,13 @@ const VehicleSetting = ({ mode }) => {
             required={true}
             defaultValue={mode === "edit" ? car?.renewLicenseDate || "" : ""}
             onChange={(value) => {
-              setValue("renewLicenseDate", value);
+              setValue("renewLicenseDate", value || undefined, {
+                shouldValidate: true,
+              });
               trigger("renewLicenseDate");
             }}
             error={!!errors.renewLicenseDate}
-            register={register}
+            register={register("renewLicenseDate", { required: true })}
             trigger={trigger}
           />
         </Grid>
@@ -478,7 +478,7 @@ const VehicleSetting = ({ mode }) => {
             value={watch("inspectionType") || ""}
             onChange={(e) => setValue("inspectionType", e.target.value)}
             label="驗車方式"
-            error={!!errors.carAgency}
+            error={!!errors.inspectionType}
             {...register("inspectionType", { required: true })}
             fullWidth
             disabled={mode === "view"}

@@ -213,11 +213,13 @@ const PolicyManagement = ({ mode }) => {
             required={true}
             defaultValue={InsuranceFee?.startDate || ""}
             onChange={(value) => {
-              setValue("startDate", value);
+              setValue("startDate", value || undefined, {
+                shouldValidate: true,
+              });
               trigger("startDate");
             }}
             error={!!errors.startDate}
-            register={register}
+            register={register ( "startDate", { required: true }) }
             trigger={trigger}
           />
         </Grid>
@@ -230,11 +232,13 @@ const PolicyManagement = ({ mode }) => {
             required={true}
             defaultValue={InsuranceFee?.endDate || ""}
             onChange={(value) => {
-              setValue("endDate", value);
+              setValue("endDate", value || undefined, {
+                shouldValidate: true,
+              });
               trigger("endDate");
             }}
             error={!!errors.endDate}
-            register={register}
+            register={register ( "endDate", { required: true }) }
             trigger={trigger}
           />
         </Grid>

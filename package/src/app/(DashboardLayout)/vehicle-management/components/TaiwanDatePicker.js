@@ -94,17 +94,10 @@ const TaiwanDatePicker = ({
     <Box>
       {/* 显示日期输入框 */}
       <TextField
-        label={
-          <Box component="span" style={{ color: error ? "red" : "inherit" }}>
-            {label}
-            {required && (
-              <span style={{ color: error ? "red" : "inherit" }}> *</span>
-            )}
-          </Box>
-        }
-        value={value} // 绑定输入框值
-        error={error} // 错误状态
-        helperText={helperText} // 错误提示
+        label={label + (required ? " *" : "")} // 讓 MUI 自己處理 label 顏色
+        error={error} // 讓 MUI 自動變紅
+        helperText={helperText} // 如果有錯誤訊息，會顯示在輸入框下方
+        value={value} 
         onClick={handleOpen}
         InputProps={{
           readOnly: true,

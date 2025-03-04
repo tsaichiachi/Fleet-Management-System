@@ -582,3 +582,31 @@ export const useGetCarAgencyDropDownListNew = () => {
     }
   );
 };
+
+//取得貸款下拉列表New
+export const useGetLoanCompanyDropDownListNew = () => {
+  return useQuery(
+    "dropDownGetLoanCompany",
+    async () => {
+      const response = await requestHttp("loanCompany/dropDownGetLoanCompany", {
+        method: "POST",
+      });
+
+      if (response.code !== "G_0000") {
+        throw new Error(
+          response.message || "Failed to fetch car owner dropdown list"
+        );
+      }
+      //console.log("Car Owner API Response:", response.data);
+      return response.data;
+    },
+    {
+      select: (data) =>
+        data.map((item) => ({
+          key: item.id,
+          value: item.id,
+          name: item.companyName,
+        })),
+    }
+  );
+};

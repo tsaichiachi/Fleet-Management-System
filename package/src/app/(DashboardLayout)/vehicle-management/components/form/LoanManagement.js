@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import TaiwanDatePicker from "../TaiwanDatePicker";
 import { useGetLoanFee, useAddOrUpdateLoanFee } from "../../apihooks";
-import { useGetLoanCompanyDropDownList } from "../../apihooks";
+import { useGetLoanCompanyDropDownList,useGetLoanCompanyDropDownListNew } from "../../apihooks";
 
 const LoanManagementForm = ({ mode }) => {
   const router = useRouter();
@@ -16,7 +16,7 @@ const LoanManagementForm = ({ mode }) => {
   const { data: LoanFeeData, isLoading } = useGetLoanFee(carLicenseNum);
   //console.log("LoanFeeData:", LoanFeeData);
   const { mutate: saveLoanFee } = useAddOrUpdateLoanFee();
-  const { data: loanCompanyList } = useGetLoanCompanyDropDownList();
+  const { data: loanCompanyList } = useGetLoanCompanyDropDownListNew();
   //console.log("loanCompanyList:", loanCompanyList);
 
   const {
@@ -140,11 +140,13 @@ const LoanManagementForm = ({ mode }) => {
             defaultValue={LoanFeeData?.[0]?.startDate || ""}
             onChange={(value) => {
               //console.log("Setting startDate to", value);
-              setValue("startDate", value);
+              setValue("startDate", value || undefined, {
+                shouldValidate: true,
+              });
               trigger("startDate");
             }}
             error={!!errors.startDate}
-            register={register}
+            register={register("startDate", { required: true })}
             trigger={trigger}
           />
         </Grid>
@@ -157,12 +159,13 @@ const LoanManagementForm = ({ mode }) => {
             required={true}
             defaultValue={LoanFeeData?.[0]?.endDate || ""}
             onChange={(value) => {
-              //console.log("Setting endDate to", value);
-              setValue("endDate", value);
+              setValue("endDate", value || undefined, {
+                shouldValidate: true,
+              });
               trigger("endDate");
             }}
             error={!!errors.endDate}
-            register={register}
+            register={register("endDate", { required: true })}
             trigger={trigger}
           />
         </Grid>

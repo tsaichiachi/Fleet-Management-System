@@ -1,4 +1,3 @@
-//保險公司
 "use client";
 import React, { useEffect, useState } from "react";
 import {
@@ -14,6 +13,7 @@ import {
   Button,
   Select,
   MenuItem,
+  Pagination,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -22,45 +22,41 @@ import { requestHttp } from "@/utils/requestHttp";
 
 const CarAgencyTable = () => {
   const [taxData, setTaxData] = useState([]); // 表格數據
+  const [currentPage, setCurrentPage] = useState(1); // 當前頁數
+  const [totalPages, setTotalPages] = useState(1); // 總頁數
   const [editingRowId, setEditingRowId] = useState(null);
   const [editedRow, setEditedRow] = useState(null);
+  const rowsPerPage = 10; // 每頁顯示的行數
 
   // 抓取數據函數
-  const fetchInitialData = async () => {
+  const fetchInitialData = async (page = 1) => {
     try {
       const response = await requestHttp("carAgency/getCarAgency", {
         method: "POST",
-        data: { page: 1, size: 1000 },
+        data: { page, size: rowsPerPage },
       });
 
       const processedData = response.data.pageList.map((item) => ({
         ...item,
-        //disable: String(item.disable), // 將 disable 轉換為字串
       }));
 
-      //console.log("processedData", processedData);
-
       setTaxData(processedData);
-      //console.log("刷新數據成功:", response.data.pageList);
+      setTotalPages(response.data.totalPages || 1); // 設置總頁數
     } catch (error) {
-      //console.error("刷新數據失敗:", error);
-      //alert("刷新數據失敗，請稍後再試！");
+      console.error("刷新數據失敗:", error);
     }
   };
 
-  // 組件加載時調用
   useEffect(() => {
-    fetchInitialData();
-  }, []); // 空依賴陣列，確保只執行一次
+    fetchInitialData(currentPage);
+  }, [currentPage]); // 當前頁數改變時重新請求數據
 
-  // 進入編輯模式
   const handleEditClick = (rowId) => {
     setEditingRowId(rowId);
     const row = taxData.find((item) => item.id === rowId);
     setEditedRow({ ...row });
   };
 
-  // 取消編輯模式
   const handleCancelClick = () => {
     setEditingRowId(null);
     setEditedRow(null);
@@ -68,11 +64,7 @@ const CarAgencyTable = () => {
 
   const handleSaveClick = async () => {
     try {
-      const dataToSave = {
-        ...editedRow,
-      };
-
-      //console.log("dataToSave", dataToSave);
+      const dataToSave = { ...editedRow };
 
       if (editingRowId === "new") {
         const response = await requestHttp("carAgency/addCarAgency", {
@@ -82,8 +74,7 @@ const CarAgencyTable = () => {
 
         if (response?.code === "G_0000") {
           alert("新增成功！");
-          await fetchInitialData(); // 刷新數據
-          // 只在新增成功時清空數據
+          fetchInitialData(currentPage);
           setEditingRowId(null);
           setEditedRow(null);
         } else {
@@ -97,15 +88,13 @@ const CarAgencyTable = () => {
 
         if (response?.code === "G_0000") {
           alert("修改成功！");
-
-          await fetchInitialData();
+          fetchInitialData(currentPage);
           setEditingRowId(null);
           setEditedRow(null);
         } else {
           alert(`修改失敗: ${response?.message || "未知錯誤"}`);
         }
       }
-      
     } catch (error) {
       console.error("保存失敗:", error);
       alert("保存失敗，請稍後再試！");
@@ -132,14 +121,7 @@ const CarAgencyTable = () => {
 
   return (
     <Box sx={{ overflow: "auto", width: "100%" }}>
-      <Box
-        sx={{
-          display: "flex",
-          //justifyContent: "flex-end",
-          alignItems: "center",
-          mb: 2,
-        }}
-      >
+      <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
         <Button variant="contained" color="primary" onClick={handleAddRow}>
           新增
         </Button>
@@ -165,28 +147,10 @@ const CarAgencyTable = () => {
               {["agencyName", "address", "owner", "taxId", "phone1"].map(
                 (field, index) => (
                   <TableCell key={index}>
-                    {field === "type" ? (
-                      <Select
-                        value={editedRow?.type|| ""}
-                        onChange={(e) =>
-                          handleInputChange("type", e.target.value)
-                        }
-                        fullWidth
-                      >
-                        <MenuItem value="" disabled>
-                          請選擇
-                        </MenuItem>
-                        <MenuItem value="CASH">現金</MenuItem>
-                        <MenuItem value="CHECK">支票</MenuItem>
-                      </Select>
-                    ) : (
-                      <TextField
-                        value={editedRow?.[field] || ""}
-                        onChange={(e) =>
-                          handleInputChange(field, e.target.value)
-                        }
-                      />
-                    )}
+                    <TextField
+                      value={editedRow?.[field] || ""}
+                      onChange={(e) => handleInputChange(field, e.target.value)}
+                    />
                   </TableCell>
                 )
               )}
@@ -205,25 +169,7 @@ const CarAgencyTable = () => {
               {["agencyName", "address", "owner", "taxId", "phone1"].map(
                 (field, index) => (
                   <TableCell key={index}>
-                    {editingRowId === row.id && field === "type" ? (
-                      <Select
-                        value={editedRow?.type }
-                        onChange={(e) =>
-                          handleInputChange("type", e.target.value)
-                        }
-                        fullWidth
-                      >
-                        <MenuItem value="" disabled>
-                          請選擇
-                        </MenuItem>
-                        <MenuItem value="CASH">現金</MenuItem>
-                        <MenuItem value="CHECK">支票</MenuItem>
-                      </Select>
-                    ) : field === "type" ? (
-                      <Typography>
-                        {row[field] === "CASH" ? "現金" : "支票"}
-                      </Typography>
-                    ) : editingRowId === row.id ? (
+                    {editingRowId === row.id ? (
                       <TextField
                         value={editedRow?.[field] || ""}
                         onChange={(e) =>
@@ -259,6 +205,16 @@ const CarAgencyTable = () => {
           ))}
         </TableBody>
       </Table>
+
+     
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        <Pagination
+          count={totalPages} // 總頁數
+          page={currentPage} // 當前頁數
+          onChange={(event, value) => setCurrentPage(value)} // 切換頁數
+      
+        />
+      </Box>
     </Box>
   );
 };
