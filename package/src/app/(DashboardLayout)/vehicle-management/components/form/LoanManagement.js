@@ -30,6 +30,18 @@ const LoanManagementForm = ({ mode }) => {
 
   // 提交表單的處理邏輯
   const onSubmit = (data) => {
+     const { startDate, endDate } = data;
+
+     if (!startDate || !endDate) {
+       alert("請選擇起日和止日");
+       return;
+     }
+
+     if (new Date(startDate) >= new Date(endDate)) {
+       alert("止日必須晚於起日，請重新選擇日期");
+       return;
+     }
+     
     const submissionData = {
       ...data,
       carLicenseNum, // 車牌號碼

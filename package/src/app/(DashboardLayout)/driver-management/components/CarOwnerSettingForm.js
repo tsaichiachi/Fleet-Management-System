@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { Button, Grid, MenuItem } from "@mui/material";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import TaiwanDatePicker from "../../vehicle-management/components/TaiwanDatePicker";
 import { useAddCarOwner, useEditCarOwner } from "../apihooks";
 import { useGetCarOwnerInfo } from "../../vehicle-management/apihooks";
 
 const CarOwnerSetting = ({ mode }) => {
   const router = useRouter();
-  const [carOwnerId, setCarOwnerId] = useState(null);
-  const { data: carOwnerInfo } = useGetCarOwnerInfo(carOwnerId);
+  const { id } = useParams(); // 從網址獲取車主 ID
+  const carOwnerId = mode === "edit" || mode === "view" ? id : null;
+
+  console.log("carOwnerId from URL:", carOwnerId);
+
+  const { data: carOwnerInfo, isLoading } = useGetCarOwnerInfo(carOwnerId);
   const { mutate: addCarOwner } = useAddCarOwner();
   const { mutate: editCarOwner } = useEditCarOwner();
 
@@ -24,62 +28,41 @@ const CarOwnerSetting = ({ mode }) => {
     watch,
   } = useForm();
 
-  // Fetch carOwnerId from localStorage
+  // 當 carOwnerInfo 變更時，更新表單資料
   useEffect(() => {
-    const ownerId = localStorage.getItem("owner_edit");
-    if (ownerId) {
-      setCarOwnerId(ownerId);
-    } else {
-      console.error("車主 ID 不存在於 localStorage 中");
-      setCarOwnerId("");
-    }
-  }, []);
-
-  // Set default values for edit/view mode
-  useEffect(() => {
-    if ((mode === "edit" || mode === "view") && carOwnerId && carOwnerInfo) {
+    if (carOwnerId && carOwnerInfo) {
       Object.entries(carOwnerInfo).forEach(([key, value]) => {
-        setValue(key, value || ""); // Populate form fields
+        if (value !== undefined) setValue(key, value);
       });
     }
-  }, [mode, carOwnerId, carOwnerInfo, setValue]);
+  }, [carOwnerId, carOwnerInfo, setValue]);
 
-  // Clear gender and birthday for "add" mode
+  // 清除新增模式下的性別與生日
   useEffect(() => {
     if (mode === "add") {
-      setValue("sex", ""); // Clear gender
-      setValue("birthday", ""); // Clear birthday
+      setValue("sex", "");
+      setValue("birthday", "");
     }
   }, [mode, setValue]);
 
   const onSubmit = (formData) => {
-    //console.log("表單資料：", formData);
     if (mode === "add") {
       const submissionData = {
         ...formData,
         idNum: formData.idNum || "defaultID",
       };
       addCarOwner(submissionData, {
-        onSuccess: () => {
-          router.push(`/driver-management`); // Navigate to list page
-        },
-        onError: (error) => {
-          alert("新增失敗，請檢查輸入資料！");
-          console.error("新增失敗：", error);
-        },
+        onSuccess: () => router.push(`/driver-management`),
+        onError: (error) => alert("新增失敗，請檢查輸入資料！"),
       });
     } else if (mode === "edit") {
       const submissionData = {
         ...formData,
-        id: parseInt(carOwnerId, 10), // Ensure car owner ID is included
+        id: parseInt(carOwnerId || "0", 10),
       };
       editCarOwner(submissionData, {
-        onSuccess: () => {
-          router.push(`/driver-management`); // Navigate to list page
-        },
-        onError: (error) => {
-          console.error("編輯失敗：", error);
-        },
+        onSuccess: () => router.push(`/driver-management`),
+        onError: (error) => console.error("編輯失敗：", error),
       });
     }
   };
@@ -127,10 +110,10 @@ const CarOwnerSetting = ({ mode }) => {
           <TextField
             select
             label="性別"
-            value={watch("sex") || ""}
+            defaultValue={carOwnerInfo?.sex || ""}
             onChange={(e) => setValue("sex", e.target.value)}
             error={!!errors.sex}
-            {...register("sex", { required: false })}
+            {...register("sex")}
             fullWidth
             disabled={mode === "view"}
             InputLabelProps={{ shrink: true }}

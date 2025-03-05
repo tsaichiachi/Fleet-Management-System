@@ -29,6 +29,11 @@ const PolicyManagmentTable = ({ data, carLicenseNum, refreshData }) => {
   };
 
   const handleDeleteClick = (carLicenseNum, insuranceCardNum) => {
+    const isConfirmed = window.confirm(
+      "確定要作廢這筆資料嗎？此操作無法還原！"
+    );
+    if (!isConfirmed) return;
+
     deleteInsurance(
       { carLicenseNum, insuranceCardNum },
       {

@@ -480,7 +480,7 @@ export const useGetCarOwnerInfo = (id) => {
     async () => {
       const response = await requestHttp("car/getCarOwnerById", {
         method: "POST",
-        data: { id  },
+        data: { id },
       });
 
       //console.log("Car Owner Info API Response:", response);
