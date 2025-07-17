@@ -96,7 +96,6 @@ const CarOwnerSetting = ({ mode }) => {
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
-            required
             id="idNum"
             label="身分證字號"
             {...register("idNum", { required: true })}
@@ -129,7 +128,7 @@ const CarOwnerSetting = ({ mode }) => {
           <TaiwanDatePicker
             label="生日"
             fieldName="birthday"
-            required={true}
+            required={false}
             defaultValue={mode === "add" ? "" : carOwnerInfo?.birthday || ""}
             onChange={(value) => {
               setValue("birthday", value || undefined, {
