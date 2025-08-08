@@ -98,7 +98,7 @@ const CarOwnerSetting = ({ mode }) => {
           <TextField
             id="idNum"
             label="身分證字號"
-            {...register("idNum", { required: true })}
+            {...register("idNum", { required: false })}
             fullWidth
             error={!!errors.idNum}
             disabled={mode === "view"}
@@ -138,7 +138,7 @@ const CarOwnerSetting = ({ mode }) => {
             }}
             error={!!errors.birthday}
             // helperText={errors.birthday ? "此欄位為必填" : ""}
-            register={register("birthday", { required: "生日為必填欄位" })}
+            register={register("birthday", { required: false })}
             trigger={trigger}
             disabled={mode === "view"}
           />
