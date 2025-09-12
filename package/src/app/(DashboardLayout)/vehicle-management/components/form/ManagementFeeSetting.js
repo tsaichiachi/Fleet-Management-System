@@ -293,19 +293,19 @@ const ManagementFeeSettingForm = () => {
           <TextField
             required
             id="oweTax"
-            label="欠款利息 (請輸入 0.001~1)"
+            label="欠款利息 (請輸入 0~1)"
             type="text"
             error={!!errors.oweTax}
             helperText={errors.oweTax?.message}
             {...register("oweTax", {
               required: "此欄位為必填",
               validate: (value) =>
-                (value >= 0.01 && value <= 1) || "利息必須介於 0.01 到 1 之間",
+                (value >= 0 && value <= 1) || "利息必須介於 0 到 1 之間",
             })}
             InputLabelProps={{ shrink: true }}
             inputProps={{
               step: 0.01,
-              min: 0.01,
+              min: 0,
               max: 1,
             }}
           />

@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Box, Typography, Button, Stack } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  Stack,
+  IconButton,
+  InputAdornment,
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CustomTextField from "@/app/(DashboardLayout)/components/forms/theme-elements/CustomTextField";
 import {
@@ -7,8 +15,6 @@ import {
   useGetPublicKey,
 } from "@/app/(DashboardLayout)/vehicle-management/apihooks";
 import JSEncrypt from "jsencrypt";
-import sha256 from "crypto-js/sha256";
-import Base64 from "crypto-js/enc-base64";
 
 const AuthLogin = ({ title, subtitle, subtext }) => {
   const router = useRouter();
@@ -19,17 +25,12 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState(""); // 提示訊息
   const [messageType, setMessageType] = useState(""); // 訊息類型 ("success" 或 "error")
+  const [showPassword, setShowPassword] = useState(false);
 
   const { mutate: login, isLoading } = useLogin();
   const { data: publicKeyData, isLoading: isPublicKeyLoading } =
     useGetPublicKey();
 
-  // const encryptPassword = (password) => {
-  //   const hashedPassword = sha256(password).toString(Base64); // 先做 SHA-256 雜湊
-  //   const encrypt = new JSEncrypt();
-  //   encrypt.setPublicKey(publicKeyData);
-  //   return encrypt.encrypt(hashedPassword);
-  // };
 
 
   const encryptPassword = (password) => {
@@ -126,7 +127,7 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
             onChange={(e) => setUserId(e.target.value)}
           />
         </Box>
-        <Box mt="25px">
+        <Box mt="20px">
           <Typography
             variant="subtitle1"
             fontWeight={600}
@@ -137,16 +138,28 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
             密碼
           </Typography>
           <CustomTextField
-            type="password"
+            type={showPassword ? "text" : "password"}
             variant="outlined"
             fullWidth
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    edge="end"
+                  >
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
         </Box>
       </Stack>
 
-      <Box mt={2}>
+      <Box mt="20px">
         <Button
           color="primary"
           variant="contained"

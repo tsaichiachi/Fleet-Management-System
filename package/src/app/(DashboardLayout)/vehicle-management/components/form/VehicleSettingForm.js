@@ -399,16 +399,16 @@ const VehicleSetting = ({ mode }) => {
           <TaiwanDatePicker
             label="換照日期"
             fieldName="renewLicenseDate"
-            required={true}
+            required={false}
             defaultValue={mode === "edit" ? car?.renewLicenseDate || "" : ""}
             onChange={(value) => {
               setValue("renewLicenseDate", value || undefined, {
-                shouldValidate: true,
+                shouldValidate: false,
               });
               trigger("renewLicenseDate");
             }}
             error={!!errors.renewLicenseDate}
-            register={register("renewLicenseDate", { required: true })}
+            register={register("renewLicenseDate", { required: false })}
             trigger={trigger}
           />
         </Grid>
