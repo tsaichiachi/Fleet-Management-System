@@ -30,18 +30,30 @@ const LoanManagementForm = ({ mode }) => {
 
   // 提交表單的處理邏輯
   const onSubmit = (data) => {
-     const { startDate, endDate } = data;
+    const { startDate, endDate } = data;
 
-     if (!startDate || !endDate) {
-       alert("請選擇起日和止日");
-       return;
-     }
+    if (!startDate || !endDate) {
+      alert("請選擇起日和止日");
+      return;
+    }
 
-     if (new Date(startDate) >= new Date(endDate)) {
-       alert("止日必須晚於起日，請重新選擇日期");
-       return;
-     }
-     
+    //  民國年轉西元年（若年份小於1911，視為民國年）
+    const toADDate = (rocDate) => {
+      const [y, m, d] = rocDate.split("-");
+      const year = Number(y);
+      const adYear = year < 1911 ? year + 1911 : year;
+      return new Date(`${adYear}-${m}-${d}`);
+    };
+
+    const start = toADDate(startDate);
+    const end = toADDate(endDate);
+
+    // 比較日期
+    if (start >= end) {
+      alert("止日必須晚於起日，請重新選擇日期");
+      return;
+    }
+
     const submissionData = {
       ...data,
       carLicenseNum, // 車牌號碼

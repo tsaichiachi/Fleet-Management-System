@@ -347,7 +347,7 @@ const VehicleSetting = ({ mode }) => {
             required
             id="ton"
             label="噸位"
-            type="text"
+            type="number"
             error={!!errors.ton}
             {...register("ton", { required: true })}
             InputLabelProps={{ shrink: true }}

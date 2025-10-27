@@ -20,6 +20,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { requestHttp } from "@/utils/requestHttp";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 const LoanCompanyTable = () => {
   const [taxData, setTaxData] = useState([]); // 表格數據
@@ -128,6 +129,31 @@ const LoanCompanyTable = () => {
       note: "",
     });
   };
+
+  //刪除
+      const handleDeleteClick = async (rowId) => {
+        if (!window.confirm("確定要刪除這筆資料嗎？")) return;  
+        try {
+          const response = await requestHttp(
+            `loanCompany/deleteLoanCompany/${rowId}`,
+            {
+              method: "POST",
+            }
+          ); 
+    
+          if (response?.code === "G_0000") {
+            alert("刪除成功！");
+            fetchInitialData(currentPage);
+          } else {
+            alert(`刪除失敗: ${response?.message || "未知錯誤"}`);
+          }
+        } catch (error) {
+          console.error("刪除失敗:", error);
+          alert("刪除失敗，請稍後再試！");
+        }
+      };
+
+
 
   return (
     <Box sx={{ overflow: "auto", width: "100%" }}>
@@ -246,12 +272,21 @@ const LoanCompanyTable = () => {
                     </IconButton>
                   </>
                 ) : (
-                  <IconButton
-                    aria-label="edit"
-                    onClick={() => handleEditClick(row.id)}
-                  >
-                    <EditIcon />
-                  </IconButton>
+                  <>
+                    <IconButton
+                      aria-label="edit"
+                      onClick={() => handleEditClick(row.id)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      aria-label="edit"
+                      onClick={() => handleDeleteClick(row.id)}
+                      color="error"
+                    >
+                      <DeleteForeverIcon />
+                    </IconButton>
+                  </>
                 )}
               </TableCell>
             </TableRow>

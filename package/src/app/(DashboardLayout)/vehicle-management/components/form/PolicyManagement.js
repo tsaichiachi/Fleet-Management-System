@@ -11,6 +11,7 @@ import {
   useGetSingleInsuranceFee,
   useEditInsurance,
 } from "../../apihooks";
+import { toADDate } from "@/utils/tool";
 
 const PolicyManagement = ({ mode }) => {
   //console.log("mode:", mode);
@@ -52,7 +53,11 @@ const PolicyManagement = ({ mode }) => {
       return;
     }
 
-    if (new Date(startDate) >= new Date(endDate)) {
+    // 將民國年轉換為西元年進行比較
+    const startDateAD = toADDate(startDate);
+    const endDateAD = toADDate(endDate);
+
+    if (startDateAD >= endDateAD) {
       alert("止日必須晚於起日，請重新選擇日期");
       return;
     }
@@ -201,22 +206,32 @@ const PolicyManagement = ({ mode }) => {
             {...register("insuranceCom", { required: true })}
           />
         </Grid> */}
-        {/* 入帳月 */}
-        <Grid item xs={12} md={6}>
-          <TaiwanDatePicker
-            label="入帳月"
-            fieldName="payUsDate"
-            required={false}
-            defaultValue={InsuranceFee?.payUsDate}
-            onChange={(value) => {
-              setValue("payUsDate", value);
-              trigger("payUsDate");
-            }}
+        {/* 入帳月 先隱藏 */}
+        {/* <Grid item xs={12} md={6}>
+          <TextField
+            select
+            required
+            value={watch("payUsDate") || ""}
+            onChange={(e) => setValue("payUsDate", e.target.value)}
+            label="入賬月"
             error={!!errors.payUsDate}
-            register={register}
-            trigger={trigger}
-          />
-        </Grid>
+            {...register("payUsDate", { required: true })}
+            fullWidth
+            InputLabelProps={{ shrink: true }}
+          >
+            <MenuItem value="" disabled>
+              請選擇
+            </MenuItem>
+            {[...Array(12)].map((_, i) => {
+              const month = i + 1;
+              return (
+                <MenuItem key={month} value={month}>
+                  {`${month} 月`}
+                </MenuItem>
+              );
+            })}
+          </TextField>
+        </Grid> */}
 
         {/* 起日 */}
         <Grid item xs={12} md={6}>
@@ -232,7 +247,7 @@ const PolicyManagement = ({ mode }) => {
               trigger("startDate");
             }}
             error={!!errors.startDate}
-            register={register ( "startDate", { required: true }) }
+            register={register("startDate", { required: true })}
             trigger={trigger}
           />
         </Grid>
@@ -251,7 +266,7 @@ const PolicyManagement = ({ mode }) => {
               trigger("endDate");
             }}
             error={!!errors.endDate}
-            register={register ( "endDate", { required: true }) }
+            register={register("endDate", { required: true })}
             trigger={trigger}
           />
         </Grid>

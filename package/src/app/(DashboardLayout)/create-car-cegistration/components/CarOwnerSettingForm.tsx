@@ -170,7 +170,7 @@ const CarOwnerSetting = () => {
         <TextField
           id="outlined-password-input"
           label="噸位CC數"
-          type="text"
+          type="number"
           autoComplete="current-password"
         />
         <TextField

@@ -17,6 +17,7 @@ import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/navigation";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 const VehicleTable = (data) => {
   const router = useRouter();
@@ -122,6 +123,13 @@ const VehicleTable = (data) => {
                   >
                     <DeleteIcon />
                   </IconButton> */}
+                  <IconButton
+                    aria-label="delete"
+                    onClick={() => handleDeleteClick(car.licenseNumber)}
+                    color="error"
+                  >
+                    <DeleteForeverIcon />
+                  </IconButton>
                 </Box>
               </TableCell>
             </TableRow>

@@ -15,7 +15,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/navigation";
-
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 
 const CarOwnerTable = ({
@@ -114,12 +114,13 @@ const CarOwnerTable = ({
                     >
                       <EditIcon />
                     </IconButton>
-                    {/* <IconButton
-              aria-label="delete"
-              onClick={() => handleDeleteClick(owner.id)}
-            >
-              <DeleteIcon />
-            </IconButton> */}
+                    <IconButton
+                      aria-label="delete"
+                      onClick={() => handleDeleteClick(owner.id)}
+                      color="error"
+                    >
+                      <DeleteForeverIcon />
+                    </IconButton>
                   </Box>
                 </TableCell>
               </TableRow>

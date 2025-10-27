@@ -55,5 +55,15 @@ export const areDatesInExpenseMonth = (dates, expenseYearMonth) => {
   });
 };
 
+// 民國年 → 西元年轉換
+export const toADDate = (rocDate) => {
+  if (!rocDate) return null;
+  const [y, m, d] = rocDate.split("-");
+  const year = Number(y);
+  // 若年份小於1911，視為民國年
+  const adYear = year < 1911 ? year + 1911 : year;
+  return new Date(`${adYear}-${m}-${d}`);
+};
+
 
 
