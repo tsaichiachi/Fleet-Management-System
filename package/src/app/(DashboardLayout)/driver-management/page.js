@@ -20,6 +20,7 @@ function DriverManagementPage() {
   const [owners, setOwners] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [totalRecords, setTotalRecords] = useState(0); // 總筆數
 
   // 整合 API 請求參數
   const fetchParams = useMemo(
@@ -32,8 +33,6 @@ function DriverManagementPage() {
     try {
       setIsLoading(true);
       setError(null);
-
-      //console.log("fetchParams:", fetchParams);
       const { page, size, name } = fetchParams;
       const response = await requestHttp("car/getCarOwner", {
         method: "POST",
@@ -43,11 +42,11 @@ function DriverManagementPage() {
           searchName: name || "",
         },
       });
-      //console.log("Car Owners API Response:", response);
 
       const total = response.data?.total || 0;
       setOwners(response.data?.pageList || []);
       setTotalPages(Math.ceil(total / pageSize));
+      setTotalRecords(total);
     } catch (err) {
       console.error("Error fetching car owners:", err);
       setError(err);
@@ -73,18 +72,20 @@ function DriverManagementPage() {
   };
 
   // 分頁變更
- const handlePageChange = (event, value) => {
-   setCurrentPage(value);
-   const startIndex = (value - 1) * pageSize;
-   const endIndex = startIndex + pageSize;
-   const currentPageData = owners.slice(startIndex, endIndex);
-   setOwners(currentPageData);
- };
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+    const startIndex = (value - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const currentPageData = owners.slice(startIndex, endIndex);
+    setOwners(currentPageData);
+  };
 
   // 新增車主按鈕點擊
   const handleAddNewClick = () => {
     router.push(`/driver-management/AddNew`);
   };
+
+  
 
   return (
     <PageContainer title="車主管理" description="管理車主相關資料">
@@ -92,32 +93,54 @@ function DriverManagementPage() {
         title="車主資料"
         sx={{ width: "100%", maxWidth: "100%", margin: "0 auto" }}
       >
-        <Box sx={{ overflow: "auto", width: "100%" }}>
+        <Box
+          sx={{
+            width: "100%",
+            overflow: "auto",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           {/* 搜尋框與按鈕 */}
-          <Box>
-            <TextField
-              label="搜尋"
-              id="outlined-size-small"
-              value={searchInput}
-              onChange={handleSearchInputChange}
-              size="small"
-              sx={{ marginRight: "1%", marginTop: "1%" }}
-            />
-            <Button
-              variant="contained"
-              sx={{ marginRight: "1%", marginTop: "1%" }}
-              onClick={handleSearchClick}
+          <Box sx={{ width: "100%", mt: 1 }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 2,
+              }}
             >
-              搜尋
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleAddNewClick}
-              sx={{ marginRight: "1%", marginTop: "1%" }}
-            >
-              新增車主
-            </Button>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  flexWrap: "wrap",
+                }}
+              >
+                <TextField
+                  label="搜尋"
+                  id="outlined-size-small"
+                  value={searchInput}
+                  onChange={handleSearchInputChange}
+                  size="small"
+                />
+                <Button variant="contained" onClick={handleSearchClick}>
+                  搜尋
+                </Button>
+                <Button variant="contained" onClick={handleAddNewClick}>
+                  新增車主
+                </Button>
+              </Box>
+
+              <Typography variant="body2" noWrap>
+                共 {totalRecords} 筆資料，第 {currentPage} 頁 / 共 {totalPages}
+                頁
+              </Typography>
+            </Box>
           </Box>
+
           {/* 車主列表 */}
           {isLoading ? (
             <Box sx={{ textAlign: "center", mt: 4 }}>
@@ -133,8 +156,8 @@ function DriverManagementPage() {
             </Box>
           ) : (
             <>
-              <CarOwnerTable data={owners} />
-              {totalPages > 0 && (
+              <CarOwnerTable data={owners} refetch={fetchCarOwners} />
+              {totalPages >= 1 && (
                 <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
                   <Pagination
                     count={totalPages}

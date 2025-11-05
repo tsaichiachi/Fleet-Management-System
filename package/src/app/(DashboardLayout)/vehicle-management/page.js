@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Typography, Button, Box, TextField, Pagination } from "@mui/material";
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
 import DashboardCard from "@/app/(DashboardLayout)/components/shared/DashboardCard";
@@ -10,43 +10,44 @@ import { useRouter } from "next/navigation";
 function VehicleManagementPage() {
   const router = useRouter();
 
-  // 狀態：車輛資料與搜尋條件
-  const [cars, setCars] = useState([]);
-  const [filteredCars, setFilteredCars] = useState([]);
-  const [search, setSearch] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-
   // 分頁狀態
   const [currentPage, setCurrentPage] = useState(1); // 當前頁碼
-  const [pageSize] = useState(10); // 每頁筆數
-  const [totalPages, setTotalPages] = useState(0); // 總頁數
+  const [pageSize, setPageSize] = useState(2);
+  const [searchName, setSearchName] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [totalPages, setTotalPages] = useState(0);
+  const [cars, setCars] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [totalRecords, setTotalRecords] = useState(0); // 總筆數
+
+  // 整合 API 請求參數
+  const fetchParams = useMemo(
+    () => ({ page: currentPage, size: pageSize, name: searchName }),
+    [currentPage, pageSize, searchName]
+  );
 
   // 呼叫 API 獲取車輛資料
   const fetchCars = async () => {
     try {
       setIsLoading(true);
       setError(null);
-
-      const response = await requestHttp("car/carInfoDropDownList", {
+      const { page, size, name } = fetchParams;
+      const response = await requestHttp("car/searchCarByLicenseNum", {
         method: "POST",
+        data: {
+          page: page,
+          size: size,
+          licenseNumber: name || "",
+        },
       });
-      //console.log("Cars API Response:", response);
 
-      // 檢查 API 響應
-      if (response.code !== "G_0000") {
-        throw new Error(response.message || "Failed to fetch cars");
-      }
-
-      // 設置車輛資料
-      setCars(response.data || []);
-      const totalItems = response.data?.length || 0;
-      setTotalPages(Math.ceil(totalItems / pageSize));
-      // 初始化篩選結果
-      const initialFiltered = response.data.slice(0, pageSize);
-      setFilteredCars(initialFiltered);
+      const total = response.data?.total || 0;
+      setCars(response.data?.pageList || []);
+      setTotalPages(Math.ceil(total / pageSize));
+      setTotalRecords(total);
     } catch (err) {
-      console.error("Error fetching cars:", err);
+      console.error("Error fetching car:", err);
       setError(err);
     } finally {
       setIsLoading(false);
@@ -56,33 +57,26 @@ function VehicleManagementPage() {
   // 初始化獲取車輛資料
   useEffect(() => {
     fetchCars();
-  }, []);
+  }, [fetchParams]);
 
-  // 分頁處理
+  // 搜尋條件變更處理
+  const handleSearchInputChange = (event) => {
+    setSearchInput(event.target.value);
+  };
+
+  // 處理搜尋按鈕點擊
+  const handleSearchClick = () => {
+    setCurrentPage(1); // 重置分頁
+    setSearchName(searchInput.trim());
+  };
+
+  // 分頁變更
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
     const startIndex = (value - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const currentPageData = cars.slice(startIndex, endIndex);
-    setFilteredCars(currentPageData);
-  };
-
-  // 搜尋條件變更處理
-  const handleSearchInputChange = (event) => {
-    setSearch(event.target.value);
-  };
-
-  // 處理搜尋按鈕點擊
-  const handleSearchClick = () => {
-    const query = search.trim().toLowerCase();
-    const filtered = cars.filter(
-      (car) =>
-        car.licenseNumber?.toLowerCase().includes(query) ||
-        car.ownerName?.toLowerCase().includes(query)
-    );
-    setFilteredCars(filtered);
-    setTotalPages(Math.ceil(filtered.length / pageSize));
-    setCurrentPage(1); // 重置分頁到第一頁
+    setCars(currentPageData);
   };
 
   // 新增車輛按鈕點擊
@@ -92,33 +86,57 @@ function VehicleManagementPage() {
 
   return (
     <PageContainer title="車籍管理" description="管理車籍相關資料">
-      <DashboardCard title="車籍資料">
-        <Box sx={{ overflow: "auto", width: { xs: "400px", sm: "auto" } }}>
+      <DashboardCard
+        title="車籍資料"
+        sx={{ width: "100%", maxWidth: "100%", margin: "0 auto" }}
+      >
+        <Box
+          sx={{
+            width: "100%",
+            overflow: "auto",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           {/* 搜尋框與按鈕 */}
-          <Box>
-            <TextField
-              label="搜尋"
-              id="outlined-size-small"
-              value={search}
-              onChange={handleSearchInputChange}
-              size="small"
-              sx={{ marginRight: "1%", marginTop: "1%" }}
-            />
-            <Button
-              variant="contained"
-              sx={{ marginRight: "1%", marginTop: "1%" }}
-              onClick={handleSearchClick}
+          <Box sx={{ width: "100%", mt: 1 }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 2,
+              }}
             >
-              搜尋
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleAddNewClick}
-              sx={{ marginRight: "1%", marginTop: "1%" }}
-            >
-              新增車輛
-            </Button>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  flexWrap: "wrap",
+                }}
+              >
+                <TextField
+                  label="搜尋"
+                  id="outlined-size-small"
+                  value={searchInput}
+                  onChange={handleSearchInputChange}
+                  size="small"
+                />
+                <Button variant="contained" onClick={handleSearchClick}>
+                  搜尋
+                </Button>
+                <Button variant="contained" onClick={handleAddNewClick}>
+                  新增車輛
+                </Button>
+              </Box>
+              <Typography variant="body2" noWrap>
+                共 {totalRecords} 筆資料，第 {currentPage} 頁 / 共 {totalPages}
+                頁
+              </Typography>
+            </Box>
           </Box>
+
           {/* 車輛列表 */}
           {isLoading ? (
             <Box sx={{ textAlign: "center", mt: 4 }}>
@@ -128,14 +146,14 @@ function VehicleManagementPage() {
             <Box sx={{ textAlign: "center", mt: 4 }}>
               <Typography>無法載入資料，請稍後再試</Typography>
             </Box>
-          ) : filteredCars.length === 0 ? (
+          ) : cars.length === 0 ? (
             <Box sx={{ textAlign: "center", mt: 4 }}>
               <Typography>尚無資料</Typography>
             </Box>
           ) : (
             <>
-              <VehicleTable data={filteredCars} />
-              {totalPages > 0 && (
+              <VehicleTable data={cars} refetch={fetchCars} />
+              {totalPages >= 1 && (
                 <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
                   <Pagination
                     count={totalPages}

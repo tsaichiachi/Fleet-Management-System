@@ -26,6 +26,7 @@ const LoanCompanyTable = () => {
   const [taxData, setTaxData] = useState([]); // 表格數據
   const [currentPage, setCurrentPage] = useState(1); // 當前頁數
   const [totalPages, setTotalPages] = useState(1); // 總頁數
+  const [totalRecords, setTotalRecords] = useState(0); // 總筆數
   const [editingRowId, setEditingRowId] = useState(null);
   const [editedRow, setEditedRow] = useState(null);
   const rowsPerPage = 10; // 每頁顯示的行數
@@ -38,14 +39,34 @@ const LoanCompanyTable = () => {
         data: { page, size: rowsPerPage },
       });
 
-      const processedData = response.data.pageList.map((item) => ({
-        ...item,
-      }));
+      if (response?.code === "G_0000" && response?.data) {
+        const processedData = response.data.pageList.map((item) => ({
+          ...item,
+        }));
 
-      setTaxData(processedData);
-      setTotalPages(response.data.totalPages || 1);
+        setTaxData(processedData);
+        setTotalRecords(response.data.total || 0); // 設置總筆數
+
+        // 計算總頁數
+        const calculatedTotalPages = Math.ceil(
+          (response.data.total || 0) / rowsPerPage
+        );
+        setTotalPages(calculatedTotalPages);
+
+        console.log(
+          `總筆數: ${response.data.total}, 每頁筆數: ${rowsPerPage}, 總頁數: ${calculatedTotalPages}`
+        );
+      } else {
+        console.error("API 回應格式錯誤:", response);
+        setTaxData([]);
+        setTotalRecords(0);
+        setTotalPages(1);
+      }
     } catch (error) {
       console.error("刷新數據失敗:", error);
+      setTaxData([]);
+      setTotalRecords(0);
+      setTotalPages(1);
     }
   };
 
@@ -80,7 +101,9 @@ const LoanCompanyTable = () => {
 
         if (response?.code === "G_0000") {
           alert("新增成功！");
-          fetchInitialData(currentPage);
+          // 新增後回到第一頁，因為總筆數可能改變
+          setCurrentPage(1);
+          fetchInitialData(1);
           setEditingRowId(null);
           setEditedRow(null);
         } else {
@@ -115,11 +138,6 @@ const LoanCompanyTable = () => {
   };
 
   const handleAddRow = () => {
-    //  if (!expenseYearMonth) {
-    //    setEditingRowId(null);
-    //    alert("請先提供有效的年月份搜尋資料再進行新增");
-    //    return;
-    //  }
     setEditingRowId("new");
     setEditedRow({
       companyName: "",
@@ -131,43 +149,58 @@ const LoanCompanyTable = () => {
   };
 
   //刪除
-      const handleDeleteClick = async (rowId) => {
-        if (!window.confirm("確定要刪除這筆資料嗎？")) return;  
-        try {
-          const response = await requestHttp(
-            `loanCompany/deleteLoanCompany/${rowId}`,
-            {
-              method: "POST",
-            }
-          ); 
-    
-          if (response?.code === "G_0000") {
-            alert("刪除成功！");
-            fetchInitialData(currentPage);
-          } else {
-            alert(`刪除失敗: ${response?.message || "未知錯誤"}`);
-          }
-        } catch (error) {
-          console.error("刪除失敗:", error);
-          alert("刪除失敗，請稍後再試！");
-        }
-      };
+  const handleDeleteClick = async (rowId) => {
+    if (!window.confirm("確定要刪除這筆資料嗎？")) return;
+    try {
+      const response = await requestHttp(`loanCompany/disableLoanCompany`, {
+        method: "POST",
+        data: {
+          id: rowId,
+          status: "disable",
+        },
+      });
 
+      if (response?.code === "G_0000") {
+        alert("刪除成功！");
+        // 刪除後檢查當前頁是否還有數據，如果沒有則回到上一頁
+        const remainingRecords = totalRecords - 1;
+        const maxPossiblePage = Math.ceil(remainingRecords / rowsPerPage);
+        const targetPage =
+          currentPage > maxPossiblePage
+            ? Math.max(1, maxPossiblePage)
+            : currentPage;
 
+        setCurrentPage(targetPage);
+        fetchInitialData(targetPage);
+      } else {
+        alert(`刪除失敗: ${response?.message || "未知錯誤"}`);
+      }
+    } catch (error) {
+      console.error("刪除失敗:", error);
+      alert("刪除失敗，請稍後再試！");
+    }
+  };
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
 
   return (
     <Box sx={{ overflow: "auto", width: "100%" }}>
       <Box
         sx={{
           display: "flex",
-          //justifyContent: "flex-end",
           alignItems: "center",
           mb: 2,
+          justifyContent: "space-between",
         }}
       >
         <Button variant="contained" color="primary" onClick={handleAddRow}>
           新增
         </Button>
+        <Typography variant="body2">
+          共 {totalRecords} 筆資料，第 {currentPage} 頁 / 共 {totalPages} 頁
+        </Typography>
       </Box>
 
       <Table aria-label="simple table" sx={{ whiteSpace: "nowrap", mt: 2 }}>
@@ -190,28 +223,10 @@ const LoanCompanyTable = () => {
               {["companyName", "shortName", "contactor", "phone", "note"].map(
                 (field, index) => (
                   <TableCell key={index}>
-                    {field === "type" ? (
-                      <Select
-                        value={editedRow?.type || ""}
-                        onChange={(e) =>
-                          handleInputChange("type", e.target.value)
-                        }
-                        fullWidth
-                      >
-                        <MenuItem value="" disabled>
-                          請選擇
-                        </MenuItem>
-                        <MenuItem value="CASH">現金</MenuItem>
-                        <MenuItem value="CHECK">支票</MenuItem>
-                      </Select>
-                    ) : (
-                      <TextField
-                        value={editedRow?.[field] || ""}
-                        onChange={(e) =>
-                          handleInputChange(field, e.target.value)
-                        }
-                      />
-                    )}
+                    <TextField
+                      value={editedRow?.[field] || ""}
+                      onChange={(e) => handleInputChange(field, e.target.value)}
+                    />
                   </TableCell>
                 )
               )}
@@ -230,25 +245,7 @@ const LoanCompanyTable = () => {
               {["companyName", "shortName", "contactor", "phone", "note"].map(
                 (field, index) => (
                   <TableCell key={index}>
-                    {editingRowId === row.id && field === "type" ? (
-                      <Select
-                        value={editedRow?.type}
-                        onChange={(e) =>
-                          handleInputChange("type", e.target.value)
-                        }
-                        fullWidth
-                      >
-                        <MenuItem value="" disabled>
-                          請選擇
-                        </MenuItem>
-                        <MenuItem value="CASH">現金</MenuItem>
-                        <MenuItem value="CHECK">支票</MenuItem>
-                      </Select>
-                    ) : field === "type" ? (
-                      <Typography>
-                        {row[field] === "CASH" ? "現金" : "支票"}
-                      </Typography>
-                    ) : editingRowId === row.id ? (
+                    {editingRowId === row.id ? (
                       <TextField
                         value={editedRow?.[field] || ""}
                         onChange={(e) =>
@@ -280,7 +277,7 @@ const LoanCompanyTable = () => {
                       <EditIcon />
                     </IconButton>
                     <IconButton
-                      aria-label="edit"
+                      aria-label="delete"
                       onClick={() => handleDeleteClick(row.id)}
                       color="error"
                     >
@@ -293,13 +290,20 @@ const LoanCompanyTable = () => {
           ))}
         </TableBody>
       </Table>
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-        <Pagination
-          count={totalPages} // 總頁數
-          page={currentPage} // 當前頁數
-          onChange={(event, value) => setCurrentPage(value)} // 切換頁數
-        />
-      </Box>
+
+      {/* 修正：只有在總頁數大於 1 時才顯示分頁組件 */}
+      {totalPages >= 1 && (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+          <Pagination
+            count={totalPages} // 總頁數
+            page={currentPage} // 當前頁數
+            onChange={handlePageChange} // 切換頁數
+            // color="primary"
+            // showFirstButton
+            // showLastButton
+          />
+        </Box>
+      )}
     </Box>
   );
 };

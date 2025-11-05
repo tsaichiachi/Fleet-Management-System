@@ -11,17 +11,17 @@ import {
   IconButton,
   Pagination,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import React from "react";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/navigation";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { requestHttp } from "@/utils/requestHttp";
 
-const VehicleTable = (data) => {
+const VehicleTable = ({ data, refetch }) => {
   const router = useRouter();
-  const cars = data?.data;
+  const cars = data;
 
   const handleViewClick = (licenseNumber, ownerName) => {
     localStorage.setItem("licenseNumber", licenseNumber);
@@ -35,9 +35,36 @@ const VehicleTable = (data) => {
     router.push(`/vehicle-management/${licenseNumber}/Edit`);
   };
 
-  const handleDeleteClick = (licenseNumber) => {
-    //console.log(`刪除車主 ID: ${licenseNumber}`);
+  const handleDeleteClick = async (id) => {
+    if (!window.confirm("確定要刪除這筆資料嗎？")) return;
+    try {
+      const response = await requestHttp(`car/disableCar`, {
+        method: "POST",
+        data: {
+          id: id,
+          status: "disable",
+        },
+      });
+
+      if (response?.code === "G_0000") {
+        alert("刪除成功！");
+        refetch(); // 重新抓取資料以更新表格
+      } else {
+        alert(`刪除失敗: ${response?.message || "未知錯誤"}`);
+      }
+    } catch (error) {
+      console.error("刪除失敗:", error);
+      alert("刪除失敗，請稍後再試！");
+    }
   };
+
+  if (!data || data.length === 0) {
+    return (
+      <Box sx={{ textAlign: "center", mt: 4 }}>
+        <Typography>資料加載中...</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ overflow: "auto", width: { xs: "auto", sm: "auto" } }}>
@@ -75,70 +102,65 @@ const VehicleTable = (data) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {cars?.map((car) => (
-            <TableRow key={car.id}>
-              {/* <TableCell>
-                <Typography sx={{ fontSize: "15px", fontWeight: "500" }}>
-                  {car.id}
-                </Typography>
-              </TableCell> */}
+          {data && data.length > 0 ? (
+            data.map((car) => (
+              <TableRow key={car.id}>
+                <TableCell>
+                  <Typography variant="subtitle2" fontWeight={400}>
+                    {car.licenseNumber}
+                  </Typography>
+                </TableCell>
 
-              <TableCell>
+                <TableCell>
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle2"
+                    fontWeight={400}
+                  >
+                    {car.ownerName}
+                  </Typography>
+                </TableCell>
+
+                <TableCell>
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <IconButton
+                      aria-label="edit"
+                      onClick={() =>
+                        handleEditClick(car.licenseNumber, car.ownerName)
+                      }
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      aria-label="view"
+                      onClick={() =>
+                        handleViewClick(car.licenseNumber, car.ownerName)
+                      }
+                    >
+                      <LibraryBooksIcon />
+                    </IconButton>
+                    <IconButton
+                      aria-label="delete"
+                      onClick={() => handleDeleteClick(car.id)}
+                      color="error"
+                    >
+                      <DeleteForeverIcon />
+                    </IconButton>
+                  </Box>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={3} align="center">
                 <Typography variant="subtitle2" fontWeight={400}>
-                  {car.licenseNumber}
+                  尚無資料
                 </Typography>
-              </TableCell>
-
-              <TableCell>
-                <Typography
-                  color="textSecondary"
-                  variant="subtitle2"
-                  fontWeight={400}
-                >
-                  {car.ownerName}
-                </Typography>
-              </TableCell>
-
-              <TableCell>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <IconButton
-                    aria-label="edit"
-                    onClick={() =>
-                      handleEditClick(car.licenseNumber, car.ownerName)
-                    }
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    aria-label="view"
-                    onClick={() =>
-                      handleViewClick(car.licenseNumber, car.ownerName)
-                    }
-                  >
-                    <LibraryBooksIcon />
-                  </IconButton>
-                  {/* <IconButton
-                    aria-label="delete"
-                    onClick={() => handleDeleteClick(car.licenseNumber)}
-                  >
-                    <DeleteIcon />
-                  </IconButton> */}
-                  <IconButton
-                    aria-label="delete"
-                    onClick={() => handleDeleteClick(car.licenseNumber)}
-                    color="error"
-                  >
-                    <DeleteForeverIcon />
-                  </IconButton>
-                </Box>
               </TableCell>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
-      {/* <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-        <Pagination count={10} />
-      </Box> */}
     </Box>
   );
 };

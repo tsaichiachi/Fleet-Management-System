@@ -25,6 +25,7 @@ const CarAgencyTable = () => {
   const [taxData, setTaxData] = useState([]); // 表格數據
   const [currentPage, setCurrentPage] = useState(1); // 當前頁數
   const [totalPages, setTotalPages] = useState(1); // 總頁數
+  const [totalRecords, setTotalRecords] = useState(0); // 總筆數
   const [editingRowId, setEditingRowId] = useState(null);
   const [editedRow, setEditedRow] = useState(null);
   const rowsPerPage = 10; // 每頁顯示的行數
@@ -37,14 +38,34 @@ const CarAgencyTable = () => {
         data: { page, size: rowsPerPage },
       });
 
-      const processedData = response.data.pageList.map((item) => ({
-        ...item,
-      }));
+      if (response?.code === "G_0000" && response?.data) {
+        const processedData = response.data.pageList.map((item) => ({
+          ...item,
+        }));
 
-      setTaxData(processedData);
-      setTotalPages(response.data.totalPages || 1); // 設置總頁數
+        setTaxData(processedData);
+        setTotalRecords(response.data.total || 0); // 設置總筆數
+
+        // 計算總頁數
+        const calculatedTotalPages = Math.ceil(
+          (response.data.total || 0) / rowsPerPage
+        );
+        setTotalPages(calculatedTotalPages);
+
+        console.log(
+          `總筆數: ${response.data.total}, 每頁筆數: ${rowsPerPage}, 總頁數: ${calculatedTotalPages}`
+        );
+      } else {
+        console.error("API 回應格式錯誤:", response);
+        setTaxData([]);
+        setTotalRecords(0);
+        setTotalPages(1);
+      }
     } catch (error) {
       console.error("刷新數據失敗:", error);
+      setTaxData([]);
+      setTotalRecords(0);
+      setTotalPages(1);
     }
   };
 
@@ -75,7 +96,9 @@ const CarAgencyTable = () => {
 
         if (response?.code === "G_0000") {
           alert("新增成功！");
-          fetchInitialData(currentPage);
+          // 新增後回到第一頁，因為總筆數可能改變
+          setCurrentPage(1);
+          fetchInitialData(1);
           setEditingRowId(null);
           setEditedRow(null);
         } else {
@@ -122,15 +145,28 @@ const CarAgencyTable = () => {
 
   //刪除
   const handleDeleteClick = async (rowId) => {
-    if (!window.confirm("確定要刪除這筆資料嗎？")) return;  
+    if (!window.confirm("確定要刪除這筆資料嗎？")) return;
     try {
-      const response = await requestHttp(`carAgency/deleteCarAgency/${rowId}`, {
+      const response = await requestHttp(`carAgency/disableCarAgency`, {
         method: "POST",
-      }); 
+        data: {
+          id: rowId,
+          status: "disable",
+        },
+      });
 
       if (response?.code === "G_0000") {
         alert("刪除成功！");
-        fetchInitialData(currentPage);
+        // 刪除後檢查當前頁是否還有數據，如果沒有則回到上一頁
+        const remainingRecords = totalRecords - 1;
+        const maxPossiblePage = Math.ceil(remainingRecords / rowsPerPage);
+        const targetPage =
+          currentPage > maxPossiblePage
+            ? Math.max(1, maxPossiblePage)
+            : currentPage;
+
+        setCurrentPage(targetPage);
+        fetchInitialData(targetPage);
       } else {
         alert(`刪除失敗: ${response?.message || "未知錯誤"}`);
       }
@@ -140,12 +176,26 @@ const CarAgencyTable = () => {
     }
   };
 
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
   return (
     <Box sx={{ overflow: "auto", width: "100%" }}>
-      <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          mb: 2,
+          justifyContent: "space-between",
+        }}
+      >
         <Button variant="contained" color="primary" onClick={handleAddRow}>
           新增
         </Button>
+        <Typography variant="body2">
+          共 {totalRecords} 筆資料，第 {currentPage} 頁 / 共 {totalPages} 頁
+        </Typography>
       </Box>
 
       <Table aria-label="simple table" sx={{ whiteSpace: "nowrap", mt: 2 }}>
@@ -222,7 +272,7 @@ const CarAgencyTable = () => {
                       <EditIcon />
                     </IconButton>
                     <IconButton
-                      aria-label="edit"
+                      aria-label="delete"
                       onClick={() => handleDeleteClick(row.id)}
                       color="error"
                     >
@@ -236,13 +286,23 @@ const CarAgencyTable = () => {
         </TableBody>
       </Table>
 
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-        <Pagination
-          count={totalPages} // 總頁數
-          page={currentPage} // 當前頁數
-          onChange={(event, value) => setCurrentPage(value)} // 切換頁數
-        />
-      </Box>
+      {totalPages >= 1 && (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+          <Pagination
+            count={totalPages} // 總頁數
+            page={currentPage} // 當前頁數
+            onChange={handlePageChange} // 切換頁數
+            // color="primary"
+            // showFirstButton
+            // showLastButton
+          />
+          {/* <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Typography variant="body2" sx={{ ml: 2 }}>
+              共 {totalRecords} 筆資料，第 {currentPage} 頁 / 共 {totalPages} 頁
+            </Typography>
+          </Box> */}
+        </Box>
+      )}
     </Box>
   );
 };

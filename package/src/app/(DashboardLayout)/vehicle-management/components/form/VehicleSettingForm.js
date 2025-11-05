@@ -23,13 +23,9 @@ const VehicleSetting = ({ mode }) => {
   const { mutate: editCar } = useEditCars();
   const { data: carOwners } = useGetCarOwnerDropDownList();
   const { data: carAgency } = useGetCarAgencyDropDownList();
-  //console.log("carAgency:", carAgency);
   const { data: carAgencyList } = useGetCarAgencyDropDownListNew();
-  //console.log("carAgencyList:", carAgencyList);
   const [carLicenseNum, setCarLicenseNum] = useState("");
-  //console.log("carLicenseNum:", carLicenseNum);
   const { data: car } = useGetCar(mode === "add" ? null : carLicenseNum, mode);
-  //console.log("car:", car)
 
   const {
     register,
@@ -42,7 +38,6 @@ const VehicleSetting = ({ mode }) => {
   } = useForm();
 
  const onSubmit = (data) => {
-   console.log("提交的資料:", data);
 
    // 根據 carAgencyId 找到對應的車行名稱
    const selectedAgency = carAgencyList?.find(
@@ -64,8 +59,6 @@ const VehicleSetting = ({ mode }) => {
      editCar({ ...submissionData, carLicenseNum });
    }
  };
-
-
 
   // 從 localStorage 獲取車牌號碼
   useEffect(() => {
@@ -399,7 +392,7 @@ const VehicleSetting = ({ mode }) => {
           <TaiwanDatePicker
             label="換照日期"
             fieldName="renewLicenseDate"
-            required={false}
+            required={true}
             defaultValue={mode === "edit" ? car?.renewLicenseDate || "" : ""}
             onChange={(value) => {
               setValue("renewLicenseDate", value || undefined, {
@@ -408,7 +401,7 @@ const VehicleSetting = ({ mode }) => {
               trigger("renewLicenseDate");
             }}
             error={!!errors.renewLicenseDate}
-            register={register("renewLicenseDate", { required: false })}
+            register={register("renewLicenseDate", { required: true })}
             trigger={trigger}
           />
         </Grid>

@@ -16,18 +16,15 @@ import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/navigation";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { requestHttp } from "@/utils/requestHttp";
 
 
 const CarOwnerTable = ({
   data,
-  // totalPages,
-  // currentPage,
+  refetch,
 }) => {
-  //console.log(data);
   const owner = data;
-  //console.log(owner);
   const router = useRouter();
-
 
   const handleViewClick = (id) => {
     localStorage.setItem("owner_edit", id);
@@ -39,9 +36,27 @@ const CarOwnerTable = ({
     router.push(`/driver-management/${id}/Edit`);
   };
 
-  const handleDeleteClick = (id) => {
-    localStorage.setItem("owner", id);
-    console.log(`Deleting owner ID: ${id}`);
+  const handleDeleteClick = async (id) => {
+    if (!window.confirm("確定要刪除這筆資料嗎？")) return;
+    try {
+      const response = await requestHttp(`car/disableCarOwner`, {
+        method: "POST",
+        data: {
+          id: id,
+          status: "disable",
+        },
+      });
+
+      if (response?.code === "G_0000") {
+        alert("刪除成功！");
+        refetch(); // 重新抓取資料以更新表格
+      } else {
+        alert(`刪除失敗: ${response?.message || "未知錯誤"}`);
+      }
+    } catch (error) {
+      console.error("刪除失敗:", error);
+      alert("刪除失敗，請稍後再試！");
+    }
   };
 
   if (!data || data.length === 0) {
@@ -136,13 +151,6 @@ const CarOwnerTable = ({
           )}
         </TableBody>
       </Table>
-      {/* <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-        <Pagination
-        count={totalPages}
-        page={currentPage}
-        onChange={(event, value) => onPageChange(value)}
-        />
-      </Box> */}
     </Box>
   );
 };
