@@ -1,6 +1,6 @@
 
 
-//原本的
+//原本的要記得
 //next.config.js
 // module.exports = {
 //   async redirects() {
@@ -17,12 +17,12 @@
 //部屬版本
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ① 讓首頁自動導向登入頁
-  async redirects() {
-    return [
-      { source: '/', destination: '/authentication/login', permanent: true },
-    ];
-  },
+  // 移除 redirects，改用 middleware 處理
+  // async redirects() {
+  //   return [
+  //     { source: '/', destination: '/authentication/login', permanent: true },
+  //   ];
+  // },
 
   // ② 在 Vercel 上透過 rewrites() 代理 API
   //    這樣前端可以打 /api/**，由 Next 伺服器轉發到你的後端 IP
