@@ -14,10 +14,8 @@ const LoanManagementForm = ({ mode }) => {
   const router = useRouter();
   const [carLicenseNum, setCarLicenseNum] = useState("");
   const { data: LoanFeeData, isLoading } = useGetLoanFee(carLicenseNum);
-  //console.log("LoanFeeData:", LoanFeeData);
   const { mutate: saveLoanFee } = useAddOrUpdateLoanFee();
   const { data: loanCompanyList } = useGetLoanCompanyDropDownListNew();
-  //console.log("loanCompanyList:", loanCompanyList);
 
   const {
     register,
@@ -83,22 +81,20 @@ const LoanManagementForm = ({ mode }) => {
 
   // 預設值綁定到表單
   useEffect(() => {
-    if (LoanFeeData && LoanFeeData.length > 0) {
+    if (LoanFeeData && LoanFeeData.length > 0 && mode !== "add")  {
       const loanFee = LoanFeeData[0]; // 提取對象
-      //console.log("Setting form values with loanFee:", loanFee);
       Object.entries(loanFee).forEach(([key, value]) => {
-       // console.log(`Setting ${key} to ${value}`);
         setValue(key, value || ""); // 設置預設值
       });
     }
-  }, [LoanFeeData, setValue]);
+  }, [LoanFeeData, setValue, mode]);
 
  useEffect(() => {
-   if (LoanFeeData && LoanFeeData.length > 0) {
+   if (LoanFeeData && LoanFeeData.length > 0 && mode !== "add") {
      const loanFee = LoanFeeData[0];
      setValue("loanCompany", loanFee.loanCompany || ""); // 設定貸款公司預設值
    }
- }, [LoanFeeData, setValue]);
+ }, [LoanFeeData, setValue, mode]);
 
  
   // 加載中處理
@@ -163,7 +159,6 @@ const LoanManagementForm = ({ mode }) => {
             required={true}
             defaultValue={LoanFeeData?.[0]?.startDate || ""}
             onChange={(value) => {
-              //console.log("Setting startDate to", value);
               setValue("startDate", value || undefined, {
                 shouldValidate: true,
               });

@@ -610,3 +610,24 @@ export const useGetLoanCompanyDropDownListNew = () => {
     }
   );
 };
+
+
+// API: 作廢貸款資料
+export const useDeleteLoan = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (deleteLoanData) => {
+      const response = await requestHttp("updateLoanFeeSettingStatus", {
+        method: "POST",
+        data: deleteLoanData,
+      });
+      return response;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["insuranceList"]);
+      },
+    }
+  );
+};

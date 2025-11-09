@@ -17,6 +17,7 @@ const PolicyManagement = () => {
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [totalRecords, setTotalRecords] = useState(0);
 
   // 分頁狀態
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,6 +53,7 @@ const PolicyManagement = () => {
       setInsuranceList(response.data?.pageList || []);
       setFilteredInsurance(response.data?.pageList || []);
       setTotalPages(Math.ceil(totalItems / pageSize));
+      setTotalRecords(totalItems);
     } catch (err) {
       console.error("Error fetching insurance list:", err);
       setError(err);
@@ -101,7 +103,7 @@ const PolicyManagement = () => {
             sx={{
               display: "flex",
               alignItems: "center",
-              // justifyContent: "space-between",
+              justifyContent: "space-between",
               marginBottom: "20px",
             }}
           >
@@ -129,10 +131,14 @@ const PolicyManagement = () => {
               >
                 新增保單
               </Button>
+              <Box sx={{ color: "red", fontWeight: "bold" }}>
+                若保卡號碼輸入錯誤，請點選垃圾桶將整筆作廢並重新新增保單
+              </Box>
             </Box>
-            <Box sx={{ color: "red", fontWeight: "bold" }}>
-              若保卡號碼輸入錯誤，請點選垃圾桶將整筆作廢並重新新增保單
-            </Box>
+
+            <Typography variant="body2">
+              共 {totalRecords} 筆資料，第 {currentPage} 頁 / 共 {totalPages} 頁
+            </Typography>
           </Box>
 
           {/* 保單列表 */}
@@ -144,11 +150,11 @@ const PolicyManagement = () => {
             <Box sx={{ textAlign: "center", mt: 4 }}>
               <Typography>無法載入資料，請稍後再試</Typography>
             </Box>
-          ) :  filteredInsurance.length === 0 ? (
+          ) : filteredInsurance.length === 0 ? (
             <Box sx={{ textAlign: "center", mt: 4 }}>
               <Typography>尚無資料</Typography>
             </Box>
-          ): (
+          ) : (
             <>
               <PolicyManagmentTable
                 data={filteredInsurance}

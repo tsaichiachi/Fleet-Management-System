@@ -12,7 +12,7 @@ function VehicleManagementPage() {
 
   // 分頁狀態
   const [currentPage, setCurrentPage] = useState(1); // 當前頁碼
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(10);
   const [searchName, setSearchName] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [totalPages, setTotalPages] = useState(0);
