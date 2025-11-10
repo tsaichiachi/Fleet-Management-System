@@ -7,15 +7,31 @@ import { Button, Grid, Select, MenuItem } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import TaiwanDatePicker from "../TaiwanDatePicker";
-import { useGetLoanFee, useAddOrUpdateLoanFee } from "../../apihooks";
+import {
+  useGetLoanFee,
+  useAddLoanFee,
+  useUpdateLoanFee,
+  useGetSingleLoanFee,
+} from "../../apihooks";
 import { useGetLoanCompanyDropDownList,useGetLoanCompanyDropDownListNew } from "../../apihooks";
 
 const LoanManagementForm = ({ mode }) => {
   const router = useRouter();
   const [carLicenseNum, setCarLicenseNum] = useState("");
   const { data: LoanFeeData, isLoading } = useGetLoanFee(carLicenseNum);
-  const { mutate: saveLoanFee } = useAddOrUpdateLoanFee();
+  const { mutate: addLoanFee } = useAddLoanFee();
+  const { mutate: updateLoanFee } = useUpdateLoanFee();
   const { data: loanCompanyList } = useGetLoanCompanyDropDownListNew();
+  //取單筆編輯資料，從URL參數insuranceCardNum取得
+  const [loanFeeId, setLoanFeeId] = useState(null);
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get("insuranceCardNum");
+    setLoanFeeId(id);
+  }, []);
+  const { data: singleLoanFeeData } = useGetSingleLoanFee(loanFeeId);
+
+ 
 
   const {
     register,
@@ -23,51 +39,100 @@ const LoanManagementForm = ({ mode }) => {
     setValue,
     trigger,
     formState: { errors },
-    watch
+    watch,
   } = useForm();
 
+
   // 提交表單的處理邏輯
-  const onSubmit = (data) => {
-    const { startDate, endDate } = data;
+ const onSubmit = (data) => {
+   const { startDate, endDate } = data;
 
-    if (!startDate || !endDate) {
-      alert("請選擇起日和止日");
-      return;
-    }
+   if (!startDate || !endDate) {
+     alert("請選擇起日和止日");
+     return;
+   }
 
-    //  民國年轉西元年（若年份小於1911，視為民國年）
-    const toADDate = (rocDate) => {
-      const [y, m, d] = rocDate.split("-");
-      const year = Number(y);
-      const adYear = year < 1911 ? year + 1911 : year;
-      return new Date(`${adYear}-${m}-${d}`);
-    };
+   //  民國年轉西元年（若年份小於1911，視為民國年）
+   const toADDate = (rocDate) => {
+     const [y, m, d] = rocDate.split("-");
+     const year = Number(y);
+     const adYear = year < 1911 ? year + 1911 : year;
+     return new Date(`${adYear}-${m}-${d}`);
+   };
 
-    const start = toADDate(startDate);
-    const end = toADDate(endDate);
+   const start = toADDate(startDate);
+   const end = toADDate(endDate);
 
-    // 比較日期
-    if (start >= end) {
-      alert("止日必須晚於起日，請重新選擇日期");
-      return;
-    }
+   // 比較日期
+   if (start >= end) {
+     alert("止日必須晚於起日，請重新選擇日期");
+     return;
+   }
 
-    const submissionData = {
-      ...data,
-      carLicenseNum, // 車牌號碼
-    };
+   const submissionData = {
+     ...data,
+     carLicenseNum, // 車牌號碼
+   };
 
-    saveLoanFee(submissionData, {
-      onSuccess: () => {
-        alert("執行成功！");
-        router.push(`/vehicle-management/${carLicenseNum}/Ledger`);
-      },
-      onError: (error) => {
-        alert("執行失敗！");
-        console.error("操作失敗：", error);
-      },
-    });
-  };
+   // 根據模式執行不同的操作
+   if (mode === "add") {
+     // 新增模式
+     addLoanFee(submissionData, {
+       onSuccess: (response) => {
+         // 檢查回傳的 code
+         if (response?.code === "G_0000") {
+           alert("新增成功！");
+           router.push(`/vehicle-management/${carLicenseNum}/LoanManagement`);
+         } else {
+           // 處理其他成功但有警告的情況
+           alert(response?.message || "新增完成，但請檢查回傳訊息");
+         }
+       },
+       onError: (error) => {
+         // 檢查是否為特定的業務邏輯錯誤
+         if (error?.response?.data?.code === "G_0002") {
+           alert(
+             error.response.data.message ||
+               "該車輛已有啟用的車貸設定，若要新增車貸，請先將舊有車貸失效"
+           );
+         } else if (error?.code === "G_0002") {
+           alert(
+             error.message ||
+               "該車輛已有啟用的車貸設定，若要新增車貸，請先將舊有車貸失效"
+           );
+         } else {
+           alert("新增失敗！請稍後再試");
+         }
+         console.error("新增失敗：", error);
+       },
+     });
+   } else if (mode === "edit") {
+     // 編輯模式
+     updateLoanFee(submissionData, {
+       onSuccess: (response) => {
+         // 檢查回傳的 code
+         if (response?.code === "G_0000") {
+           alert("修改成功！");
+           router.push(`/vehicle-management/${carLicenseNum}/LoanManagement`);
+         } else {
+           // 處理其他成功但有警告的情況
+           alert(response?.message || "修改完成，但請檢查回傳訊息");
+         }
+       },
+       onError: (error) => {
+         // 檢查是否為特定的業務邏輯錯誤
+         if (error?.response?.data?.code === "G_0002") {
+           alert(error.response.data.message || "修改失敗，請檢查車貸設定");
+         } else if (error?.code === "G_0002") {
+           alert(error.message || "修改失敗，請檢查車貸設定");
+         } else {
+           alert("修改失敗！請稍後再試");
+         }
+         console.error("修改失敗：", error);
+       },
+     });
+   }
+ };
 
   // 從 localStorage 獲取車牌號碼
   useEffect(() => {
@@ -81,22 +146,15 @@ const LoanManagementForm = ({ mode }) => {
 
   // 預設值綁定到表單
   useEffect(() => {
-    if (LoanFeeData && LoanFeeData.length > 0 && mode !== "add")  {
-      const loanFee = LoanFeeData[0]; // 提取對象
-      Object.entries(loanFee).forEach(([key, value]) => {
-        setValue(key, value || ""); // 設置預設值
-      });
+    if (mode !== "add" && singleLoanFeeData) {
+      // 逐一設定表單欄位的值 
+      for (const [key, value] of Object.entries(singleLoanFeeData)) {
+        setValue(key, value);
+      }
     }
-  }, [LoanFeeData, setValue, mode]);
+  }, [mode, singleLoanFeeData, setValue]);
+  
 
- useEffect(() => {
-   if (LoanFeeData && LoanFeeData.length > 0 && mode !== "add") {
-     const loanFee = LoanFeeData[0];
-     setValue("loanCompany", loanFee.loanCompany || ""); // 設定貸款公司預設值
-   }
- }, [LoanFeeData, setValue, mode]);
-
- 
   // 加載中處理
   if (isLoading) {
     return <p>資料加載中...</p>;
@@ -255,7 +313,11 @@ const LoanManagementForm = ({ mode }) => {
             <Button
               variant="contained"
               sx={{ marginRight: "1%" }}
-              onClick={() => router.push(`/vehicle-management`)}
+              onClick={() =>
+                router.push(
+                  `/vehicle-management/${carLicenseNum}/LoanManagement`
+                )
+              }
             >
               取消
             </Button>

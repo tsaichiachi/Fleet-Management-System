@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "react-query";
 import { requestHttp } from "@/utils/requestHttp";
 import { useRouter } from "next/navigation";
 import { size } from "lodash";
+import { id } from "date-fns/locale";
 
 
 // API: 取得所有車輛
@@ -392,7 +393,7 @@ export const useGetLoanFee = (carLicenseNum) => {
 };
 
 // 新增或修改貸款
-export const useAddOrUpdateLoanFee = () => {
+export const useAddLoanFee = () => {
   const queryClient = useQueryClient();
 
   return useMutation(
@@ -401,6 +402,29 @@ export const useAddOrUpdateLoanFee = () => {
         method: "POST",
         data: LoanFeeData,
       });
+      return response;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["LoanFee"]);
+      },
+    }
+  );
+};
+
+// 修改貸款
+export const useUpdateLoanFee = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (LoanFeeData) => {
+      const response = await requestHttp(
+        "loanFeeSetting/updateLoanFeeSetting",
+        {
+          method: "POST",
+          data: LoanFeeData,
+        }
+      );
       return response;
     },
     {
@@ -617,17 +641,49 @@ export const useDeleteLoan = () => {
   const queryClient = useQueryClient();
 
   return useMutation(
-    async (deleteLoanData) => {
-      const response = await requestHttp("updateLoanFeeSettingStatus", {
-        method: "POST",
-        data: deleteLoanData,
-      });
+    async (id) => {
+      const response = await requestHttp(
+        "loanFeeSetting/updateLoanFeeSettingStatus",
+        {
+          method: "POST",
+          data: {
+            id: id.id,
+            status: "disable",
+          },
+        }
+      );
       return response;
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(["insuranceList"]);
+        queryClient.invalidateQueries(["LoanFee"]);
       },
     }
   );
 };
+
+//取單筆貸款資料
+export const useGetSingleLoanFee = (
+  loanFeeId,
+  mode
+) => {
+  return useQuery(
+    ["singleInsuranceFee", loanFeeId],
+    async () => {
+      const response = await requestHttp(
+        "loanFeeSetting/getSingleLoanFeeSetting",
+        {
+          method: "POST",
+          data: { id: loanFeeId },
+        }
+      );
+
+      //console.log("singleInsuranceFee API Response:", response);
+      return response.data;
+    },
+    {
+      enabled: mode !== "add" && !!loanFeeId, // 僅當 mode !== "add" 且 loanFeeId 存在時查詢
+    }
+  );
+};
+                       

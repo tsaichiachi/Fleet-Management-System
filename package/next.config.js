@@ -1,40 +1,18 @@
 
 
-//原本的要記得
+//原本的
 //next.config.js
-// module.exports = {
-//   async redirects() {
-//     return [
-//       {
-//         source: "/",
-//         destination: "/authentication/login", 
-//         permanent: false,
-//       },
-//     ];
-//   },
-// };
-
-//部屬版本
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  // 移除 redirects，改用 middleware 處理
-  // async redirects() {
-  //   return [
-  //     { source: '/', destination: '/authentication/login', permanent: true },
-  //   ];
-  // },
-
-  // ② 在 Vercel 上透過 rewrites() 代理 API
-  //    這樣前端可以打 /api/**，由 Next 伺服器轉發到你的後端 IP
-  async rewrites() {
+module.exports = {
+  async redirects() {
     return [
       {
-        source: '/api/:path*',
-        destination: 'http://124.218.37.141:8081/:path*', // 你的實際後端
+        source: "/",
+        destination: "/authentication/login", 
+        permanent: false,
       },
     ];
   },
 };
 
-module.exports = nextConfig;
+
 
