@@ -56,8 +56,6 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
       return;
     }
 
-    console.log("加密後的密碼", encryptedPassword);
-
     login(
       { userId, password: encryptedPassword },
       {

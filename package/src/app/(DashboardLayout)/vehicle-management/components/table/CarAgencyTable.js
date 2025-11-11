@@ -51,10 +51,6 @@ const CarAgencyTable = () => {
           (response.data.total || 0) / rowsPerPage
         );
         setTotalPages(calculatedTotalPages);
-
-        console.log(
-          `總筆數: ${response.data.total}, 每頁筆數: ${rowsPerPage}, 總頁數: ${calculatedTotalPages}`
-        );
       } else {
         console.error("API 回應格式錯誤:", response);
         setTaxData([]);

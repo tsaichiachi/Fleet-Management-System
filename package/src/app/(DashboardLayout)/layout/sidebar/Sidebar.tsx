@@ -15,8 +15,6 @@ const Sidebar = ({
   onSidebarClose,
   isSidebarOpen,
 }: ItemType) => {
-  // console.log(isMobileSidebarOpen);
-  // console.log(isSidebarOpen);
   const lgUp = useMediaQuery((theme: any) => theme.breakpoints.up("lg"));
   const sidebarWidth = "270px";
 

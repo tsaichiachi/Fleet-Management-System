@@ -13,8 +13,6 @@ const CarOwnerSetting = ({ mode }) => {
   const { id } = useParams(); // 從網址獲取車主 ID
   const carOwnerId = mode === "edit" || mode === "view" ? id : null;
 
-  console.log("carOwnerId from URL:", carOwnerId);
-
   const { data: carOwnerInfo, isLoading } = useGetCarOwnerInfo(carOwnerId);
   const { mutate: addCarOwner } = useAddCarOwner();
   const { mutate: editCarOwner } = useEditCarOwner();

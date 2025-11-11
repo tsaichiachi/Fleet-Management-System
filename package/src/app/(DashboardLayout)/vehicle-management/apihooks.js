@@ -11,7 +11,6 @@ export const useGetCars = () => {
     const response = await requestHttp("car/carInfoDropDownList", {
       method: "POST",
     });
-    //console.log("Cars API Response:", response);
 
     // 檢查 API 響應的成功與否
     if (response.code !== "G_0000") {
@@ -103,7 +102,6 @@ export const useGetCarOwnerDropDownList = () => {
           response.message || "Failed to fetch car owner dropdown list"
         );
       }
-      //console.log("Car Owner API Response:", response.data);
       return response.data;
     },
     {
@@ -133,7 +131,6 @@ export const useGetInsuranceList = (carLicenseNum) => {
       if (response?.code !== "G_0000") {
         throw new Error(response?.message || "無法獲取保險列表");
       }
-      //console.log("Insurance API Response:", response.data);
       return response.data; // 返回保險數據
     },
     {
@@ -150,7 +147,6 @@ export const useAddInsurance = (carLicenseNum) => {
 
   return useMutation(
     async (newInsurance) => {
-      //console.log(newInsurance);
       const response = await requestHttp(
         "insuranceFeeSetting/addInsuranceFeeSetting",
         {
@@ -560,7 +556,6 @@ export const useGetCarByOwner = (searchName) => {
 //登入
 export const useLogin = () => {
   return useMutation(async (loginData) => {
-    console.log("loginData", loginData);
     const response = await requestHttp("user/login", {
       method: "POST",
       data: loginData,

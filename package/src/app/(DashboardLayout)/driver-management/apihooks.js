@@ -5,7 +5,6 @@ import { requestHttp } from "@/utils/requestHttp";
  * API: 取得所有車主
  */
 export const useGetCarOwners = (fetchParams) => {
-  console.log("fetchParams:", fetchParams);
   const { page, size, name } = fetchParams;
   return useQuery("carOwners", async () => {
     const response = await requestHttp("car/getCarOwner", {
