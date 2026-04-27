@@ -62,6 +62,9 @@ export const useEditCars = () => {
 
   return useMutation(
     async (newCar) => {
+      if (!confirm("確認要修改此車輛資料嗎？")) {
+        throw new Error("使用者取消修改");
+      }
       const response = await requestHttp("car/updateCar", {
         method: "POST",
         data: newCar,
@@ -181,6 +184,9 @@ export const useEditInsurance = (carLicenseNum) => {
 
   return useMutation(
     async (newInsurance) => {
+      if (!confirm("確認要修改此保單資料嗎？")) {
+        throw new Error("使用者取消修改");
+      }
       const response = await requestHttp(
         "insuranceFeeSetting/updateInsuranceFeeSetting",
         {
@@ -318,6 +324,13 @@ export const useAddOrUpdateCarFee = (carLicenseNum) => {
 
   return useMutation(
     async (carFeeData) => {
+      // 判斷是新增還是修改（如果有id則為修改）
+      const isUpdate = !!carFeeData.id;
+      
+      if (isUpdate && !confirm("確認要修改此管費資料嗎？")) {
+        throw new Error("使用者取消修改");
+      }
+      
       const response = await requestHttp("car/addCarFee", {
         method: "POST",
         data: carFeeData,
@@ -325,13 +338,14 @@ export const useAddOrUpdateCarFee = (carLicenseNum) => {
       if (response.code === "G_0000") {
         return response; // 成功返回響應
       } else {
-        throw new Error(response.message || "新增失敗"); // 如果不是 G_0000，拋出錯誤
+        throw new Error(response.message || (isUpdate ? "修改失敗" : "新增失敗")); // 如果不是 G_0000，拋出錯誤
       }
     },
     {
-      onSuccess: (response) => {
-        alert("新增管費成功！"); // 可視化成功訊息
-        router.push(`/vehicle-management/${carLicenseNum}/PolicyManagement`);
+      onSuccess: (response, variables) => {
+        const isUpdate = !!variables.id;
+        alert(isUpdate ? "修改管費成功！" : "新增管費成功！"); // 可視化成功訊息
+        router.push(`/vehicle-management/${carLicenseNum}/ManagementFeeSetting`);
         queryClient.invalidateQueries("cars"); // 更新車主列表
       },
       onError: (error) => {
@@ -414,6 +428,9 @@ export const useUpdateLoanFee = () => {
 
   return useMutation(
     async (LoanFeeData) => {
+      if (!confirm("確認要修改此貸款資料嗎？")) {
+        throw new Error("使用者取消修改");
+      }
       const response = await requestHttp(
         "loanFeeSetting/updateLoanFeeSetting",
         {

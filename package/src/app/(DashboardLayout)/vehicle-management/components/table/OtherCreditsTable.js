@@ -12,6 +12,7 @@ import {
   TextField,
   IconButton,
   Button,
+  Switch,
   Select,
   MenuItem,
 } from "@mui/material";
@@ -53,7 +54,7 @@ const OtherCreditsTable = ({
 
       const processedData = response.data.pageList.map((item) => ({
         ...item,
-        //disable: String(item.disable), // 將 disable 轉換為字串
+        disable: String(item.disable), // 將 disable 轉換為字串
       }));
 
       //console.log("processedData", processedData);
@@ -91,11 +92,6 @@ const OtherCreditsTable = ({
       // 驗證處理日期和發票日期的格式
       if (!validateDate(giveBackDate, "YYY-MM-DD")) {
         alert("日期格式錯誤，應為 YYY-MM-DD");
-        return;
-      }
-
-      if (!areDatesInExpenseMonth(giveBackDate, expenseYearMonth)) {
-        alert(`日期必須在 ${expenseYearMonth} 當月內`);
         return;
       }
 
@@ -169,7 +165,7 @@ const OtherCreditsTable = ({
       giveBackDate: "",
       amount: "",
       note: "",
-      //   disable: "0", // 預設為 "否"
+      disable: "0", // 預設為 "否"（0=正常, 1=作廢）
     });
   };
 
@@ -187,12 +183,14 @@ const OtherCreditsTable = ({
           車牌:{carLicenseNum}，查詢年月:{expenseYearMonth}
           <br />
           {expenseYearMonth ? (
-            <>僅能新增、編輯[{currentTaiwanDate}]的資料</>
+            <>
+              其他抵收作廢後, 不可復原, 需重新輸入一筆
+            </>
           ) : (
             "請提供有效的年月份進行資料搜尋"
           )}
         </Box>
-        {expenseYearMonth >= currentTaiwanDate && (
+        {expenseYearMonth && (
           <Button variant="contained" color="primary" onClick={handleAddRow}>
             新增
           </Button>
@@ -205,7 +203,7 @@ const OtherCreditsTable = ({
       <Table aria-label="simple table" sx={{ whiteSpace: "nowrap", mt: 2 }}>
         <TableHead>
           <TableRow>
-            {["日期(YYY-MM-DD)", "抵收金額", "備註", "操作"].map(
+            {["日期(YYY-MM-DD)", "抵收金額", "備註", "作廢", "操作"].map(
               (header, index) => (
                 <TableCell key={index}>
                   <Typography variant="subtitle2" fontWeight={600}>
@@ -243,6 +241,8 @@ const OtherCreditsTable = ({
                   )}
                 </TableCell>
               ))}
+              {/* 新增時隱藏「作廢」 */}
+              <TableCell />
               <TableCell>
                 <IconButton onClick={handleSaveClick} color="primary">
                   <SaveIcon />
@@ -285,8 +285,26 @@ const OtherCreditsTable = ({
                   )}
                 </TableCell>
               ))}
+              {/* 作廢欄位 */}
               <TableCell>
                 {editingRowId === row.id ? (
+                  <Switch
+                    checked={editedRow?.disable === "1"}
+                    onChange={(e) =>
+                      handleInputChange("disable", e.target.checked ? "1" : "0")
+                    }
+                    color="primary"
+                  />
+                ) : (
+                  <Typography>{row.disable === "1" ? "是" : "否"}</Typography>
+                )}
+              </TableCell>
+              <TableCell>
+                {row.disable === "1" ? (
+                  <Typography color="error" fontWeight="bold">
+                    已作廢
+                  </Typography>
+                ) : editingRowId === row.id ? (
                   <>
                     <IconButton onClick={handleSaveClick} color="primary">
                       <SaveIcon />
@@ -295,17 +313,13 @@ const OtherCreditsTable = ({
                       <CancelIcon />
                     </IconButton>
                   </>
-                ) : expenseYearMonth >= currentTaiwanDate ? (
+                ) : (
                   <IconButton
                     aria-label="edit"
                     onClick={() => handleEditClick(row.id)}
                   >
                     <EditIcon />
                   </IconButton>
-                ) : (
-                  <Typography color="error" fontWeight="bold">
-                    僅供檢視
-                  </Typography>
                 )}
               </TableCell>
             </TableRow>

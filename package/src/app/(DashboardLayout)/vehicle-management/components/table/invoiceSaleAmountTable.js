@@ -107,10 +107,10 @@ const InvoiceSaleAmountTable = ({
         return;
       }
 
-      if (!areDatesInExpenseMonth(handleDate, expenseYearMonth)) {
-        alert(`處理日期必須在 ${expenseYearMonth} 當月內`);
-        return;
-      }
+      // if (!areDatesInExpenseMonth(handleDate, expenseYearMonth)) {
+      //   alert(`處理日期必須在 ${expenseYearMonth} 當月內`);
+      //   return;
+      // }
 
       // if (!carAgencyId) {
       //   alert("請選擇車行");
@@ -238,20 +238,18 @@ const InvoiceSaleAmountTable = ({
           <br />
           {expenseYearMonth ? (
             <>
-              1. 僅能新增、編輯[{currentTaiwanDate}]的資料
-              <br />
-              2. 根據[處理日期]來判斷當月帳單。ex: 處理日期為12月5號,
+              1. 根據[處理日期]來判斷當月帳單。ex: 處理日期為12月5號,
               則算於12月的帳單
               <br />
-              3. 發票作廢後, 不可復原, 需重新輸入一張
+              2. 發票作廢後, 不可復原, 需重新輸入一張
               <br />
-              4. [稅]計算公式: 銷貨金額 * 銷項稅率
+              3. [稅]計算公式: 銷貨金額 * 銷項稅率
             </>
           ) : (
             "請提供有效的年月份進行資料搜尋"
           )}
         </Box>
-        {expenseYearMonth >= currentTaiwanDate && (
+        {expenseYearMonth && (
           <Button variant="contained" color="primary" onClick={handleAddRow}>
             新增
           </Button>
@@ -422,17 +420,13 @@ const InvoiceSaleAmountTable = ({
                       <CancelIcon />
                     </IconButton>
                   </>
-                ) : expenseYearMonth >= currentTaiwanDate ? (
+                ) : (
                   <IconButton
                     aria-label="edit"
                     onClick={() => handleEditClick(row.id)}
                   >
                     <EditIcon />
                   </IconButton>
-                ) : (
-                  <Typography color="error" fontWeight="bold">
-                    僅供檢視
-                  </Typography>
                 )}
               </TableCell>
             </TableRow>

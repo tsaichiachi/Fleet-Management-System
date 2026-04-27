@@ -1,5 +1,4 @@
 //罰單
-//銷發票額,抵發票額，抵油單額
 "use client";
 import React, { useEffect, useState } from "react";
 import {
@@ -98,13 +97,8 @@ const TrafficTicketTable = ({
         alert("到案日期格式錯誤，應為 YYY-MM");
         return;
       }
-      if (!validateDate(payDate, "YYY-MM-DD")) {
-        alert("代繳日期格式錯誤，應為 YYY-MM");
-        return;
-      }
-
-      if (!areDatesInExpenseMonth(handleDate, expenseYearMonth)) {
-        alert(`處理日期必須在 ${expenseYearMonth} 當月內`);
+      if (payDate && !validateDate(payDate, "YYY-MM-DD")) {
+        alert("代繳日期格式錯誤，應為 YYY-MM-DD");
         return;
       }
 
@@ -181,6 +175,7 @@ const TrafficTicketTable = ({
       amount: "",
       payDate: "",
       note: "",
+      disable: "0", // 預設為 "否"（0=正常, 1=作廢）
     });
   };
 
@@ -198,13 +193,15 @@ const TrafficTicketTable = ({
           車牌:{carLicenseNum}，查詢年月:{expenseYearMonth}
           <br />
           {expenseYearMonth ? (
-            <>僅能新增、編輯[{currentTaiwanDate}]的資料</>
+            <>
+              罰單作廢後, 不可復原, 需重新輸入一筆
+            </>
           ) : (
             "請提供有效的年月份進行資料搜尋"
           )}
         </Box>
 
-        {expenseYearMonth >= currentTaiwanDate && (
+        {expenseYearMonth && (
           <Button variant="contained" color="primary" onClick={handleAddRow}>
             新增
           </Button>
@@ -224,6 +221,7 @@ const TrafficTicketTable = ({
               "罰單金額",
               "代繳日期(YYY-MM-DD)",
               "備註",
+              "作廢",
               "操作",
             ].map((header, index) => (
               <TableCell key={index}>
@@ -254,6 +252,8 @@ const TrafficTicketTable = ({
                   />
                 </TableCell>
               ))}
+              {/* 新增時隱藏「作廢」 */}
+              <TableCell />
               <TableCell>
                 <IconButton onClick={handleSaveClick} color="primary">
                   <SaveIcon />
@@ -287,8 +287,26 @@ const TrafficTicketTable = ({
                   )}
                 </TableCell>
               ))}
+              {/* 作廢欄位 */}
               <TableCell>
                 {editingRowId === row.id ? (
+                  <Switch
+                    checked={editedRow?.disable === "1"}
+                    onChange={(e) =>
+                      handleInputChange("disable", e.target.checked ? "1" : "0")
+                    }
+                    color="primary"
+                  />
+                ) : (
+                  <Typography>{row.disable === "1" ? "是" : "否"}</Typography>
+                )}
+              </TableCell>
+              <TableCell>
+                {row.disable === "1" ? (
+                  <Typography color="error" fontWeight="bold">
+                    已作廢
+                  </Typography>
+                ) : editingRowId === row.id ? (
                   <>
                     <IconButton onClick={handleSaveClick} color="primary">
                       <SaveIcon />
@@ -297,17 +315,13 @@ const TrafficTicketTable = ({
                       <CancelIcon />
                     </IconButton>
                   </>
-                ) : expenseYearMonth >= currentTaiwanDate ? (
+                ) : (
                   <IconButton
                     aria-label="edit"
                     onClick={() => handleEditClick(row.id)}
                   >
                     <EditIcon />
                   </IconButton>
-                ) : (
-                  <Typography color="error" fontWeight="bold">
-                    僅供檢視
-                  </Typography>
                 )}
               </TableCell>
             </TableRow>

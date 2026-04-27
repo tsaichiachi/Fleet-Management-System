@@ -43,6 +43,7 @@ const LedgerForm = () => {
     handleSubmit,
     setValue,
     trigger,
+    getValues,
     formState: { errors },
   } = useForm();
 
@@ -156,7 +157,7 @@ const handleCurrentMonthGenerate = async () => {
     const authToken = localStorage.getItem("authToken"); // 取得 Token
 
     const response = await axios.post(
-      `${apiUrl}/bill/generateCurrentMonthBill`,
+      `${apiUrl}/bill/generateBillSnapshot`,
       requestData,
       {
         headers: {
@@ -192,6 +193,103 @@ const handleCurrentMonthGenerate = async () => {
     alert("回應格式錯誤，請稍後重試");
   } catch (error) {
     console.error("請求失敗:", error);
+
+    if (error.response?.data) {
+      try {
+        const errorJson = error.response.data;
+
+        if (errorJson?.code) {
+          alert(errorJson.message || "發生錯誤，請稍後重試");
+          return;
+        }
+      } catch (parseError) {
+        console.error("無法解析錯誤詳細信息");
+      }
+    }
+
+    alert("系統錯誤，請稍後重試");
+  }
+};
+
+const handleSubmitBillSnapshot = async () => {
+  if (!searchParams) {
+    alert("請先輸入年月份並搜尋");
+    return;
+  }
+
+  try {
+    // 獲取所有表單值
+    const formValues = getValues();
+    
+    const requestData = {
+      carLicenseNum,
+      billDate: searchParams?.billDate,
+      billData: {
+        lastMonthOweAmount: parseFloat(formValues.lastMonthOweAmount) || 0,
+        manageFee: parseFloat(formValues.manageFee) || 0,
+        unionFee: parseFloat(formValues.unionFee) || 0,
+        loanFee: parseFloat(formValues.loanFee) || 0,
+        laborInsuranceFee: parseFloat(formValues.laborInsuranceFee) || 0,
+        healthFee: parseFloat(formValues.healthFee) || 0,
+        insuranceFee: parseFloat(formValues.insuranceFee) || 0,
+        licenseTaxFee: parseFloat(formValues.licenseTaxFee) || 0,
+        fuelTaxFee: parseFloat(formValues.fuelTaxFee) || 0,
+        invoiceSaleAmount: parseFloat(formValues.invoiceSaleAmount) || 0,
+        invoiceSaleAmountTax: parseFloat(formValues.invoiceSaleAmountTax) || 0,
+        invoiceOffsetAmount: parseFloat(formValues.invoiceOffsetAmount) || 0,
+        invoiceOffsetAmountTax: parseFloat(formValues.invoiceOffsetAmountTax) || 0,
+        invoiceGasAmount: parseFloat(formValues.invoiceGasAmount) || 0,
+        invoiceGasAmountTax: parseFloat(formValues.invoiceGasAmountTax) || 0,
+        lendMoney: parseFloat(formValues.lendMoney) || 0,
+        lendMoneyInterest: parseFloat(formValues.lendMoneyInterest) || 0,
+        giveBackMoney: parseFloat(formValues.giveBackMoney) || 0,
+        giveBackInterest: parseFloat(formValues.giveBackInterest) || 0,
+        otherLendMoneyAmount: parseFloat(formValues.otherLendMoneyAmount) || 0,
+        otherGiveBackMoneyAmount: parseFloat(formValues.otherGiveBackMoneyAmount) || 0,
+        trafficSum: parseFloat(formValues.trafficSum) || 0,
+        payInterest: parseFloat(formValues.payInterest) || 0,
+        receiveOffset: parseFloat(formValues.receiveOffset) || 0,
+        returnMoney: parseFloat(formValues.returnMoney) || 0,
+        totalSum: parseFloat(formValues.totalSum) || 0,
+      },
+    };
+
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const authToken = localStorage.getItem("authToken");
+
+    const response = await axios.post(
+      `${apiUrl}/bill/submitBillSnapshot`,
+      requestData,
+      {
+        headers: {
+          Authorization: authToken ? `Bearer ${authToken}` : "",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    // 檢查 API 回應
+    if (response.data?.code) {
+      const { code, message } = response.data;
+
+      if (code === "G_0000") {
+        alert("帳單提交成功!");
+        refetch(); // 重新載入資料
+        return;
+      }
+
+      if (code === "G_9999") {
+        alert(message || "請洽管理員");
+        return;
+      }
+
+      alert(message || "操作失敗，請稍後重試");
+      return;
+    }
+
+    alert("回應格式錯誤，請稍後重試");
+  } catch (error) {
+    console.error("提交帳單失敗:", error);
 
     if (error.response?.data) {
       try {
@@ -351,7 +449,6 @@ const handleCurrentMonthGenerate = async () => {
         {/* 上月欠款 */}
         <Grid item xs={12} md={6}>
           <TextField
-            disabled
             id="lastMonthOweAmount"
             label="上月欠款"
             type="text"
@@ -363,7 +460,6 @@ const handleCurrentMonthGenerate = async () => {
         {/* 管理費 */}
         <Grid item xs={12} md={6}>
           <TextField
-            disabled
             id="manageFee"
             label="管理費"
             type="text"
@@ -373,35 +469,9 @@ const handleCurrentMonthGenerate = async () => {
           />
         </Grid>
 
-        {/* 互助金 */}
-        {/* <Grid item xs={12} md={6}>
-          <TextField
-            disabled
-            id="laborFee"
-            label="互助金"
-            type="text"
-            error={!!errors.laborFee}
-            {...register("laborFee", { required: true })}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid> */}
-
-        {/* 計息方式???? */}
-        {/* <Grid item xs={12} md={6}>
-          <TextField
-            disabled
-            id="healthyFee"
-            label="計息方式"
-            type="text"
-            error={!!errors.healthyFee}
-            {...register("healthyFee", { required: true })}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid> */}
         {/* 公會費 */}
         <Grid item xs={12} md={6}>
           <TextField
-            disabled
             id="unionFee"
             label="公會費"
             type="text"
@@ -413,7 +483,6 @@ const handleCurrentMonthGenerate = async () => {
         {/* 車貸款 */}
         <Grid item xs={12} md={6}>
           <TextField
-            disabled
             id="loanFee"
             label="車貸款"
             type="text"
@@ -422,22 +491,10 @@ const handleCurrentMonthGenerate = async () => {
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
-        {/* 無習基準 ??*/}
-        {/* <Grid item xs={12} md={6}>
-          <TextField
-            disabled
-            id="peopleHelpFee"
-            label="無習基準"
-            type="text"
-            error={!!errors.peopleHelpFee}
-            {...register("peopleHelpFee", { required: true })}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid> */}
+
         {/* 勞保費 */}
         <Grid item xs={12} md={6}>
           <TextField
-            disabled
             id="laborInsuranceFee"
             label="勞保費"
             type="text"
@@ -449,7 +506,6 @@ const handleCurrentMonthGenerate = async () => {
         {/* 保險費 */}
         <Grid item xs={12} md={6}>
           <TextField
-            disabled
             id="insuranceFee"
             label="保險費"
             type="text"
@@ -458,22 +514,10 @@ const handleCurrentMonthGenerate = async () => {
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
-        {/* 計息金額 */}
-        {/* <Grid item xs={12} md={6}>
-          <TextField
-            disabled
-            id="peopleHelpFee"
-            label="計息金額"
-            type="text"
-            error={!!errors.peopleHelpFee}
-            {...register("peopleHelpFee", { required: true })}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid> */}
+
         {/* 健保費 */}
         <Grid item xs={12} md={6}>
           <TextField
-            disabled
             id="healthFee"
             label="健保費"
             type="text"
@@ -485,7 +529,6 @@ const handleCurrentMonthGenerate = async () => {
         {/* 牌照稅 */}
         <Grid item xs={12} md={6}>
           <TextField
-            disabled
             id="licenseTaxFee"
             label="牌照稅"
             type="text"
@@ -494,34 +537,10 @@ const handleCurrentMonthGenerate = async () => {
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
-        {/* 上月利息 */}
-        {/* <Grid item xs={12} md={6}>
-          <TextField
-            disabled
-            id="peopleHelpFee"
-            label="上月利息"
-            type="text"
-            error={!!errors.peopleHelpFee}
-            {...register("peopleHelpFee", { required: true })}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid> */}
-        {/* 準備金 */}
-        {/* <Grid item xs={12} md={6}>
-          <TextField
-            disabled
-            id="peopleHelpFee"
-            label="準備金"
-            type="text"
-            error={!!errors.peopleHelpFee}
-            {...register("peopleHelpFee", { required: true })}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid> */}
+
         {/* 燃料稅 */}
         <Grid item xs={12} md={6}>
           <TextField
-            disabled
             id="fuelTaxFee"
             label="燃料稅"
             type="text"
@@ -591,11 +610,11 @@ const handleCurrentMonthGenerate = async () => {
             }
           />
         </Grid>
-        {/* 抵發稅額 */}
+        {/* 抵發稅額invoiceOffsetAmountTax */}
         <Grid item xs={12} md={6}>
           <TextField
             disabled
-            id="receipTax"
+            id="invoiceOffsetAmountTax"
             label="抵發稅額"
             type="text"
             error={!!errors.invoiceOffsetAmountTax}
@@ -624,12 +643,12 @@ const handleCurrentMonthGenerate = async () => {
           />
         </Grid>
 
-        {/* 抵油單稅 */}
+        {/* 抵油單稅invoiceGasAmountTax */}
         <Grid item xs={12} md={6}>
           <TextField
             disabled
             id="invoiceGasAmountTax"
-            label="抵發稅額"
+            label="抵油單稅"
             type="text"
             error={!!errors.invoiceGasAmountTax}
             {...register("invoiceGasAmountTax", { required: false })}
@@ -854,6 +873,19 @@ const handleCurrentMonthGenerate = async () => {
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
+      </Grid>
+
+      {/* 提交帳單按鈕 */}
+      <Grid item xs={12} sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSubmitBillSnapshot}
+          disabled={!searchParams || !isSearched}
+          sx={{ paddingX: 4, paddingY: 1.5 }}
+        >
+          提交帳單
+        </Button>
       </Grid>
     </Box>
   );
