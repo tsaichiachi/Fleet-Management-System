@@ -90,7 +90,7 @@ const InvoiceSaleAmountTable = ({
 
   const handleSaveClick = async () => {
     try {
-      const { handleDate, invoiceDate, taxMonth, carAgency, carAgencyId } =
+      const { handleDate, invoiceDate, taxMonth, carAgency, carAgencyId, disable, targetBillYearMonth } =
         editedRow;
 
       // 驗證處理日期和發票日期的格式
@@ -105,6 +105,14 @@ const InvoiceSaleAmountTable = ({
       if (!validateDate(taxMonth, "YYY-MM")) {
         alert("稅捐月份格式錯誤，應為 YYY-MM");
         return;
+      }
+
+      // 如果勾選作廢且有填寫沖銷月份，驗證格式
+      if (disable === "1" && targetBillYearMonth) {
+        if (!validateDate(targetBillYearMonth, "YYY-MM")) {
+          alert("沖銷月份格式錯誤，應為 YYY-MM");
+          return;
+        }
       }
 
       const dataToSave = {
@@ -133,10 +141,25 @@ const InvoiceSaleAmountTable = ({
           alert(`新增失敗: ${response?.message || "未知錯誤"}`);
         }
       } else {
-        const response = await requestHttp("invoice/updateInvoice", {
-          method: "POST",
-          data: dataToSave,
-        });
+        // 修改時，根據是否作廢決定調用不同的API
+        let response;
+        if (disable === "1") {
+          // 作廢時調用 voidAndRebillToMonth API
+          response = await requestHttp("invoice/voidAndRebillToMonth", {
+            method: "POST",
+            data: {
+              id: editedRow.id,
+              targetBillYearMonth,
+              type,
+            },
+          });
+        } else {
+          // 不作廢時調用原本的 updateInvoice API
+          response = await requestHttp("invoice/updateInvoice", {
+            method: "POST",
+            data: dataToSave,
+          });
+        }
 
         if (response?.code === "G_0000") {
           alert("修改成功！");
@@ -191,6 +214,7 @@ const InvoiceSaleAmountTable = ({
       note: "",
       taxMonth: "",
       disable: "0", // 預設為 "否"
+      targetBillYearMonth: "", // 沖銷月份
     });
   };
 
@@ -277,6 +301,11 @@ const InvoiceSaleAmountTable = ({
             </TableCell>
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
+                沖銷月份(YYY-MM)
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography variant="subtitle2" fontWeight={600}>
                 操作
               </Typography>
             </TableCell>
@@ -329,7 +358,8 @@ const InvoiceSaleAmountTable = ({
                   ))}
                 </Select>
               </TableCell>
-              {/* 新增時隱藏「作廢」 */}
+              {/* 新增時隱藏「作廢」和「沖銷月份」 */}
+              <TableCell />
               <TableCell />
               <TableCell>
                 <IconButton onClick={handleSaveClick} color="primary">
@@ -405,6 +435,22 @@ const InvoiceSaleAmountTable = ({
                   />
                 ) : (
                   <Typography>{row.disable === "1" ? "是" : "否"}</Typography>
+                )}
+              </TableCell>
+              {/* 沖銷月份欄位 */}
+              <TableCell>
+                {editingRowId === row.id && editedRow?.disable === "1" ? (
+                  <TextField
+                    value={editedRow?.targetBillYearMonth || ""}
+                    onChange={(e) =>
+                      handleInputChange("targetBillYearMonth", e.target.value)
+                    }
+                    placeholder="YYY-MM"
+                  />
+                ) : (
+                  <Typography>
+                    {row.disable === "1" ? row.targetBillYearMonth || "-" : "-"}
+                  </Typography>
                 )}
               </TableCell>
               <TableCell>

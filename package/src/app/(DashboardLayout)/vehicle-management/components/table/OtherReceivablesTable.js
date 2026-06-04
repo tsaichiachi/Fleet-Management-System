@@ -84,12 +84,20 @@ const OtherReceivablesTable = ({
 
   const handleSaveClick = async () => {
     try {
-      const { lendDate, expireDate } = editedRow;
+      const { lendDate, expireDate, disable, targetBillYearMonth } = editedRow;
 
       // 驗證處理日期和發票日期的格式
       if (!validateDate(lendDate, "YYY-MM-DD")) {
         alert("日期格式錯誤，應為 YYY-MM-DD");
         return;
+      }
+
+      // 如果勾選作廢且有填寫沖銷月份，驗證格式
+      if (disable === "1" && targetBillYearMonth) {
+        if (!validateDate(targetBillYearMonth, "YYY-MM")) {
+          alert("沖銷月份格式錯誤，應為 YYY-MM");
+          return;
+        }
       }
 
       const dataToSave = {
@@ -117,13 +125,27 @@ const OtherReceivablesTable = ({
           alert(`新增失敗: ${response?.message || "未知錯誤"}`);
         }
       } else {
-        const response = await requestHttp(
-          "otherLendMoney/updateOtherLendMoney",
-          {
+        // 修改時，根據是否作廢決定調用不同的API
+        let response;
+        if (disable === "1") {
+          // 作廢時調用 voidAndRebillToMonth API
+          response = await requestHttp("otherLendMoney/voidAndRebillToMonth", {
             method: "POST",
-            data: dataToSave,
-          }
-        );
+            data: {
+              id: editedRow.id,
+              targetBillYearMonth,
+            },
+          });
+        } else {
+          // 不作廢時調用原本的 updateOtherLendMoney API
+          response = await requestHttp(
+            "otherLendMoney/updateOtherLendMoney",
+            {
+              method: "POST",
+              data: dataToSave,
+            }
+          );
+        }
 
         if (response?.code === "G_0000") {
           alert("修改成功！");
@@ -160,6 +182,7 @@ const OtherReceivablesTable = ({
       amount: "",
       note: "",
       disable: "0", // 預設為 "否"（0=正常, 1=作廢）
+      targetBillYearMonth: "", // 沖銷月份
     });
   };
 
@@ -197,7 +220,7 @@ const OtherReceivablesTable = ({
       <Table aria-label="simple table" sx={{ whiteSpace: "nowrap", mt: 2 }}>
         <TableHead>
           <TableRow>
-            {["日期(YYY-MM-DD)", "應收金額", "備註", "作廢", "操作"].map(
+            {["日期(YYY-MM-DD)", "應收金額", "備註", "作廢", "沖銷月份(YYY-MM)", "操作"].map(
               (header, index) => (
                 <TableCell key={index}>
                   <Typography variant="subtitle2" fontWeight={600}>
@@ -235,7 +258,8 @@ const OtherReceivablesTable = ({
                   )}
                 </TableCell>
               ))}
-              {/* 新增時隱藏「作廢」 */}
+              {/* 新增時隱藏「作廢」和「沖銷月份」 */}
+              <TableCell />
               <TableCell />
               <TableCell>
                 <IconButton onClick={handleSaveClick} color="primary">
@@ -291,6 +315,22 @@ const OtherReceivablesTable = ({
                   />
                 ) : (
                   <Typography>{row.disable === "1" ? "是" : "否"}</Typography>
+                )}
+              </TableCell>
+              {/* 沖銷月份欄位 */}
+              <TableCell>
+                {editingRowId === row.id && editedRow?.disable === "1" ? (
+                  <TextField
+                    value={editedRow?.targetBillYearMonth || ""}
+                    onChange={(e) =>
+                      handleInputChange("targetBillYearMonth", e.target.value)
+                    }
+                    placeholder="YYY-MM"
+                  />
+                ) : (
+                  <Typography>
+                    {row.disable === "1" ? row.targetBillYearMonth || "-" : "-"}
+                  </Typography>
                 )}
               </TableCell>
               <TableCell>
