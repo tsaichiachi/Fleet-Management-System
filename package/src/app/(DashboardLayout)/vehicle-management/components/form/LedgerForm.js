@@ -65,7 +65,7 @@ const LedgerForm = () => {
   useEffect(() => {
     if (monthBillData) {
       Object.entries(monthBillData).forEach(([key, value]) => {
-        setValue(key, value || "");
+        setValue(key, value ?? "");
       });
     }
   }, [monthBillData, setValue]);
