@@ -9,17 +9,19 @@ import {
   TableRow,
   Pagination,
   IconButton,
+  Switch,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/navigation";
-import { useDeleteLoan } from "../../apihooks";
+import { useDeleteLoan, useUpdateLoanFee } from "../../apihooks";
 
 const LoanManagementTable = ({ data, carLicenseNum, refreshData }) => {
   //console.log("data:", data);
   const router = useRouter();
 
   const { mutate: deleteLoan } = useDeleteLoan();
+  const { mutate: updateLoanFee } = useUpdateLoanFee();
 
   const handleEditClick = (id) => {
     router.push(
@@ -46,6 +48,36 @@ const LoanManagementTable = ({ data, carLicenseNum, refreshData }) => {
         },
       }
     );
+  };
+
+  const handleIncludeInBillChange = (product, newValue) => {
+    const includeInBill = newValue ? "Y" : "N";
+    
+    const updateData = {
+      id: product.id,
+      carLicenseNum: product.carLicenseNum,
+      loanCompany: product.loanCompany,
+      startDate: product.startDate,
+      startDatetime: product.startDatetime,
+      endDate: product.endDate,
+      endDatetime: product.endDatetime,
+      totalAmount: product.totalAmount,
+      monthPayAmount: product.monthPayAmount,
+      note: product.note || "",
+      status: product.status,
+      includeInBill: includeInBill,
+    };
+
+    updateLoanFee(updateData, {
+      onSuccess: () => {
+        alert(`已${newValue ? "開啟" : "關閉"}入帳`);
+        refreshData();
+      },
+      onError: (error) => {
+        alert("更新失敗");
+        console.error("更新失敗：", error);
+      },
+    });
   };
 
   return (
@@ -91,6 +123,11 @@ const LoanManagementTable = ({ data, carLicenseNum, refreshData }) => {
             </TableCell>
             <TableCell>
               <Typography variant="subtitle2" fontWeight={600}>
+                是否入帳
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography variant="subtitle2" fontWeight={600}>
                 作廢
               </Typography>
             </TableCell>
@@ -130,6 +167,16 @@ const LoanManagementTable = ({ data, carLicenseNum, refreshData }) => {
                   <Typography fontWeight={400}>
                     {product.monthPayAmount}
                   </Typography>
+                </TableCell>
+                <TableCell>
+                  <Switch
+                    checked={product.includeInBill === "Y"}
+                    onChange={(e) =>
+                      handleIncludeInBillChange(product, e.target.checked)
+                    }
+                    disabled={product.status !== "enable"}
+                    color="primary"
+                  />
                 </TableCell>
                 <TableCell>
                   <Typography fontWeight={400}>
